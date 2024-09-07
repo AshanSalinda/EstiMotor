@@ -7,7 +7,12 @@ logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
 def scrape_ikman():
-    url = 'https://www.patpat.lk/vehicle/car/Honda/City/2003/honda-city/1308414'
+    url = 'https://ikman.lk/en/ad/nissan-sunny-sb14-1998-for-sale-colombo'
+    price_container_class = 'amount--3NTpl'
+    details_container_class = 'ad-meta--17Bqm'
+    label_div_class = 'word-break--2nyVq label--3oVZK'
+    value_div_class = 'word-break--2nyVq value--1lKHt'
+
     try:
         response = requests.get(url)
         response.raise_for_status()  # Check for HTTP errors
@@ -17,24 +22,25 @@ def scrape_ikman():
         vehicle_details = {}
 
         # Extract vehicle price
-        price_container = soup.find('p', class_='m-0 col-6 col-sm-7 p-0 m-0')
+        price_container = soup.find('div', class_ = price_container_class)
         if price_container:
-            price_spans = price_container.find_all('span')
-            if len(price_spans) > 1:
-                vehicle_details['price'] = price_spans[1].get_text(strip=True)
-            else:
-                logger.warning("Price span not found")
+           vehicle_details['price'] = price_container.get_text(strip=True)
+        else:
+            logger.warning("Price not found")
 
-        # Extract vehicle details from the table
-        table = soup.find('table', class_='course-info table table-striped')
-        if table:
-            rows = table.find_all('tr')
-            for row in rows:
-                cells = row.find_all('td')
-                if len(cells) == 2:
-                    key = cells[0].get_text(strip=True).replace(':', '')
-                    value = cells[1].get_text(strip=True)
-                    vehicle_details[key] = value
+        # Find the details container
+        details_container = soup.find('div', class_ = details_container_class )
+        if details_container:
+            # Iterate over each detail row
+            detail_rows = details_container.find_all('div', class_='full-width--XovDn')
+            for row in detail_rows:
+                label_div = row.find('div', class_ = label_div_class)
+                value_div = row.find('div', class_= value_div_class)
+                if label_div and value_div:
+                    label = label_div.get_text(strip=True).replace(':', '')
+                    # Handle cases where the value is wrapped in another tag
+                    value = value_div.get_text(strip=True)
+                    vehicle_details[label] = value
         else:
             logger.warning("Details table not found")
 
