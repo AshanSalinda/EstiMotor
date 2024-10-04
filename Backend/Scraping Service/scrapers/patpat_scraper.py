@@ -1,33 +1,29 @@
-import logging
 from bs4 import BeautifulSoup
+from utils.logger import info, warn, err
 import requests
-
-# Configure logging
-logger = logging.getLogger(__name__)
-logging.basicConfig(level=logging.INFO)
-
 
 
 def scrape_patpat():
-    page_no = 638
+    page_no = 1
     all_vehicle_data = []
 
     while page_no > 0:
-        logger.info(f"Scraping page no: {page_no}")
+        info(f"Scraping page no: {page_no}")
 
         page_data = get_page_data(str(page_no))
         page_no = 0 if page_data['is_last_page'] else page_no + 1
         vehicle_links = page_data['vehicle_links']
         
         for link in vehicle_links:
-            logger.info(f"Scraping vehicle page: {link}")
+            err(f"Scraping vehicle page: {link}")
             vehicle_data = scrape_vehicle_page(link)
             if vehicle_data:
                 all_vehicle_data.append(vehicle_data)
 
 
-    logger.info("Scraping completed.")
+    warn("Scraping completed.")
     print(all_vehicle_data)
+    print(len(all_vehicle_data))
     return all_vehicle_data
 
 
@@ -55,12 +51,12 @@ def get_page_data(page_no):
                 vehicle_links.append(href)
 
         return {
-            'is_last_page': is_last_page, 
+            'is_last_page': True, 
             'vehicle_links': vehicle_links
         }
 
     except requests.RequestException as e:
-        logger.error(f"Page Data Getting Error for: {BASE_URL + page_no} {e}", exc_info=True)
+        print(f"Page Data Getting Error for: {BASE_URL + page_no} {e}")
         return {'is_last_page': False, 'vehicle_links': []}
 
 
@@ -82,7 +78,7 @@ def scrape_vehicle_page(url):
         if title_container:
             vehicle_details['title'] = title_container.get_text(strip=True)
         else:
-            logger.warning("Title not found")
+            print("Title not found")
 
 
         price_container = soup.find('p', class_ = price_class)
@@ -91,7 +87,7 @@ def scrape_vehicle_page(url):
             if len(price_spans) == 2:
                 vehicle_details['price'] = price_spans[1].get_text(strip=True)
             else:
-                logger.warning("Price span not found")
+                print("Price span not found")
 
 
         table = soup.find('table', class_ = table_class)
@@ -104,16 +100,16 @@ def scrape_vehicle_page(url):
                     value = cells[1].get_text(strip=True)
                     vehicle_details[key] = value
         else:
-            logger.warning("Details table not found")
+            print("Details table not found")
 
         return vehicle_details
 
 
     except requests.RequestException as e:
-        logger.error(f"Request failed: {e}", exc_info=True)
+        print(f"Request failed: {e}")
         return {}
     except Exception as e:
-        logger.error(f"An error occurred during scraping: {e}", exc_info=True)
+        print(f"An error occurred during scraping: {e}")
         return {}
 
 
