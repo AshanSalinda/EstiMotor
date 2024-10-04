@@ -1,13 +1,9 @@
-import logging
 from bs4 import BeautifulSoup
 import requests
 
-# Configure logging
-logger = logging.getLogger(__name__)
-logging.basicConfig(level=logging.INFO)
 
 def scrape_ikman():
-    url = 'https://ikman.lk/en/ad/nissan-sunny-sb14-1998-for-sale-colombo'
+    url = 'https://ikman.lk/en/ad/toyota-dyna-2014-for-sale-kalutara'
     price_container_class = 'amount--3NTpl'
     details_container_class = 'ad-meta--17Bqm'
     label_div_class = 'word-break--2nyVq label--3oVZK'
@@ -26,7 +22,7 @@ def scrape_ikman():
         if price_container:
            vehicle_details['price'] = price_container.get_text(strip=True)
         else:
-            logger.warning("Price not found")
+            print("Price not found")
 
         # Find the details container
         details_container = soup.find('div', class_ = details_container_class )
@@ -42,19 +38,19 @@ def scrape_ikman():
                     value = value_div.get_text(strip=True)
                     vehicle_details[label] = value
         else:
-            logger.warning("Details table not found")
+            print("Details table not found")
 
         # Print extracted details
         if vehicle_details:
             for key, value in vehicle_details.items():
                 print(f"{key}: {value}")
         else:
-            logger.info("No vehicle details found")
+            print("No vehicle details found")
 
     except requests.RequestException as e:
-        logger.error(f"Request failed: {e}", exc_info=True)
+        print(f"Request failed: {e}")
     except Exception as e:
-        logger.error(f"An error occurred during scraping: {e}", exc_info=True)
+        print(f"An error occurred during scraping: {e}")
 
 if __name__ == '__main__':
     scrape_ikman()
