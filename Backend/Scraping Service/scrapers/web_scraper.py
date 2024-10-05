@@ -1,148 +1,67 @@
+import scrapy
 from utils.logger import info, warn, err
-from bs4 import BeautifulSoup
-import requests
+from datetime import datetime, timezone
 
 
-class VehicleScraper:
-    def __init__(self, url, ad_url_selector, next_button_selector, get_vehicle_info):
-        self.url = url
-        self.ad_url_selector = ad_url_selector
-        self.next_button_selector = next_button_selector
-        self.get_vehicle_info = get_vehicle_info
+class WebScraper(scrapy.Spider):
+    def __init__(self, url, ad_link_selector, *args, **kwargs):
+        super(WebScraper, self).__init__(*args, **kwargs)
+        self.start_urls = [url]
+        self.ad_link_selector = ad_link_selector
+        self.started_at = datetime.now()
+        self.all_vehicle_data = []
+        self.page_count = 0
 
 
-    def scrape(self):
+    def closed(self, reason):
+        """This is called when the spider finishes crawling"""
+
+        start_time = self.crawler.stats.get_value('start_time')
+        finish_time = datetime.now(timezone.utc)
+        time_taken = str(finish_time - start_time)
+        time = time_taken.split('.')[0]
+        ms = int(time_taken.split('.')[1]) // 1000
+
+        success_requests = self.crawler.stats.get_value('downloader/response_status_count/200', 0)
+        failed_requests = self.crawler.stats.get_value('downloader/response_status_count/500', 0)
+        not_found_requests = self.crawler.stats.get_value('downloader/response_status_count/404', 0)
+        failed_request_other = self.crawler.stats.get_value('downloader/exception_type_count/twisted.internet.error.TimeoutError', 0) 
+        failed_request_network = self.crawler.stats.get_value('downloader/exception_type_count/twisted.internet.error.DNSLookupError', 0) 
+        print(f"Failed requests: {failed_requests}")
+        print(f"Successful requests: {success_requests}")
+        print(f"Not found requests: {not_found_requests}")
+        print(f"Other failed requests: {start_time}")
+        print(f"network errors {finish_time}")
+        print(f"Scraping completed in: {time}.{ms}")
+
+
+    def parse(self, response):
+        """This is the default callback for every request made by the spider"""
+
         try:       
-            page_no = 1
-            page_count = 0
-            all_vehicle_data = []
+            info(f"Scraping page: {self.page_count}")
 
-            while page_no > 0:
-                info(f"Scraping page no: {page_no}")
+            ad_links = response.css('div.result-img a::attr(href)').getall()
+            for link in ad_links:
+                yield response.follow(link, callback=self.get_vehicle_info)
 
-                page_info = self.get_page_info(str(page_no))
-                page_no = 0 if page_info['is_last_page'] else page_no + 1
-                # ad_links = page_info['ad_links']
-                page_count += 1
-                
-                # for ad in ad_links:
-                #     print(f"Scraping: {ad}")
-                #     vehicle_data = self.get_vehicle_info(ad)
+            # Handle pagination
+            next_page = self.get_next_page(response)
+            if next_page:
+                yield response.follow(next_page, callback=self.parse)
 
-                #     if vehicle_data:
-                #         all_vehicle_data.append(vehicle_data)
-
-            return page_count
-
-        except requests.RequestException as e:
-            err(f"Request failed: {e}")
+            self.page_count += 1
+        
         except Exception as e:
             err(f"An error occurred during scraping: {e}")
 
 
-    def get_page_info(self, page_no):
-        try:
-            ad_links = []
-            is_last_page = False
 
-            response = requests.get(self.url + page_no)
-            response.raise_for_status()
-            soup = BeautifulSoup(response.text, 'html.parser')
-
-            next_button = soup.select_one(self.next_button_selector)
-
-            if next_button:
-                is_last_page = next_button.get('class') == ['disabled']
-
-            # for ad in soup.select(self.ad_url_selector):
-            #     href = ad.get('href')
-            #     if href:
-            #         ad_links.append(href)
-
-            return {
-                'is_last_page': is_last_page,
-                'ad_links': ad_links
-            }
-
-        except requests.RequestException as e:
-            err(f"Request failed: {e}")
-        except Exception as e:
-            err(f"An error occurred during scraping: {e}")
+    def get_vehicle_info(self, response):
+        err(f"{self.name} must implement a own get_vehicle_info method")
 
 
-    def get_vehicle_info(self, url):
-        try:
-           raise NotImplementedError("Subclasses must implement this method")
+    def get_next_page(self, response):
+        err(f"{self.name} must implement a own get_next_page method")
 
-        except requests.RequestException as e:
-            err(f"Request failed: {e}")
-        except Exception as e:
-            err(f"An error occurred during scraping: {e}")
-
-
-def scrape_vehicle_page(url):
-    try:
-        response = requests.get(url)
-        response.raise_for_status()
-        soup = BeautifulSoup(response.text, 'html.parser')
-
-        title_class = 'item-title'
-        price_class = 'm-0 col-6 col-sm-7 p-0 m-0'
-        table_class = 'course-info table table-striped'
-
-        vehicle_details = {}
-
-
-        title_container = soup.find('h2', class_ = title_class)
-        if title_container:
-            vehicle_details['title'] = title_container.get_text(strip=True)
-        else:
-            print("Title not found")
-
-
-        price_container = soup.find('p', class_ = price_class)
-        if price_container:
-            price_spans = price_container.find_all('span')
-            if len(price_spans) == 2:
-                vehicle_details['price'] = price_spans[1].get_text(strip=True)
-            else:
-                print("Price span not found")
-
-
-        table = soup.find('table', class_ = table_class)
-        if table:
-            rows = table.find_all('tr')
-            for row in rows:
-                cells = row.find_all('td')
-                if len(cells) == 2:
-                    key = cells[0].get_text(strip=True).replace(':', '')
-                    value = cells[1].get_text(strip=True)
-                    vehicle_details[key] = value
-        else:
-            print("Details table not found")
-
-        return vehicle_details
-
-
-    except requests.RequestException as e:
-        print(f"Request failed: {e}")
-        return {}
-    except Exception as e:
-        print(f"An error occurred during scraping: {e}")
-        return {}
-
-
-def scrape_patpat():
-    url = 'https://www.patpat.lk/vehicle?page='
-    ad_link_selector = 'div.result-img a'
-    next_button_selector = 'ul.pagination li:last-child'
-    get_vehicle_info = scrape_vehicle_page
-
-    patpat_scraper = VehicleScraper(url, ad_link_selector, next_button_selector, get_vehicle_info)
-    page_count = patpat_scraper.scrape()
-    info(f"Scraped {page_count} pages")
-
-
-if __name__ == '__main__':
-    scrape_patpat()
 
