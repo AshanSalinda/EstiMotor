@@ -1,10 +1,11 @@
 import scrapy
 from utils.logger import info, warn, err
 from datetime import datetime, timezone
-from urllib.parse import urlparse, parse_qs
+from urllib.parse import urlparse, parse_qs, urlencode
 
 
 class WebScraper(scrapy.Spider):
+    """Base class for website-specific scrapers"""
     def __init__(self, url, ad_selector, *args, **kwargs):
         super(WebScraper, self).__init__(*args, **kwargs)
         self.start_urls = [url]
@@ -12,14 +13,13 @@ class WebScraper(scrapy.Spider):
 
 
     def start_requests(self):
-        """This is called when the spider starts crawling"""
-
+        """Called when the spider starts crawling"""
         for url in self.start_urls:
             yield scrapy.Request(url, callback=self.scrape, errback=self.on_error)
 
 
     def closed(self, reason):
-        """This is called when the spider finishes crawling"""
+        """Called when the spider finishes crawling"""
 
         start_time = self.crawler.stats.get_value('start_time')
         finish_time = datetime.now(timezone.utc)
@@ -35,39 +35,44 @@ class WebScraper(scrapy.Spider):
             'failed_with_network_error': self.crawler.stats.get_value('downloader/exception_type_count/twisted.internet.error.DNSLookupError', 0),
             'time_taken': f"{time}.{ms}"
         }
-
         info(stats)
 
     
     def on_error(self, failure):
-        """This is called when an error occurs during a request"""
-
+        """Handle request errors"""
         url = failure.request.url
         index = failure.request.meta.get('index', '0:0')
         err(f"{index}\t{url}")
+        print(failure)
 
 
     def scrape(self, response):
         """This is the default callback for every request for pages, made by the spider"""
         try:
-            # Extract the 'page' parameter value from the url
-            page_no = parse_qs(urlparse(response.url).query).get('page', [1])[0] 
+            current_url = response.url
+            query_params = parse_qs(urlparse(current_url).query)
+            page_no = int(query_params.get('page', [1])[0] )
             info(f"Scraping page: {page_no}")
 
             # Extract All Ads links and get ad details
-            ad_links = response.css(f"{self.ad_selector}::attr(href)").getall()
-            for index, link in enumerate(ad_links):
-                yield response.follow(
-                    link, 
-                    callback=self.get_vehicle_info, 
-                    errback=self.on_error, 
-                    meta={'index': f"{page_no}:{index + 1}"}
-                )
+            # ad_links = response.css(f"{self.ad_selector}::attr(href)").getall()
+            # for index, link in enumerate(ad_links):
+            #     yield response.follow(
+            #         link, 
+            #         callback=self.get_vehicle_info, 
+            #         errback=self.on_error, 
+            #         meta={'index': f"{page_no}:{index + 1}"}
+            #     )
 
             # Handle pagination
-            next_page = self.get_next_page(response)
-            if next_page:
-                yield response.follow(next_page, callback=self.scrape, errback=self.on_error)
+            last_page = self.is_last_page(response)
+            if not last_page:
+                query_params['page'] = page_no + 1
+                new_query = urlencode(query_params)
+                next_page_url = f"{current_url.split('?')[0]}?{new_query}"
+                print(next_page_url)
+
+                yield response.follow(next_page_url, callback=self.scrape, errback=self.on_error)
         
         except Exception as e:
             err(f"An error occurred during scraping: {e}")
@@ -78,7 +83,7 @@ class WebScraper(scrapy.Spider):
         err(f"{self.name} must implement a own get_vehicle_info method")
 
 
-    def get_next_page(self, response):
-        err(f"{self.name} must implement a own get_next_page method")
+    def is_last_page(self, response):
+        err(f"{self.name} must implement a own is_last_page method")
 
 
