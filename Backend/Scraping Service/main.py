@@ -1,5 +1,5 @@
-# from scrapers.websites.ikman import scrape_ikman
-from scrapers.websites.ikman_scraper import run_scrapy
+from scrapers.websites.riyasewana_scraper import run_scrapy
+# from scrapers.websites.ikman_scraper import run_scrapy
 # from scrapers.websites.patpat_scraper import run_scrapy
 
 
