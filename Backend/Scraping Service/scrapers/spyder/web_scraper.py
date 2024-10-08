@@ -55,14 +55,14 @@ class WebScraper(scrapy.Spider):
             info(f"Scraping page: {page_no}")
 
             # Extract All Ads links and get ad details
-            # ad_links = response.css(f"{self.ad_selector}::attr(href)").getall()
-            # for index, link in enumerate(ad_links):
-            #     yield response.follow(
-            #         link, 
-            #         callback=self.get_vehicle_info, 
-            #         errback=self.on_error, 
-            #         meta={'index': f"{page_no}:{index + 1}"}
-            #     )
+            ad_links = response.css(f"{self.ad_selector}::attr(href)").getall()
+            for index, link in enumerate(ad_links):
+                yield response.follow(
+                    link, 
+                    callback=self.get_vehicle_info, 
+                    errback=self.on_error, 
+                    meta={'index': f"{page_no}:{index + 1}"}
+                )
 
             # Handle pagination
             last_page = self.is_last_page(response)
