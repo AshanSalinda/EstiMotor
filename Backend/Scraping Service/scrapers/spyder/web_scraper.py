@@ -1,5 +1,6 @@
 import scrapy
 from utils.logger import info, warn, err
+from ..Items.Items import VehicleItem
 from datetime import datetime, timezone
 from urllib.parse import urlparse, parse_qs, urlencode
 
@@ -8,6 +9,7 @@ class WebScraper(scrapy.Spider):
     """Base class for website-specific scrapers"""
     def __init__(self, url, ad_selector, *args, **kwargs):
         super(WebScraper, self).__init__(*args, **kwargs)
+        self.VehicleItem = VehicleItem
         self.start_urls = [url]
         self.ad_selector = ad_selector
 

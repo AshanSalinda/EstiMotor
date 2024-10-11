@@ -1,7 +1,6 @@
 from utils.logger import info, warn, err
 from scrapy.crawler import CrawlerProcess
 from scrapy.selector import Selector
-from playwright.async_api import async_playwright
 from ..spyder.web_scraper import WebScraper
 
 
@@ -29,19 +28,20 @@ class PatpatScraper(WebScraper):
 
     def get_vehicle_info(self, response):
         try:
+            vehicle_item = self.VehicleItem()
             vehicle_details = {}
             title = response.css(f"{self.title}::text").get()
             price = response.css(f"{self.price}::text").get()
             table = response.css(self.table)
 
             if price:
-                vehicle_details['price'] = price.strip('Rs ').replace(',', '')
+                vehicle_item['price'] = price.strip('Rs ').replace(',', '')
             else:
                 raise Exception("Price not found")
 
 
             if title:
-                vehicle_details['title'] = title.strip()
+                vehicle_item['title'] = title.strip()
             else:
                 raise Exception("Title not found")
                 
@@ -53,6 +53,10 @@ class PatpatScraper(WebScraper):
 
                 if key and value and type(key) == str and type(value) == str:
                     vehicle_details[key.strip().replace(':', '')] = value.strip()
+
+            vehicle_item['details'] = vehicle_details
+            vehicle_item['url'] = response.url
+            yield vehicle_item
 
             print(f"{response.meta.get('index')}\t{response.url}")
 
