@@ -11,8 +11,6 @@ class PatpatScraper(WebScraper):
         self.title = selectors['title']
         self.price = selectors['price']
         self.rows = selectors['rows']
-        self.key = selectors['key']
-        self.value = selectors['value']
         ad_selector = selectors['ads_link']
         super(PatpatScraper, self).__init__(url, ad_selector, *args, **kwargs)
 
@@ -30,19 +28,29 @@ class PatpatScraper(WebScraper):
         try:
             vehicle_details = {}
             title = response.css(f"{self.title}::text").get()
-            price = response.css(f"{self.price}::text").getall()
-            table_rows = response.css(self.rows)
+            price = response.css(f"{self.price}::text").get()
+            table = response.css(self.rows)
+
+
+            if price:
+                if price == ': Negotiable':
+                    raise Exception("Price is negotiable") 
+                else:
+                    vehicle_details['price'] = price.strip()
+            else:
+                raise Exception("Price not found")
+
 
             if title:
                 vehicle_details['title'] = title.strip()
+            else:
+                raise Exception("Title not found")
 
-            if len(price) == 2:
-                vehicle_details['price'] = price[1].strip()
 
-            for row in table_rows:
-                key = row.css(f"{self.key}::text").get()
-                value = row.css(f"{self.value}::text").get()
-                if key and value:
+            for row in table:
+                key = row.css('td:nth-child(1)::text').get()
+                value = row.css('td:nth-child(2)::text').get()
+                if key and value and type(key) == str and type(value) == str:
                     vehicle_details[key.strip().replace(':', '')] = value.strip()
 
             print(f"{response.meta.get('index')}\t{response.url}")
@@ -57,10 +65,8 @@ def run_scrapy():
         'ads_link': 'div.result-img a',
         'next_button': 'ul.pagination li:last-child.disabled',
         'title': 'h2.item-title',
-        'price': 'p.m-0.col-6.col-sm-7.p-0.m-0 span',
+        'price': 'div.item-price p span:last-of-type',
         'rows': 'table.course-info tr',
-        'key': 'td.w-25',
-        'value': 'td.w-75'
     }
 
 

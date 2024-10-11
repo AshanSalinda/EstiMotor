@@ -54,9 +54,14 @@ class WebScraper(scrapy.Spider):
             page_no = int(query_params.get('page', [1])[0] )
             info(f"Scraping page: {page_no}")
 
-            # Extract All Ads links and get ad details
+            # Extract All Ads links
             ad_links = response.css(f"{self.ad_selector}::attr(href)").getall()
+
+            # Get the vehicle info for each ad
             for index, link in enumerate(ad_links):
+                if self.name == "ikman_scraper":
+                    link = f"https://ikman.lk{link}"
+
                 yield response.follow(
                     link, 
                     callback=self.get_vehicle_info, 
@@ -70,7 +75,6 @@ class WebScraper(scrapy.Spider):
                 query_params['page'] = page_no + 1
                 new_query = urlencode(query_params)
                 next_page_url = f"{current_url.split('?')[0]}?{new_query}"
-                print(next_page_url)
 
                 yield response.follow(next_page_url, callback=self.scrape, errback=self.on_error)
         

@@ -9,33 +9,19 @@ class PatpatScraper(WebScraper):
     name = "ikman_scraper"
 
     def __init__(self, url, selectors, *args, **kwargs):
-        self.next_button = selectors['next_button']
+        self.pagination = selectors['pagination']
         self.title = selectors['title']
         self.price = selectors['price']
-        self.rows = selectors['rows']
-        self.key = selectors['key']
-        self.value = selectors['value']
+        self.table = selectors['table']
         ad_selector = selectors['ads_link']
         super(PatpatScraper, self).__init__(url, ad_selector, *args, **kwargs)
 
 
-    async def is_last_page(self, response):
+    def is_last_page(self, response):
         try:
-            async with async_playwright() as p:
-                browser = await p.chromium.launch(headless=True)
-                page = await browser.new_page()
-                await page.goto(response.url, wait_until='domcontentloaded')
-                html = await page.content()
-                res = Selector(text=html)
-                await browser.close()
-
-                # Extract the pagination element
-                pagination = res.css('div.pagination--1bp3g').get()
-                print(pagination)
-
-                disabled_next_button = response.css('div.pagination--1bp3g').get()
-                print("button", disabled_next_button)
-                return disabled_next_button != None
+            # Extract the pagination element
+            pagination = response.css(self.pagination).get()
+            return pagination == None
   
         except Exception as e:
             err(f"Failed to check if it is_last_page for {response.url} \n {e}")
@@ -44,21 +30,28 @@ class PatpatScraper(WebScraper):
     def get_vehicle_info(self, response):
         try:
             vehicle_details = {}
-
             title = response.css(f"{self.title}::text").get()
-            price = response.css(f"{self.price}::text").getall()
-            table_rows = response.css(self.rows)
+            price = response.css(f"{self.price}::text").get()
+            table = response.css(self.table)
+
+            if price:
+                vehicle_details['price'] = price.strip('Rs ').replace(',', '')
+            else:
+                raise Exception("Price not found")
+
 
             if title:
                 vehicle_details['title'] = title.strip()
+            else:
+                raise Exception("Title not found")
+                
 
-            if len(price) == 2:
-                vehicle_details['price'] = price[1].strip()
+            for row in table:
+                key = row.css('div:nth-child(1)::text').get()
+                value_el = row.css('div:nth-child(2)')
+                value = value_el.css('div a span::text').get() or value_el.css('::text').get()
 
-            for row in table_rows:
-                key = row.css(f"{self.key}::text").get()
-                value = row.css(f"{self.value}::text").get()
-                if key and value:
+                if key and value and type(key) == str and type(value) == str:
                     vehicle_details[key.strip().replace(':', '')] = value.strip()
 
             print(f"{response.meta.get('index')}\t{response.url}")
@@ -70,13 +63,11 @@ class PatpatScraper(WebScraper):
 def run_scrapy():
     url = 'https://ikman.lk/en/ads/sri-lanka/cars?page=137'
     selectors = {
-        'ads_link': 'div.result-img a',
-        'next_button': 'ul.pages--2uPAr li:last-child',
-        'title': 'h2.item-title',
-        'price': 'p.m-0.col-6.col-sm-7.p-0.m-0 span',
-        'rows': 'table.course-info tr',
-        'key': 'td.w-25',
-        'value': 'td.w-75'
+        'ads_link': 'ul.list--3NxGO li a',
+        'pagination': 'div.pagination--1bp3g nav',
+        'title': 'h1.title--3s1R8',
+        'price': 'div.amount--3NTpl',
+        'table': 'div.ad-meta--17Bqm div.full-width--XovDn',
     }
 
 
