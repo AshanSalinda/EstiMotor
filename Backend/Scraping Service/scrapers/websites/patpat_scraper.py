@@ -1,17 +1,20 @@
 from utils.logger import info, warn, err
-from scrapy.crawler import CrawlerProcess
-from ..spyder.web_scraper import WebScraper
+from ..web_scraper import WebScraper
+from .site_data import patpat
 
 
 class PatpatScraper(WebScraper):
     name = "patpat_scraper"
 
-    def __init__(self, url, selectors, *args, **kwargs):
+    def __init__(self, storage, *args, **kwargs):
+        selectors = patpat['selectors']
+        url = patpat['url']
+        ad_selector = selectors['ads_link']
         self.next_button = selectors['next_button']
         self.title = selectors['title']
         self.price = selectors['price']
         self.rows = selectors['rows']
-        ad_selector = selectors['ads_link']
+        self.storage = storage
         super(PatpatScraper, self).__init__(url, ad_selector, *args, **kwargs)
 
 
@@ -53,33 +56,8 @@ class PatpatScraper(WebScraper):
                 if key and value and type(key) == str and type(value) == str:
                     vehicle_details[key.strip().replace(':', '')] = value.strip()
 
+            self.storage.add(vehicle_details)
             print(f"{response.meta.get('index')}\t{response.url}")
 
         except Exception as e:
             err(f"{response.meta.get('index')}\t{response.url}\n{e}")
-
-
-def run_scrapy():
-    url = 'https://www.patpat.lk/vehicle?page=580'
-    selectors = {
-        'ads_link': 'div.result-img a',
-        'next_button': 'ul.pagination li:last-child.disabled',
-        'title': 'h2.item-title',
-        'price': 'div.item-price p span:last-of-type',
-        'rows': 'table.course-info tr',
-    }
-
-
-    process = CrawlerProcess(settings={
-        "LOG_LEVEL": 'WARNING',
-        "REQUEST_FINGERPRINTER_IMPLEMENTATION": '2.7',
-        "BOT_NAME": 'EstiMotor_scraper'
-    })
-
-
-    process.crawl(PatpatScraper, url, selectors)
-    process.start()
-
-
-if __name__ == '__main__':
-    run_scrapy()
