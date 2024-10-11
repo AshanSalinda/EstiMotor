@@ -27,7 +27,6 @@ class RiyasewanaScraper(WebScraper):
     def get_vehicle_info(self, response):
         try:
             vehicle_details = {}
-
             title = response.css(f"{self.title}::text").get()
             table = response.css('table.moret tr')
             price = None
