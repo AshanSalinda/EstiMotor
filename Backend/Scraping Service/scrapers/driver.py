@@ -16,4 +16,5 @@ def run_scrapy():
     process.crawl(RiyasewanaScraper, storage)
 
     process.start()
+    print(storage.get_stats())
     print(storage.get())

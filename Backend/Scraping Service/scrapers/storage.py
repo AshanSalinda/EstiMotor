@@ -8,8 +8,8 @@ class Storage(object):
     def add(self, vehicle):
         self.vehicles.append(vehicle)
 
-    def add_stat(self, key, value):
-        self.stats[key] = value
+    def add_stat(self, stats):
+        self.stats = stats
 
     def get(self):
         return self.vehicles
