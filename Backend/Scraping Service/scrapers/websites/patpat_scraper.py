@@ -27,6 +27,21 @@ class PatpatScraper(WebScraper):
             err(f"Failed to check if it is_last_page for {response.url} \n {e}")
 
 
+    def get_key(self, key):
+        keys = {
+            'Manufacturer': 'Make',
+            'Model': 'Model',
+            'Model Year': 'YOM',
+            'Transmission': 'Transmission',
+            'Engine Capacity': 'Engine Capacity',
+            'Fuel Type': 'Fuel Type',
+            'Mileage': 'Mileage',
+        } 
+       
+        key = key.strip() if key and type(key) == str else None
+        return keys.get(key)
+
+
     def get_vehicle_info(self, response):
         try:
             vehicle_details = {}
@@ -51,10 +66,10 @@ class PatpatScraper(WebScraper):
 
 
             for row in table:
-                key = row.css('td:nth-child(1)::text').get()
+                key = self.get_key(row.css('td:nth-child(1)::text').get())
                 value = row.css('td:nth-child(2)::text').get()
-                if key and value and type(key) == str and type(value) == str:
-                    vehicle_details[key.strip().replace(':', '')] = value.strip()
+                if key and value and type(value) == str:
+                    vehicle_details[key] = value.strip()
 
             self.storage.add(vehicle_details)
             print(f"{response.meta.get('index')}\t{response.url}")
