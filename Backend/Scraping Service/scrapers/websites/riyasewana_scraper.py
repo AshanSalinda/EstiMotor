@@ -26,6 +26,21 @@ class RiyasewanaScraper(WebScraper):
             err(f"Failed to check if it is_last_page for {response.url} \n {e}")
 
 
+    def get_key(self, key):
+        keys = {
+            'Make': 'Make',
+            'Model': 'Model',
+            'YOM': 'YOM',
+            'Gear': 'Transmission',
+            'Engine (cc)': 'Engine Capacity',
+            'Fuel Type': 'Fuel Type',
+            'Mileage (km)': 'Mileage',
+        } 
+       
+        key = key.strip() if key and type(key) == str else None
+        return keys.get(key)
+
+
     def get_vehicle_info(self, response):
         try:
             vehicle_details = {}
@@ -62,15 +77,16 @@ class RiyasewanaScraper(WebScraper):
 
             for row in range(0, 4):
                 for col in range(1, 4, 2):
-                    key = table[row].css(f"td:nth-child({col}) p::text").get()
+                    key = self.get_key(table[row].css(f"td:nth-child({col}) p::text").get())
                     value = table[row].css(f"td:nth-child({col+1})::text").get()
                     
-                    if key and value and type(key) == str and type(value) == str:
-                        vehicle_details[key.strip()] = value.strip()
+                    if key and value and type(value) == str:
+                        vehicle_details[key] = value.strip()
 
 
             vehicle_details['url'] = response.url
             self.storage.add(vehicle_details)
+
             print(f"{response.meta.get('index')}\t{response.url}")
 
         except Exception as e:

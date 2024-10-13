@@ -28,6 +28,21 @@ class IkmanScraper(WebScraper):
             err(f"Failed to check if it is_last_page for {response.url} \n {e}")
 
 
+    def get_key(self, key):
+        keys = {
+            'Brand:': 'Make',
+            'Model:': 'Model',
+            'Year of Manufacture:': 'YOM',
+            'Transmission:': 'Transmission',
+            'Engine capacity:': 'Engine Capacity',
+            'Fuel type:': 'Fuel type',
+            'Mileage:': 'Mileage',
+        } 
+
+        key = key.strip() if key and type(key) == str else None
+        return keys.get(key)
+
+
     def get_vehicle_info(self, response):
         try:
             vehicle_details = {}
@@ -48,12 +63,12 @@ class IkmanScraper(WebScraper):
                 
 
             for row in table:
-                key = row.css('div:nth-child(1)::text').get()
+                key = self.get_key(row.css('div:nth-child(1)::text').get())
                 value_el = row.css('div:nth-child(2)')
                 value = value_el.css('div a span::text').get() or value_el.css('::text').get()
 
-                if key and value and type(key) == str and type(value) == str:
-                    vehicle_details[key.strip().replace(':', '')] = value.strip()
+                if key and value and type(value) == str:
+                    vehicle_details[key] = value.strip()
 
             vehicle_details['url'] = response.url
             self.storage.add(vehicle_details)

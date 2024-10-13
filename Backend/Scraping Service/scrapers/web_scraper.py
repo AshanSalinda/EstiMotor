@@ -15,7 +15,12 @@ class WebScraper(scrapy.Spider):
     def start_requests(self):
         """Called when the spider starts crawling"""
         for url in self.start_urls:
-            yield scrapy.Request(url, callback=self.scrape, errback=self.on_error)
+            yield scrapy.Request(
+                url, 
+                callback=self.scrape, 
+                errback=self.on_error, 
+                meta={'index': '1:0'}
+            )
 
 
     def closed(self, reason):

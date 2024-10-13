@@ -21,7 +21,7 @@ ikman = {
 }
 
 riyasewana = {
-    'url': 'https://riyasewana.com/search?page=1380',
+    'url': 'https://riyasewana.com/search?page=1414',
     'selectors': {
         'ads_link': 'ul li.item.round h2 a',
         'next_button': 'div.pagination a:last-of-type',
