@@ -1,8 +1,10 @@
 from scrapy import signals
 from datetime import datetime, timezone
 
-class RequestStatsMiddleware:
+class RequestStats:
     start_time = datetime.now(timezone.utc)
+    sent_requests = 0
+    response_count = 0
 
     def __init__(self):
         self.start_time = None
@@ -24,7 +26,7 @@ class RequestStatsMiddleware:
         """Print stats when spider is closed"""
 
         finish_time = datetime.now(timezone.utc)
-        [time, ms] = str(finish_time - RequestStatsMiddleware.start_time).split('.')
+        [time, ms] = str(finish_time - RequestStats.start_time).split('.')
         time_taken = f"{time}.{int(ms) // 1000}"
 
         spider.storage.add_stat('Total Time Taken', time_taken)
@@ -40,6 +42,7 @@ class RequestStatsMiddleware:
 
     def process_request(self, request, spider):
         """This is called for every request sent"""
+        RequestStats.sent_requests += 1
         self.request_count += 1
         return None
 
@@ -54,6 +57,10 @@ class RequestStatsMiddleware:
                 'url': response.url,
                 'status': response.status
             })
+
+        RequestStats.response_count += 1
+        percentage = (RequestStats.response_count * 100) / RequestStats.sent_requests
+        print(f"\r{percentage:.2f}% completed", end='')
 
         return response
 

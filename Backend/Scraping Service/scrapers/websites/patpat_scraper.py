@@ -27,21 +27,6 @@ class PatpatScraper(WebScraper):
             err(f"Failed to check if it is_last_page for {response.url} \n {e}")
 
 
-    def get_key(self, key):
-        keys = {
-            'Manufacturer': 'Make',
-            'Model': 'Model',
-            'Model Year': 'YOM',
-            'Transmission': 'Transmission',
-            'Engine Capacity': 'Engine Capacity',
-            'Fuel Type': 'Fuel Type',
-            'Mileage': 'Mileage',
-        } 
-       
-        key = key.strip() if key and type(key) == str else None
-        return keys.get(key)
-
-
     def get_vehicle_info(self, response, vehicle_details):
         title = response.css(f"{self.title}::text").get()
         price = response.css(f"{self.price}::text").get()

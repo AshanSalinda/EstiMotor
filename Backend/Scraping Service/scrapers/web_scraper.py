@@ -78,15 +78,43 @@ class WebScraper(scrapy.Spider):
             index = response.meta.get('index')
             vehicle_details = self.get_vehicle_info(response, {'url': url, 'index': index})
             self.storage.add(vehicle_details)
-            print(f"{index}\t{url}")
+            # print(f"{index}\t{url}")
         
         except Exception as e:
-            err(f"{index}\t{url}\n{e}")
+            # err(f"{index}\t{url}\n{e}")
+            print('')
+
+    
+    def get_key(self, key):
+        keys = {
+            'Brand:': 'Make',
+            'Manufacturer': 'Make',
+            'Make': 'Make',
+            'Model:': 'Model',
+            'Model': 'Model',
+            'Year of Manufacture:': 'YOM',
+            'Model Year': 'YOM',
+            'YOM': 'YOM',
+            'Transmission:': 'Transmission',
+            'Transmission': 'Transmission',
+            'Gear': 'Transmission',
+            'Engine capacity:': 'Engine Capacity',
+            'Engine Capacity': 'Engine Capacity',
+            'Engine (cc)': 'Engine Capacity',
+            'Fuel type:': 'Fuel type',
+            'Fuel Type': 'Fuel Type',
+            'Mileage:': 'Mileage',
+            'Mileage': 'Mileage',
+            'Mileage (km)': 'Mileage',
+        } 
+
+        key = key.strip() if key and type(key) == str else None
+        return keys.get(key)
 
 
     def get_vehicle_info(self, response, vehicle_details):
         """
-        get_vehicle_info(response: dict, vehicle_details: dict) -> dict
+        get_vehicle_info(self, response: scrapy.http.Response, vehicle_details: dict) -> dict
 
         Extracts vehicle information from the provided response object and return the updated vehicle_details dictionary.
 
@@ -109,11 +137,31 @@ class WebScraper(scrapy.Spider):
                 Fuel type: Must Include,
                 Mileage: Must Include,
             }
+
+        Raises:
+            No need to handle any exceptions here.
         """
         err(f"{self.name} must implement a own get_vehicle_info method")
 
 
     def is_last_page(self, response):
+        """
+        is_last_page(self, response: scrapy.http.Response) -> bool
+
+        Checks if the current page is the last page by looking for the pagination element 
+        in the given response object.
+
+        Args:
+            response: The HTTP response object containing the content of the webpage.
+
+        Returns:
+            bool: True if  it's the last page; False otherwise.
+
+        Raises:
+            Exception: If an error occurs during the check, logs an error message with 
+            this format.
+            (f"Failed to check if it is_last_page for {response.url} \n {e}")
+        """
         err(f"{self.name} must implement a own is_last_page method")
 
 

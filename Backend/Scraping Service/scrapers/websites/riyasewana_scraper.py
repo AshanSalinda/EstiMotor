@@ -26,21 +26,6 @@ class RiyasewanaScraper(WebScraper):
             err(f"Failed to check if it is_last_page for {response.url} \n {e}")
 
 
-    def get_key(self, key):
-        keys = {
-            'Make': 'Make',
-            'Model': 'Model',
-            'YOM': 'YOM',
-            'Gear': 'Transmission',
-            'Engine (cc)': 'Engine Capacity',
-            'Fuel Type': 'Fuel Type',
-            'Mileage (km)': 'Mileage',
-        } 
-       
-        key = key.strip() if key and type(key) == str else None
-        return keys.get(key)
-
-
     def get_vehicle_info(self, response, vehicle_details):
         title = response.css(f"{self.title}::text").get()
         table = response.css('table.moret tr')

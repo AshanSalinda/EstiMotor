@@ -16,5 +16,5 @@ def run_scrapy():
 
     process.start()
     print(storage.get_stats())
-    # print(storage.get())
+    print(storage.get())
 

@@ -28,30 +28,15 @@ class IkmanScraper(WebScraper):
             err(f"Failed to check if it is_last_page for {response.url} \n {e}")
 
 
-    def get_key(self, key):
-        keys = {
-            'Brand:': 'Make',
-            'Model:': 'Model',
-            'Year of Manufacture:': 'YOM',
-            'Transmission:': 'Transmission',
-            'Engine capacity:': 'Engine Capacity',
-            'Fuel type:': 'Fuel type',
-            'Mileage:': 'Mileage',
-        } 
-
-        key = key.strip() if key and type(key) == str else None
-        return keys.get(key)
-
-
     def get_vehicle_info(self, response, vehicle_details):
         title = response.css(f"{self.title}::text").get()
         price = response.css(f"{self.price}::text").get()
         table = response.css(self.table)
 
-        if price:
+        if price and type(price) == str:
             vehicle_details['price'] = price.strip()
 
-        if title:
+        if title and type(title) == str:
             vehicle_details['title'] = title.strip()
 
         for row in table:
