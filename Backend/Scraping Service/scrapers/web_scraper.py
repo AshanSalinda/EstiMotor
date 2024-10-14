@@ -6,10 +6,10 @@ from urllib.parse import urlparse, parse_qs, urlencode
 
 class WebScraper(scrapy.Spider):
     """Base class for website-specific scrapers"""
-    def __init__(self, url, ad_selector, *args, **kwargs):
-        super(WebScraper, self).__init__(*args, **kwargs)
-        self.start_urls = [url]
-        self.ad_selector = ad_selector
+    def __init__(self, *args):
+        super(WebScraper, self).__init__()
+        self.start_urls = [args[0]]
+        self.ad_selector = args[1]
 
 
     def start_requests(self):
@@ -19,34 +19,14 @@ class WebScraper(scrapy.Spider):
                 url, 
                 callback=self.scrape, 
                 errback=self.on_error, 
-                meta={'index': '1:0'}
+                meta={'index': f"{self.name}:1:0"}
             )
-
-
-    def closed(self, reason):
-        """Called when the spider finishes crawling"""
-
-        start_time = self.crawler.stats.get_value('start_time')
-        finish_time = datetime.now(timezone.utc)
-        time_taken = str(finish_time - start_time)
-        time = time_taken.split('.')[0]
-        ms = int(time_taken.split('.')[1]) // 1000
-
-        stats = {
-            'error_responses': self.crawler.stats.get_value('downloader/response_status_count/500', 0),
-            'success_requests': self.crawler.stats.get_value('downloader/response_status_count/200', 0),
-            'not_found_responses': self.crawler.stats.get_value('downloader/response_status_count/404', 0),
-            'failed_with_timeout': self.crawler.stats.get_value('downloader/exception_type_count/twisted.internet.error.TimeoutError', 0),
-            'failed_with_network_error': self.crawler.stats.get_value('downloader/exception_type_count/twisted.internet.error.DNSLookupError', 0),
-            'time_taken': f"{time}.{ms}"
-        }
-        info(stats)
 
     
     def on_error(self, failure):
         """Handle request errors"""
         url = failure.request.url
-        index = failure.request.meta.get('index', '0:0')
+        index = failure.request.meta.get('index', 'None:0:0')
         err(f"{index}\t{url}")
         print(failure)
 
@@ -69,9 +49,9 @@ class WebScraper(scrapy.Spider):
 
                 yield response.follow(
                     link, 
-                    callback=self.get_vehicle_info, 
+                    callback=self.process_ads, 
                     errback=self.on_error, 
-                    meta={'index': f"{page_no}:{index + 1}"}
+                    meta={'index': f"{self.name}:{page_no}:{index + 1}"}
                 )
 
             # Handle pagination
@@ -81,14 +61,55 @@ class WebScraper(scrapy.Spider):
                 new_query = urlencode(query_params)
                 next_page_url = f"{current_url.split('?')[0]}?{new_query}"
 
-                yield response.follow(next_page_url, callback=self.scrape, errback=self.on_error)
+                yield response.follow(
+                    next_page_url, 
+                    callback=self.scrape, 
+                    errback=self.on_error,
+                    meta={'index': f"{self.name}:{page_no + 1}:0"}
+                )
         
         except Exception as e:
             err(f"An error occurred during scraping: {e}")
 
 
+    def process_ads(self, response):
+        try:
+            url = response.url
+            index = response.meta.get('index')
+            vehicle_details = self.get_vehicle_info(response, {'url': url, 'index': index})
+            self.storage.add(vehicle_details)
+            print(f"{index}\t{url}")
+        
+        except Exception as e:
+            err(f"{index}\t{url}\n{e}")
 
-    def get_vehicle_info(self, response):
+
+    def get_vehicle_info(self, response, vehicle_details):
+        """
+        get_vehicle_info(response: dict, vehicle_details: dict) -> dict
+
+        Extracts vehicle information from the provided response object and return the updated vehicle_details dictionary.
+
+        Args:
+            response: The HTTP response containing the webpage's content for a vehicle ad.
+            vehicle_details: A dictionary to store extracted vehicle information 
+
+        Returns:
+            dict: Updated vehicle_details dictionary containing the extracted data.
+            {   
+                url: Provided,
+                index: Provided,
+                Price: Must Include,
+                Title: Must Include,
+                Make: Must Include,
+                Model: Must Include,
+                YOM: Must Include,
+                Transmission: Must Include,
+                Engine Capacity: Must Include,
+                Fuel type: Must Include,
+                Mileage: Must Include,
+            }
+        """
         err(f"{self.name} must implement a own get_vehicle_info method")
 
 
