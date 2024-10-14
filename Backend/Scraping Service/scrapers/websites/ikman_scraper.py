@@ -4,9 +4,9 @@ from .site_data import ikman
 
 
 class IkmanScraper(WebScraper):
-    name = "ikman_scraper"
+    name = "ikman"
 
-    def __init__(self, storage, *args, **kwargs):
+    def __init__(self, storage):
         selectors = ikman['selectors']
         url = ikman['url']
         ad_selector = selectors['ads_link']
@@ -15,7 +15,7 @@ class IkmanScraper(WebScraper):
         self.price = selectors['price']
         self.table = selectors['table']
         self.storage = storage
-        super(IkmanScraper, self).__init__(url, ad_selector, *args, **kwargs)
+        super(IkmanScraper, self).__init__(url, ad_selector)
 
 
     def is_last_page(self, response):
@@ -28,52 +28,23 @@ class IkmanScraper(WebScraper):
             err(f"Failed to check if it is_last_page for {response.url} \n {e}")
 
 
-    def get_key(self, key):
-        keys = {
-            'Brand:': 'Make',
-            'Model:': 'Model',
-            'Year of Manufacture:': 'YOM',
-            'Transmission:': 'Transmission',
-            'Engine capacity:': 'Engine Capacity',
-            'Fuel type:': 'Fuel type',
-            'Mileage:': 'Mileage',
-        } 
+    def get_vehicle_info(self, response, vehicle_details):
+        title = response.css(f"{self.title}::text").get()
+        price = response.css(f"{self.price}::text").get()
+        table = response.css(self.table)
 
-        key = key.strip() if key and type(key) == str else None
-        return keys.get(key)
+        if price and type(price) == str:
+            vehicle_details['price'] = price.strip()
 
+        if title and type(title) == str:
+            vehicle_details['title'] = title.strip()
 
-    def get_vehicle_info(self, response):
-        try:
-            vehicle_details = {}
-            title = response.css(f"{self.title}::text").get()
-            price = response.css(f"{self.price}::text").get()
-            table = response.css(self.table)
+        for row in table:
+            key = self.get_key(row.css('div:nth-child(1)::text').get())
+            value_el = row.css('div:nth-child(2)')
+            value = value_el.css('div a span::text').get() or value_el.css('::text').get()
 
-            if price:
-                vehicle_details['price'] = price.strip('Rs ').replace(',', '')
-            else:
-                raise Exception("Price not found")
+            if key and value and type(value) == str:
+                vehicle_details[key] = value.strip()
 
-
-            if title:
-                vehicle_details['title'] = title.strip()
-            else:
-                raise Exception("Title not found")
-                
-
-            for row in table:
-                key = self.get_key(row.css('div:nth-child(1)::text').get())
-                value_el = row.css('div:nth-child(2)')
-                value = value_el.css('div a span::text').get() or value_el.css('::text').get()
-
-                if key and value and type(value) == str:
-                    vehicle_details[key] = value.strip()
-
-            vehicle_details['url'] = response.url
-            self.storage.add(vehicle_details)
-
-            print(f"{response.meta.get('index')}\t{response.url}")
-
-        except Exception as e:
-            err(f"{response.meta.get('index')}\t{response.url}\n{e}")
+        return vehicle_details
