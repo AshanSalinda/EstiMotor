@@ -14,5 +14,5 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(api_router, prefix="/api/v1/scraping")
-app.include_router(websocket_router, prefix="/ws")
+app.include_router(api_router)
+app.include_router(websocket_router)

@@ -1,5 +1,5 @@
 from fastapi import APIRouter, BackgroundTasks
-
+from ..tasks.background import start_scraping_task, stop_scraping_task
 from ..utils.logger import info, warn, err
 
 router = APIRouter()
@@ -11,11 +11,11 @@ async def favicon():
     pass
 
 
-@router.post("/start")
-async def start_scraping_task(background_tasks: BackgroundTasks):
+@router.get("/start")
+async def start_scraping(background_tasks: BackgroundTasks):
     """Start a scraping task in the background."""
     try:
-        # background_tasks.add_task(start_scraping)
+        start_scraping_task.delay()
         return {"status": "Scraping started!"}
 
     except Exception as e:
@@ -23,11 +23,11 @@ async def start_scraping_task(background_tasks: BackgroundTasks):
         return {"status": "Failed to start scraping task!"}
 
 
-@router.post("/stop")
-async def stop_scraping_task():
+@router.get("/stop")
+async def stop_scraping():
     """Stop an ongoing scraping task."""
     try:
-        # stop_scraping()
+        stop_scraping_task()
         return {"status": "Scraping stopped!"}
 
     except Exception as e:
