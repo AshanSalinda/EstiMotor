@@ -10,10 +10,10 @@ class WebScraper(scrapy.Spider):
     def __init__(self, *args):
         super(WebScraper, self).__init__()
         self.start_urls = [args[0]]
-        self.ad_selector = args[2]
-        self.ad_links = set()
         self.page_no = args[1]
+        self.ad_selector = args[2]
         self.storage = Storage()
+        self.ad_links = set()
 
 
     def start_requests(self):
