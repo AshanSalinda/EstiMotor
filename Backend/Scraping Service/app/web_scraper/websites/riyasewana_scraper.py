@@ -1,4 +1,4 @@
-from utils.logger import info, warn, err
+from ...utils.logger import info, warn, err
 from ..web_scraper import WebScraper
 from .site_data import riyasewana
 

@@ -1,5 +1,5 @@
 import scrapy
-from utils.logger import info, warn, err
+from ..utils.logger import info, warn, err
 from datetime import datetime, timezone
 from urllib.parse import urlparse, parse_qs, urlencode
 from .storage import Storage

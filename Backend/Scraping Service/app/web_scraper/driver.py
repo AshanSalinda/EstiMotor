@@ -6,7 +6,10 @@ from .websites.riyasewana_scraper import RiyasewanaScraper
 from scrapy.crawler import CrawlerProcess
 
 
-def run_scrapy():
+process = None
+
+def start_scraping():
+    global process
     storage = Storage()
     process = CrawlerProcess(settings)
 
@@ -18,4 +21,14 @@ def run_scrapy():
     process.stop()
     print(storage.get_stats())
     # print(storage.get())
+
+
+def stop_scraping():
+    global process
+    if process is not None:
+        process.stop()
+        print("Scraping stopped!")
+
+    else:
+        print("No scraping task to stop!")
 
