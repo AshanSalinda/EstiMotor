@@ -1,9 +1,17 @@
 class Storage(object):
-    """This class is used to store the vehicle Details and stats"""
+    """This is a singleton class, used to store the vehicle Details and stats"""
+    _instance = None
+
+    def __new__(cls, *args, **kwargs):
+        if not cls._instance:
+            cls._instance = super(Storage, cls).__new__(cls, *args, **kwargs)
+        return cls._instance
 
     def __init__(self):
-        self.vehicles = []
-        self.stats = {}
+        if not hasattr(self, 'initialized'):
+            self.vehicles = []
+            self.stats = {}
+            self.initialized = True
 
     def add(self, vehicle):
         self.vehicles.append(vehicle)

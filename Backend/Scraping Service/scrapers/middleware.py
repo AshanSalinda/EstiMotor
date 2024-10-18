@@ -60,7 +60,7 @@ class RequestStats:
 
         RequestStats.response_count += 1
         percentage = (RequestStats.response_count * 100) / RequestStats.sent_requests
-        print(f"\r{percentage:.2f}% completed", end='')
+        # print(f"\r{percentage:.2f}% completed", end='')
 
         return response
 

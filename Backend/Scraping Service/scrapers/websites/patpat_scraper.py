@@ -6,16 +6,16 @@ from .site_data import patpat
 class PatpatScraper(WebScraper):
     name = "patpat"
 
-    def __init__(self, storage):
+    def __init__(self):
         selectors = patpat['selectors']
         url = patpat['url']
+        page_no = patpat['page_no']
         ad_selector = selectors['ads_link']
         self.next_button = selectors['next_button']
         self.title = selectors['title']
         self.price = selectors['price']
         self.rows = selectors['rows']
-        self.storage = storage
-        super(PatpatScraper, self).__init__(url, ad_selector)
+        super(PatpatScraper, self).__init__(url, page_no, ad_selector)
 
 
     def is_last_page(self, response):
