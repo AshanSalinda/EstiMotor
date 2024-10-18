@@ -6,15 +6,15 @@ from .site_data import riyasewana
 class RiyasewanaScraper(WebScraper):
     name = "riyasewana"
 
-    def __init__(self, storage):
+    def __init__(self):
         selectors = riyasewana['selectors']
         self.next_button = selectors['next_button']
         self.title = selectors['title']
         self.table = selectors['table']
-        self.storage = storage
         ad_selector = selectors['ads_link']
         url = riyasewana['url']
-        super(RiyasewanaScraper, self).__init__(url, ad_selector)
+        page_no = riyasewana['page_no']
+        super(RiyasewanaScraper, self).__init__(url, page_no, ad_selector)
 
 
     def is_last_page(self, response):

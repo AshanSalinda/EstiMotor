@@ -10,11 +10,12 @@ def run_scrapy():
     storage = Storage()
     process = CrawlerProcess(settings)
 
-    process.crawl(IkmanScraper, storage)
-    process.crawl(PatpatScraper, storage)
-    process.crawl(RiyasewanaScraper, storage)
+    process.crawl(IkmanScraper)
+    process.crawl(PatpatScraper)
+    process.crawl(RiyasewanaScraper)
 
     process.start()
+    process.stop()
     print(storage.get_stats())
-    print(storage.get())
+    # print(storage.get())
 

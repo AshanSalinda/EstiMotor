@@ -6,16 +6,16 @@ from .site_data import ikman
 class IkmanScraper(WebScraper):
     name = "ikman"
 
-    def __init__(self, storage):
+    def __init__(self):
         selectors = ikman['selectors']
         url = ikman['url']
+        page_no = ikman['page_no']
         ad_selector = selectors['ads_link']
         self.pagination = selectors['pagination']
         self.title = selectors['title']
         self.price = selectors['price']
         self.table = selectors['table']
-        self.storage = storage
-        super(IkmanScraper, self).__init__(url, ad_selector)
+        super(IkmanScraper, self).__init__(url, page_no, ad_selector)
 
 
     def is_last_page(self, response):
