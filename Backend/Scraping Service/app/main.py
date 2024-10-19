@@ -1,4 +1,4 @@
-from fastapi import FastAPI, WebSocket
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.websocket import broadcast, router as websocket_router
 from app.api.routes import router as api_router
