@@ -1,6 +1,6 @@
 patpat = {
     'url': 'https://www.patpat.lk/vehicle',
-    'page_no': 668,
+    'page_no': 676,
     'selectors': {
         'ads_link': 'div.result-img a',
         'next_button': 'ul.pagination li:last-child.disabled',
@@ -12,7 +12,7 @@ patpat = {
 
 ikman = {
     'url': 'https://ikman.lk/en/ads/sri-lanka/cars',
-    'page_no': 148,
+    'page_no': 151,
     'selectors': {
         'ads_link': 'ul.list--3NxGO li a',
         'pagination': 'div.pagination--1bp3g nav',
@@ -24,7 +24,7 @@ ikman = {
 
 riyasewana = {
     'url': 'https://riyasewana.com/search',
-    'page_no': 1414,
+    'page_no': 1432,
     'selectors': {
         'ads_link': 'ul li.item.round h2 a',
         'next_button': 'div.pagination a:last-of-type',
