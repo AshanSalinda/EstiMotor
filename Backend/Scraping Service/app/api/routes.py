@@ -1,6 +1,7 @@
 from fastapi import APIRouter
 from app.web_scraper.driver import start_scraping, stop_scraping, start_reactor, stop_reactor
 from app.utils.logger import info, warn, err
+from app.api.websocket import send
 
 router = APIRouter()
 
