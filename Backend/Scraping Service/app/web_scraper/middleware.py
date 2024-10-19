@@ -1,12 +1,13 @@
 from scrapy import signals
 from datetime import datetime, timezone
-from app.api.websocket import queue_for_sending
+from app.api.websocket import enqueue_for_sending
 
 
 class RequestStats:
     start_time = datetime.now(timezone.utc)
     sent_requests = 0
     response_count = 0
+    pending_requests = set()
 
     def __init__(self):
         self.start_time = None
@@ -46,6 +47,7 @@ class RequestStats:
         """This is called for every request sent"""
         RequestStats.sent_requests += 1
         self.request_count += 1
+        RequestStats.pending_requests.add(request.url)
         return None
 
 
@@ -53,7 +55,7 @@ class RequestStats:
         """This is called when responded"""
         if 200 <= response.status < 300:
             self.success_responses += 1
-            queue_for_sending({'url': response.url})
+            enqueue_for_sending({'url': response.url})
         else:
             self.error_responses.append({
                 'index': request.meta.get('index'),
@@ -62,6 +64,8 @@ class RequestStats:
             })
 
         RequestStats.response_count += 1
+        RequestStats.pending_requests.discard(request.url)
+        print(f"{len(RequestStats.pending_requests)}\t{response.url}")
         percentage = (RequestStats.response_count * 100) / RequestStats.sent_requests
         # print(f"\r{percentage:.2f}% completed", end='')
 
@@ -76,4 +80,5 @@ class RequestStats:
             'error': type(exception).__name__
         })
 
+        RequestStats.pending_requests.discard(request.url)
         return None
