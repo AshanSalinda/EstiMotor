@@ -1,73 +1,7 @@
-# from .storage import Storage
-# from .settings import settings
-# from .websites.ikman_scraper import IkmanScraper
-# from .websites.patpat_scraper import PatpatScraper
-# from .websites.riyasewana_scraper import RiyasewanaScraper
-# from scrapy.crawler import CrawlerProcess, CrawlerRunner
-
-# import asyncio
-# from concurrent.futures import ThreadPoolExecutor
-
-
-# process = CrawlerProcess(settings)
-# runner = CrawlerRunner(settings)
-
-# # def start_scraping():
-# #     global process
-# #     storage = Storage()
-# #     process = CrawlerProcess(settings)
-
-# #     process.crawl(IkmanScraper)
-# #     process.crawl(PatpatScraper)
-# #     process.crawl(RiyasewanaScraper)
-
-# #     process.start()
-# #     print(storage.get_stats())
-# #     # print(storage.get())
-
-
-# async def start_scraping():
-#     try:
-#         global process
-#         storage = Storage()
-#         # process.crawl(IkmanScraper)
-#         # process.crawl(PatpatScraper)
-#         # process.crawl(RiyasewanaScraper)
-#         # process.start()
-#         await runner.crawl(RiyasewanaScraper)
-#         print(storage.get_stats())
-#         # print(storage.get())
-
-#     except Exception as e:
-#         print(f"An error occurred during scraping: {e}")
-
-
-# def stop_scraping():
-#     global process
-#     if process is not None:
-#         process.stop()
-#         process = None
-#         print("Scraping stopped!")
-
-#     else:
-#         print("No scraping task to stop!")
-
-
-
-
-
-
-# async def start_scraping():
-#     loop = asyncio.get_event_loop()
-#     with ThreadPoolExecutor() as executor:
-#         await loop.run_in_executor(executor, run_scraper)
-
-
-from scrapy.crawler import CrawlerRunner
-from scrapy import signals
-from twisted.internet import reactor, defer
 from threading import Thread
-
+from twisted.internet import reactor, defer
+from scrapy.crawler import CrawlerRunner
+from ..utils.logger import info, warn, err
 from .storage import Storage
 from .settings import settings
 from .websites.ikman_scraper import IkmanScraper
@@ -76,10 +10,19 @@ from .websites.riyasewana_scraper import RiyasewanaScraper
 
 
 runner = CrawlerRunner(settings)
+reactor_thread = None
+is_scraping = False
 
 
-def run_scraper():
+def start_scraping():
+    global is_scraping
+
+    if is_scraping:
+        err("Scraping is already running.")
+        return
+
     print("Starting the crawling process...")
+    is_scraping = True
 
     # Start crawling the spiders
     d1 = runner.crawl(IkmanScraper)
@@ -90,29 +33,41 @@ def run_scraper():
 
 
 def on_all_spiders_finished(result):
+    global is_scraping
     print("All spiders finished.")
+    is_scraping = False
     storage = Storage()
     print(storage.get_stats())
 
 
 def stop_scraping():
+    global is_scraping
+    if not is_scraping or not runner.crawlers:
+        err("No scraping task to stop.")
+        return
+
     for crawler in runner.crawlers:
         if crawler.crawling:
             print(f"Stopping {crawler.spider.name}...")
             crawler.engine.close_spider(crawler.spider, 'Stopped by user')
 
-
-def start_scraping():
-    """Start the scraping process and the reactor."""
-    stop_scraping()
-    run_scraper()
+    is_scraping = False
 
 
 def start_reactor():
     """Start the Twisted reactor in a separate thread."""
-    thread = Thread(target=reactor.run, args=(False,))
-    thread.start()
+    global reactor_thread
+    if not reactor.running:
+        reactor_thread = Thread(target=reactor.run, args=(False,))
+        reactor_thread.start()
+        info("\t  Twisted reactor started.")
 
 
-# Start the reactor when initializing FastAPI app
-start_reactor()
+def stop_reactor():
+    """Stop the Twisted reactor."""
+    global reactor_thread
+    if reactor.running:
+        reactor.stop()
+        reactor_thread.join()
+        reactor_thread = None
+        info("\t  Twisted reactor stopped.")
