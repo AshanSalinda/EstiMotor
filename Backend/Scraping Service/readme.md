@@ -1,30 +1,10 @@
 # Power Shell Commands for the Project
 
-
-
-- To run as Administrator
-  ```
-    Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
-  ```
-
-- To create virtual environment
-  ```
-    python -m venv venv
-  ```
+<br>
 
 - To Activate the venv
   ```
     .\venv\Scripts\Activate.ps1
-  ```
-
-- To Deactivate the venv
-  ```
-    deactivate
-  ```
-
-- To Remove venv
-  ```
-    Remove-Item -Recurse -Force venv
   ```
 
 - To install the dependencies on requirements.txt
@@ -32,8 +12,37 @@
     pip install -r requirements.txt
   ```
 
-- To Update the
+- To Run the App
+  ```
+    uvicorn app.main:app
+  ```
+
+- To Deactivate the venv
+  ```
+    deactivate
+  ```
+
+- To Update the requirements.txt
   ```
     pip freeze > requirements.txt
   ```
+
+- To run as Administrator
+  ```
+    Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+  ```
+  
+- To create virtual environment
+  ```
+    python -m venv venv
+  ```
+
+- To Remove venv
+  ```
+    Remove-Item -Recurse -Force venv
+  ```
+
+
+
+
 
