@@ -1,4 +1,3 @@
-from app.api.websocket import queue_for_sending
 
 class Storage(object):
     """This is a singleton class, used to store the vehicle Details and stats"""
@@ -17,7 +16,6 @@ class Storage(object):
 
     def add(self, vehicle):
         self.vehicles.append(vehicle)
-        # queue_for_sending({'url': vehicle['url']})
 
     def add_stat(self, spider, stats):
         self.stats[spider] = stats

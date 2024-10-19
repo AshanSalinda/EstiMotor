@@ -10,7 +10,7 @@ send_task: asyncio.Task = None
 batch_size = 5   # Number of messages to send at once
 
 
-def queue_for_sending(message: dict):
+def enqueue_for_sending(message: dict):
     """Add a message to the queue for sending."""
     try:
         message_queue.put_nowait(message)
@@ -55,6 +55,8 @@ async def check_for_send():
 
         if messages:
             await broadcast(messages)
+        
+        await asyncio.sleep(0.1)
 
 
 
