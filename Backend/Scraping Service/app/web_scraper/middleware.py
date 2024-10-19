@@ -1,5 +1,7 @@
 from scrapy import signals
 from datetime import datetime, timezone
+from app.api.websocket import queue_for_sending
+
 
 class RequestStats:
     start_time = datetime.now(timezone.utc)
@@ -51,6 +53,7 @@ class RequestStats:
         """This is called when responded"""
         if 200 <= response.status < 300:
             self.success_responses += 1
+            queue_for_sending({'url': response.url})
         else:
             self.error_responses.append({
                 'index': request.meta.get('index'),

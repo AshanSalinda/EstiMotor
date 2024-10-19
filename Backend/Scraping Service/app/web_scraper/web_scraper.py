@@ -77,12 +77,12 @@ class WebScraper(scrapy.Spider):
             err(f"Failed to navigate next page: {next_page_url}: {e}")	
 
 
-    async def process_ads(self, response):
+    def process_ads(self, response):
         try:
             url = response.url
             index = response.meta.get('index')
             vehicle_details = self.get_vehicle_info(response, {'url': url, 'index': index})
-            await self.storage.add(vehicle_details)
+            self.storage.add(vehicle_details)
             print(f"{index}\t{url}")
         
         except Exception as e:
