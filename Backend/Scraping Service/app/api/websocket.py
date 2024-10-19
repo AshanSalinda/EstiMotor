@@ -18,7 +18,7 @@ async def websocket_endpoint(websocket: WebSocket):
         active_connections.remove(websocket)
         
 
-async def broadcast(message: dict):
+async def send(message: dict):
     """Send a JSON message to all active WebSocket connections."""
     for connection in active_connections:
         try:
