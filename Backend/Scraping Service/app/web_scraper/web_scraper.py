@@ -14,6 +14,7 @@ class WebScraper(scrapy.Spider):
         self.ad_selector = args[2]
         self.storage = Storage()
         self.ad_links = set()
+        print(f"Starting {self.name} at {datetime.now(timezone.utc)}")
 
 
     def start_requests(self):
