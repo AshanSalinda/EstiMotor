@@ -1,7 +1,7 @@
 from threading import Thread
 from twisted.internet import reactor, defer
 from scrapy.crawler import CrawlerRunner
-from ..utils.logger import info, warn, err
+from app.utils.logger import info, warn, err
 from .storage import Storage
 from .settings import settings
 from .websites.ikman_scraper import IkmanScraper
@@ -34,10 +34,11 @@ def start_scraping():
 
 def on_all_spiders_finished(result):
     global is_scraping
-    print("All spiders finished.")
+    
     is_scraping = False
     storage = Storage()
     print(storage.get_stats())
+    print("All spiders finished.")
 
 
 def stop_scraping():
@@ -48,10 +49,8 @@ def stop_scraping():
 
     for crawler in runner.crawlers:
         if crawler.crawling:
-            print(f"Stopping {crawler.spider.name}...")
+            print(f"Stopping {crawler.spider.name} spider...")
             crawler.engine.close_spider(crawler.spider, 'Stopped by user')
-
-    is_scraping = False
 
 
 def start_reactor():
