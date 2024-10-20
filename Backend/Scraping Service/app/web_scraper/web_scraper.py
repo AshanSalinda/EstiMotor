@@ -4,6 +4,9 @@ from datetime import datetime, timezone
 from urllib.parse import urlparse, parse_qs, urlencode
 from .storage import Storage
 
+# custom signal for indicate that reached to the end of pagination
+pagination_ended = object()
+
 
 class WebScraper(scrapy.Spider):
     """Base class for website-specific scrapers"""
@@ -22,21 +25,12 @@ class WebScraper(scrapy.Spider):
         for url in self.start_urls:
             yield scrapy.Request(
                 f"{url}?page={self.page_no}", 
-                callback=self.scrape, 
-                errback=self.on_error, 
+                callback=self.parse, 
                 meta={'index': f"{self.name}:page{self.page_no}"}
             )
 
-    
-    def on_error(self, failure):
-        """Handle request errors"""
-        url = failure.request.url
-        index = failure.request.meta.get('index', 'None:0:0')
-        err(f"{index}\t{url}")
-        print(failure)
 
-
-    def scrape(self, response):
+    def parse(self, response):
         """This is the default callback for every request for pages, made by the spider"""
         try:
             # Extract All Ad's links
@@ -49,17 +43,25 @@ class WebScraper(scrapy.Spider):
                 yield self.navigate_to_next_page(response)
 
             else:
+                # Send signal when pagination ends with the count of ads
+                self.crawler.signals.send_catch_log(
+                    signal=pagination_ended, 
+                    spider=self, 
+                    data={'ads_count': len(self.ad_links)}
+                )
+                
+                # Scrape All ads 
                 for index, link in enumerate(self.ad_links):
                     yield response.follow(
                         link, 
-                        callback=self.process_ads, 
-                        errback=self.on_error, 
+                        callback=self.scrape_the_ad, 
                         meta={'index': f"{self.name}:{index + 1}"}
                     )
         
         except Exception as e:
             err(f"An error occurred during scraping: {e}")
 
+    
     
     def navigate_to_next_page(self, response):
         try:
@@ -68,8 +70,7 @@ class WebScraper(scrapy.Spider):
 
             return response.follow(
                 next_page_url, 
-                callback=self.scrape, 
-                errback=self.on_error,
+                callback=self.parse, 
                 meta={'index': f"{self.name}:page{self.page_no}"}
             )
         
@@ -77,18 +78,20 @@ class WebScraper(scrapy.Spider):
             err(f"Failed to navigate next page: {next_page_url}: {e}")	
 
 
-    def process_ads(self, response):
+
+    def scrape_the_ad(self, response):
         try:
             url = response.url
             index = response.meta.get('index')
             vehicle_details = self.get_vehicle_info(response, {'url': url, 'index': index})
             self.storage.add(vehicle_details)
-            # print(f"{index}\t{url}")
+            print(f"{index}\t{url}")
         
         except Exception as e:
             # err(f"{index}\t{url}\n{e}")
             pass
 
+    
     
     def get_key(self, key):
         keys = {
@@ -115,6 +118,7 @@ class WebScraper(scrapy.Spider):
 
         key = key.strip() if key and type(key) == str else None
         return keys.get(key)
+
 
 
     def get_vehicle_info(self, response, vehicle_details):
@@ -147,6 +151,7 @@ class WebScraper(scrapy.Spider):
             No need to handle any exceptions here.
         """
         err(f"{self.name} must implement a own get_vehicle_info method")
+
 
 
     def is_last_page(self, response):

@@ -67,7 +67,7 @@ async def on_shutdown():
 
 
 
-@router.websocket("/ws")
+@router.websocket("/")
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
     active_connections.append(websocket)

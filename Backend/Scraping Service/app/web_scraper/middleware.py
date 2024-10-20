@@ -1,13 +1,13 @@
 from scrapy import signals
 from datetime import datetime, timezone
 from app.api.websocket import enqueue_for_sending
+from .web_scraper import pagination_ended
 
 
 class RequestStats:
     start_time = datetime.now(timezone.utc)
     sent_requests = 0
     response_count = 0
-    pending_requests = set()
 
     def __init__(self):
         self.start_time = None
@@ -22,9 +22,15 @@ class RequestStats:
         """This method is used by Scrapy to create spiders."""
         middleware = cls()
         crawler.signals.connect(middleware.spider_closed, signal=signals.spider_closed)
+        crawler.signals.connect(middleware.on_pagination_end, signal=pagination_ended)
         return middleware
-
-
+        
+        
+    def on_pagination_end(self, spider, data):
+        ads_count = data.get('ads_count', 0)
+        print(spider.name, "pagination ended, ads count :", ads_count)
+    
+    
     def spider_closed(self, spider):
         """Print stats when spider is closed"""
 
@@ -47,7 +53,7 @@ class RequestStats:
         """This is called for every request sent"""
         RequestStats.sent_requests += 1
         self.request_count += 1
-        RequestStats.pending_requests.add(request.url)
+        enqueue_for_sending({'sent request': request.url})
         return None
 
 
@@ -55,8 +61,9 @@ class RequestStats:
         """This is called when responded"""
         if 200 <= response.status < 300:
             self.success_responses += 1
-            enqueue_for_sending({'url': response.url})
+            enqueue_for_sending({'success response': response.url})
         else:
+            enqueue_for_sending({'error response': response.url})
             self.error_responses.append({
                 'index': request.meta.get('index'),
                 'url': response.url,
@@ -64,8 +71,6 @@ class RequestStats:
             })
 
         RequestStats.response_count += 1
-        RequestStats.pending_requests.discard(request.url)
-        print(f"{len(RequestStats.pending_requests)}\t{response.url}")
         percentage = (RequestStats.response_count * 100) / RequestStats.sent_requests
         # print(f"\r{percentage:.2f}% completed", end='')
 
@@ -76,9 +81,9 @@ class RequestStats:
         """This is called when an exception is raised during request processing"""
         self.failed_requests.append({
             'index': request.meta.get('index'),
-            'url': response.url,
+            'url': request.url,
             'error': type(exception).__name__
         })
-
-        RequestStats.pending_requests.discard(request.url)
+        
+        enqueue_for_sending({'error response': request.url})
         return None
