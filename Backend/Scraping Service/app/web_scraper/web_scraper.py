@@ -17,7 +17,6 @@ class WebScraper(scrapy.Spider):
         self.ad_selector = args[2]
         self.storage = Storage()
         self.ad_links = set()
-        print(f"Starting {self.name} at {datetime.now(timezone.utc)}")
 
 
     def start_requests(self):
@@ -25,8 +24,7 @@ class WebScraper(scrapy.Spider):
         for url in self.start_urls:
             yield scrapy.Request(
                 f"{url}?page={self.page_no}", 
-                callback=self.parse, 
-                meta={'index': f"{self.name}:page{self.page_no}"}
+                callback=self.parse,
             )
 
 
@@ -50,11 +48,10 @@ class WebScraper(scrapy.Spider):
                     data={'ads_count': len(self.ad_links)}
                 )
                 
-                # Scrape All ads 
                 for index, link in enumerate(self.ad_links):
                     yield response.follow(
                         link, 
-                        callback=self.scrape_the_ad, 
+                        callback=self.process_the_ad, 
                         meta={'index': f"{self.name}:{index + 1}"}
                     )
         
@@ -62,36 +59,28 @@ class WebScraper(scrapy.Spider):
             err(f"An error occurred during scraping: {e}")
 
     
-    
     def navigate_to_next_page(self, response):
         try:
             self.page_no += 1
             next_page_url = f"{(response.url).split('?')[0]}?page={self.page_no}"
-
-            return response.follow(
-                next_page_url, 
-                callback=self.parse, 
-                meta={'index': f"{self.name}:page{self.page_no}"}
-            )
+            return response.follow(next_page_url, callback=self.parse)
         
         except Exception as e:
             err(f"Failed to navigate next page: {next_page_url}: {e}")	
 
 
-
-    def scrape_the_ad(self, response):
+    def process_the_ad(self, response):
         try:
             url = response.url
             index = response.meta.get('index')
             vehicle_details = self.get_vehicle_info(response, {'url': url, 'index': index})
             self.storage.add(vehicle_details)
-            print(f"{index}\t{url}")
+            # print(f"{index}\t{url}")
         
         except Exception as e:
             # err(f"{index}\t{url}\n{e}")
             pass
 
-    
     
     def get_key(self, key):
         keys = {
@@ -118,7 +107,6 @@ class WebScraper(scrapy.Spider):
 
         key = key.strip() if key and type(key) == str else None
         return keys.get(key)
-
 
 
     def get_vehicle_info(self, response, vehicle_details):
@@ -151,7 +139,6 @@ class WebScraper(scrapy.Spider):
             No need to handle any exceptions here.
         """
         err(f"{self.name} must implement a own get_vehicle_info method")
-
 
 
     def is_last_page(self, response):

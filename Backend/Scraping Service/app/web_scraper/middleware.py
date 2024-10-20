@@ -6,11 +6,15 @@ from .web_scraper import pagination_ended
 
 class RequestStats:
     start_time = datetime.now(timezone.utc)
-    sent_requests = 0
+    total_links = 0
     response_count = 0
 
     def __init__(self):
-        self.start_time = None
+        if RequestStats.start_time:
+            RequestStats.start_time = datetime.now(timezone.utc)
+            RequestStats.total_links = 0
+            RequestStats.response_count = 0
+        
         self.request_count = 0
         self.success_responses = 0
         self.error_responses = []
@@ -28,7 +32,7 @@ class RequestStats:
         
     def on_pagination_end(self, spider, data):
         ads_count = data.get('ads_count', 0)
-        print(spider.name, "pagination ended, ads count :", ads_count)
+        RequestStats.total_links += ads_count
     
     
     def spider_closed(self, spider):
@@ -51,9 +55,8 @@ class RequestStats:
 
     def process_request(self, request, spider):
         """This is called for every request sent"""
-        RequestStats.sent_requests += 1
         self.request_count += 1
-        enqueue_for_sending({'sent request': request.url})
+        # enqueue_for_sending({'sent request': request.url})
         return None
 
 
@@ -61,18 +64,24 @@ class RequestStats:
         """This is called when responded"""
         if 200 <= response.status < 300:
             self.success_responses += 1
-            enqueue_for_sending({'success response': response.url})
+            # enqueue_for_sending({'success response': response.url})
         else:
-            enqueue_for_sending({'error response': response.url})
+            # enqueue_for_sending({'error response': response.url})
             self.error_responses.append({
                 'index': request.meta.get('index'),
                 'url': response.url,
                 'status': response.status
             })
-
-        RequestStats.response_count += 1
-        percentage = (RequestStats.response_count * 100) / RequestStats.sent_requests
-        # print(f"\r{percentage:.2f}% completed", end='')
+            
+        is_ad = request.meta.get('index')
+        if is_ad:
+            RequestStats.response_count += 1
+            try:
+                percentage = round((RequestStats.response_count * 100) / RequestStats.total_links, 2)
+                enqueue_for_sending({'progress': percentage})
+                print(f"\r{percentage}% completed", end='')
+            except Exception as e:
+                pass
 
         return response
 
@@ -85,5 +94,6 @@ class RequestStats:
             'error': type(exception).__name__
         })
         
+        RequestStats.response_count += 1
         enqueue_for_sending({'error response': request.url})
         return None
