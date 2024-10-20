@@ -52,7 +52,7 @@ async def stop_scraping_task():
     """Stop an ongoing scraping task."""
    
     try:
-        stop_scraping()
+        await stop_scraping()
         return {"status": "Scraping stopped!"}
 
     except Exception as e:

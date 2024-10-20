@@ -1,12 +1,14 @@
+import asyncio
 from threading import Thread
 from twisted.internet import reactor, defer
 from scrapy.crawler import CrawlerRunner
 from app.utils.logger import info, warn, err
-from .storage import Storage
-from .settings import settings
+from app.api.websocket import set_enqueue_access
 from .websites.ikman_scraper import IkmanScraper
 from .websites.patpat_scraper import PatpatScraper
 from .websites.riyasewana_scraper import RiyasewanaScraper
+from .storage import Storage
+from .settings import settings
 
 
 runner = CrawlerRunner(settings)
@@ -22,6 +24,7 @@ def start_scraping():
         return
 
     print("Starting the crawling process...")
+    set_enqueue_access(True)
     is_scraping = True
 
     # Start crawling the spiders
@@ -41,7 +44,7 @@ def on_all_spiders_finished(result):
     print("All spiders finished.")
 
 
-def stop_scraping():
+async def stop_scraping():
     global is_scraping
     if not is_scraping or not runner.crawlers:
         err("No scraping task to stop.")
@@ -51,6 +54,12 @@ def stop_scraping():
         if crawler.crawling:
             print(f"Stopping {crawler.spider.name} spider...")
             crawler.engine.close_spider(crawler.spider, 'Stopped by user')
+    
+    set_enqueue_access(False)
+    
+    # Wait for spiders to gracefully shut down
+    while any(crawler.crawling for crawler in runner.crawlers):
+        await asyncio.sleep(0.1)
 
 
 def start_reactor():
