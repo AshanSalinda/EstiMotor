@@ -14,8 +14,8 @@
         "tailwindcss"
     ],
     "workbench.colorCustomizations": {
-        "statusBar.background": "#691d7c",
+        "statusBar.background": "#28632b",
         "statusBar.foreground": "#ffffff",
-        "statusBarItem.hoverBackground": "#7a3c8a"
+        "statusBarItem.hoverBackground": "#327e36"
     }
 }
