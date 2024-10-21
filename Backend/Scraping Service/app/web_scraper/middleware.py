@@ -79,7 +79,7 @@ class RequestStats:
             try:
                 percentage = round((RequestStats.response_count * 100) / RequestStats.total_links, 2)
                 enqueue_for_sending({'progress': percentage})
-                print(f"\r{percentage}% completed", end='')
+                # print(f"\r{percentage}% completed", end='')
             except Exception as e:
                 pass
 
