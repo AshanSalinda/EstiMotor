@@ -12,5 +12,10 @@
         "Riyasewana",
         "spyder",
         "tailwindcss"
-    ]
+    ],
+    "workbench.colorCustomizations": {
+        "statusBar.background": "#28632b",
+        "statusBar.foreground": "#ffffff",
+        "statusBarItem.hoverBackground": "#327e36"
+    }
 }
