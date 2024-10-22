@@ -5,3 +5,7 @@
 html {
   @apply font-sans;
 }
+
+body {
+  @apply text-white;
+}
