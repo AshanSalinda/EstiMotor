@@ -8,17 +8,21 @@ const font = fullConfig.theme.fontFamily.sans.join(",");
 const stepperStyles = {
     MuiStepIcon: {
         styleOverrides: {
-            root: { fontSize: "30px" },
+            root: ({ ownerState }) => ({
+                fontSize: "30px",
+                color: ownerState.disabled ? colors.dark[200] : 'yellow'
+            }),
         },
     },
     MuiStepConnector: {
         styleOverrides: {
-            root: { marginLeft: "15px" },
+            root: { marginLeft: "15px"},
+            line: { borderColor: colors.dark[200] },
         },
     },
     MuiStepContent: {
         styleOverrides: {
-            root: { marginLeft: "15px" },
+            root: { marginLeft: "15px", borderColor: colors.dark[200] },
         },
     },
     MuiStepLabel: {
@@ -26,9 +30,7 @@ const stepperStyles = {
             label: { fontSize: "20px" },
         },
     },
-}
-
-
+};
 
 const muiTheme = createTheme({
     palette: {
