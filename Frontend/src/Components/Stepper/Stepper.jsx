@@ -30,7 +30,7 @@ export default function MyStepper({ steps, activeStep }) {
                             error={step.error} 
                             className={index <= activeStep ? 'cursor-pointer' : 'cursor-default'} 
                             onClick={() => handleClick(index)} icon={null}
-                            optional={activeStep === index && <div className='w-full h-1 bg-blue-500'></div>} >
+                            optional={activeStep === index && <div className='w-full h-1 bg-primary-500'></div>} >
                             {step.label}
                         </StepLabel>
 

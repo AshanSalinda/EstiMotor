@@ -15,7 +15,7 @@ export default function AdminLayout() {
             <Header title={title} />
             <div className="flex h-[92vh]">
                 <SideNavbar />
-                <div className="flex flex-col flex-grow h-full overflow-y-auto bg-dark-600">
+                <div className="flex flex-col flex-grow h-full overflow-y-auto bg-dark-700">
                     <Outlet />
                 </div>
             </div>

@@ -39,7 +39,7 @@ const muiTheme = createTheme({
     palette: {
         primary: { main: colors.primary[500] },
         secondary: { main: colors.primary[900] },
-        text: { primary: "#FFFFFF", secondary: "#FFFFFF", disabled: "#FFFFFF" },
+        text: { primary: "#FFFFFF", secondary: 'yellow', disabled: 'orange' },
         grey: { 400: "#ff0000" },
     },
     typography: {
