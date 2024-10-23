@@ -11,11 +11,11 @@ export default function AdminLayout() {
             : "EstiMotor";
 
     return (
-        <div className="flex flex-col w-screen h-screen">
+        <div>
             <Header title={title} />
-            <div className="flex flex-grow w-screen">
+            <div className="flex h-[92vh]">
                 <SideNavbar />
-                <div className="w-full h-full bg-dark-600">
+                <div className="flex flex-col flex-grow h-full overflow-y-auto bg-dark-600">
                     <Outlet />
                 </div>
             </div>

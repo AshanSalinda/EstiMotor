@@ -28,21 +28,12 @@ export default {
                     900: "#002641",
                 },
             },
-            animation: {
-                "shrink-fade": "shrink-and-fade 0.1s ease-in-out forwards",
-                "grow-fade": "grow-and-fade 0.5s ease-in-out forwards",
-            },
-            keyframes: {
-                "shrink-and-fade": {
-                    "0%": { opacity: "1", height: "auto" },
-                    "100%": { opacity: "0", height: "0" },
-                },
-                "grow-and-fade": {
-                    "0%": { opacity: "0", height: "0" },
-                    "100%": { opacity: "1", height: "auto" },
-                },
-            },
-        },
+            height: {
+            '50vh': '50vh',
+            '75vh': '75vh',
+            '90vh': '90vh',
+            }
+        }
     },
     plugins: [],
 };
