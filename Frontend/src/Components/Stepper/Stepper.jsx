@@ -31,7 +31,7 @@ export default function MyStepper({ steps, activeStep }) {
                             className={index <= activeStep ? 'cursor-pointer' : 'cursor-default'} 
                             onClick={() => handleClick(index)} icon={null}
                             optional={activeStep === index && <div className='w-full h-1 bg-primary-500'></div>} >
-                            {step.label}
+                            {step.title}
                         </StepLabel>
 
                         <StepContent >
