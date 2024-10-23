@@ -2,16 +2,19 @@ import { createTheme } from "@mui/material/styles";
 import resolveConfig from "tailwindcss/resolveConfig";
 import tailwindConfig from "/tailwind.config.js";
 
+
 const fullConfig = resolveConfig(tailwindConfig);
 const colors = fullConfig.theme.colors;
 const font = fullConfig.theme.fontFamily.sans.join(",");
 const stepperStyles = {
     MuiStepIcon: {
         styleOverrides: {
-            root: ({ ownerState }) => ({
+            root: {
                 fontSize: "30px",
-                color: ownerState.disabled ? colors.dark[200] : 'yellow'
-            }),
+                color: colors.dark[200],
+                '&.Mui-completed': { color: "#00FF00" },
+                '&.Mui-error': { color: '#FF0000' },
+            },
         },
     },
     MuiStepConnector: {
@@ -27,7 +30,7 @@ const stepperStyles = {
     },
     MuiStepLabel: {
         styleOverrides: {
-            label: { fontSize: "20px" },
+            label: { fontSize: "20px", color: '#FFFFFF' },
         },
     },
 };
@@ -36,7 +39,7 @@ const muiTheme = createTheme({
     palette: {
         primary: { main: colors.primary[500] },
         secondary: { main: colors.primary[900] },
-        text: { primary: "#FFFFFF", secondary: "#FFFFFF", disabled: "#FFFFFF" },
+        text: { primary: "#FFFFFF", secondary: 'yellow', disabled: 'orange' },
         grey: { 400: "#ff0000" },
     },
     typography: {

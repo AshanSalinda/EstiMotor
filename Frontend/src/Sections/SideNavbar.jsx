@@ -2,6 +2,6 @@ import React from 'react'
 
 export default function SideNavbar() {
   return (
-    <div className='h-full w-14 bg-dark-400'></div>
+    <div className='h-full w-[3vw] bg-dark-500'></div>
   )
 }

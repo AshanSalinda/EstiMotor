@@ -1,55 +1,41 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Stepper from '../components/Stepper/Stepper';
-
-const steps = [
-    {
-        label: "Web Scraping",
-        content: `For each ad campaign that you create, you can control how much
-            you're willing to spend on clicks and conversions, which networks
-            and geographical locations you want your ads to show on, and more.`,
-    },
-    {
-        label: "Data Cleaning",
-        content:
-            "An ad group contains one or more ads which target a shared set of keywords.",
-    },
-    {
-        label: "Data Transformation",
-        content: `Try out different ad text to see what brings in the most customers,
-                and learn how to enhance your ads using features like ad extensions.
-                If you run into any problems with your ads, find out how to tell if
-                they're running and how to resolve approval issues.`,
-    },
-    {
-        label: "Model Training",
-        content: `Try out different ad text to see what brings in the most customers,
-                and learn how to enhance your ads using features like ad extensions.
-                If you run into any problems with your ads, find out how to tell if
-                they're running and how to resolve approval issues.`,
-    },
-    {
-        label: "Completed",
-        content: `Try out different ad text to see what brings in the most customers,
-                and learn how to enhance your ads using features like ad extensions.
-                If you run into any problems with your ads, find out how to tell if
-                they're running and how to resolve approval issues.`,
-    },
-];
+import DataPanel from '../sections/DataPanel';
+import { stepsInfo } from '../utils/steps.json';
+import stepManager from '../utils/steps/stepManager';
 
 
 export default function ManualTraining() {
-    const [activeStep, setActiveStep] = useState(0);
+    // const [activeStep, setActiveStep] = useState(0);
+    // const [steps, setSteps] = useState(stepsInfo);
+    const { steps, activeStep, logs, start } = stepManager();
+
+    const markAsError = () => {
+        steps[activeStep].error = true;
+        setSteps([...steps]);
+    }
 
     return (
-        <div>
-            <Stepper steps={steps} activeStep={activeStep}/>
-            <button 
-                onClick={() => setActiveStep(pre => (pre + 1) % steps.length)} 
-                className="px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700" >
-                Next
-            </button>
-        </div>
-        
-        
+        <div className='flex justify-between h-full mx-8 my-4 overflow-y-auto'>
+            <div className='w-96'>
+                <Stepper steps={steps} activeStep={activeStep}/>
+                {/* <button 
+                    onClick={() => setActiveStep(pre => (pre + 1) % steps.length)} 
+                    className="px-4 py-2 bg-blue-500 rounded hover:bg-blue-700" >
+                    Next
+                </button>*/}
+                <button 
+                    onClick={() => start()} 
+                    className="px-4 py-2 bg-blue-500 rounded hover:bg-blue-700" >
+                    Error
+                </button>
+                {/* <button 
+                    onClick={() => setData(pre => [{name: 'data ' + pre.length}, ...pre])} 
+                    className="px-4 py-2 bg-blue-500 rounded hover:bg-blue-700" >
+                    Add
+                </button> */}
+            </div>
+            <DataPanel data={logs}/>
+        </div>  
     )
 }

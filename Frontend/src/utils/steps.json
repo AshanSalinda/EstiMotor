@@ -1,0 +1,30 @@
+{
+    "stepsInfo": [
+      {
+        "label": "Data Collecting",
+        "description": "Gather vehicle data from multiple sources",
+        "content": "Gather vehicle data from multiple sources, including websites and user inputs."
+      },
+      {
+        "label": "Data Cleaning",
+        "description": "Process and clean the collected data",
+        "content": "Process and clean the collected data to ensure accuracy and consistency."
+      },
+      {
+        "label": "Data Transformation",
+        "description": "Transform the data into a structured format",
+        "content": "Transform the cleaned data into a structured format suitable for model training."
+      },
+      {
+        "label": "Model Training",
+        "description": "Train the machine learning model",
+        "content": "Train the machine learning model using the transformed data to predict vehicle prices."
+      },
+      {
+        "label": "Completed",
+        "description": "The model is ready",
+        "content": "The model is ready and predictions can now be made for vehicle price estimation."
+      }
+    ]
+  }
+  
