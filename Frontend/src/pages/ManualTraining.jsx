@@ -1,41 +1,46 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import Stepper from '../components/Stepper/Stepper';
 import DataPanel from '../sections/DataPanel';
 import { stepsInfo } from '../utils/steps.json';
-import stepManager from '../utils/steps/stepManager';
 
 
 export default function ManualTraining() {
-    // const [activeStep, setActiveStep] = useState(0);
-    // const [steps, setSteps] = useState(stepsInfo);
-    const { steps, activeStep, logs, start } = stepManager();
+    const [activeStep, setActiveStep] = useState(0);
+    const [expandedStep, setExpandedStep] = useState(0);
+    const [expandedStepLogs, setExpandedStepLogs] = useState([]);
+    const allLogs = useRef({ 0: [], 1: [], 2: [], 3: [], 4: [] });
 
-    const markAsError = () => {
-        steps[activeStep].error = true;
-        setSteps([...steps]);
-    }
+    const setLogs = (message) => {
+        allLogs.current[activeStep].unshift(message);
+
+        if (activeStep === expandedStep) {
+            setExpandedStepLogs([...allLogs.current[activeStep]]);
+        }
+    };
+
+    const handleNext = () => {
+        const nextStep = (activeStep + 1) % stepsInfo.length;
+
+        setExpandedStep(nextStep);
+        setActiveStep(nextStep);
+        setExpandedStepLogs([]);
+    };
+
+    useEffect(() => {
+        setExpandedStepLogs(allLogs.current[expandedStep] || []);
+    }, [expandedStep]);
 
     return (
-        <div className='flex justify-between h-full mx-8 my-4 overflow-y-auto'>
-            <div className='w-96'>
-                <Stepper steps={steps} activeStep={activeStep}/>
-                {/* <button 
-                    onClick={() => setActiveStep(pre => (pre + 1) % steps.length)} 
-                    className="px-4 py-2 bg-blue-500 rounded hover:bg-blue-700" >
-                    Next
-                </button>*/}
-                <button 
-                    onClick={() => start()} 
-                    className="px-4 py-2 bg-blue-500 rounded hover:bg-blue-700" >
-                    Error
-                </button>
-                {/* <button 
-                    onClick={() => setData(pre => [{name: 'data ' + pre.length}, ...pre])} 
-                    className="px-4 py-2 bg-blue-500 rounded hover:bg-blue-700" >
-                    Add
-                </button> */}
-            </div>
-            <DataPanel data={logs}/>
-        </div>  
+        <>
+            <button 
+                onClick={handleNext} 
+                className="px-4 py-2 ml-auto mr-10 bg-blue-500 rounded w-fit hover:bg-blue-700" >
+                Next
+            </button>
+            <div className='flex justify-between h-full mx-8 my-4 overflow-y-auto'>
+                <Stepper activeStep={activeStep} expandedStep={expandedStep} setExpandedStep={setExpandedStep} setLogs={setLogs}/>
+                <DataPanel data={expandedStepLogs}/>
+            </div>  
+        </>
     )
 }
