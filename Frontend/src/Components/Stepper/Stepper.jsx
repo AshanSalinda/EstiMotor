@@ -1,48 +1,37 @@
 import React, { useState, useEffect } from 'react'
-import { 
-    Collapse, 
-    Step, 
-    StepLabel,
-    StepContent, 
-    Stepper as MuiStepper 
-} from "@mui/material";
+import { Stepper as MuiStepper, Step as MuiStep } from "@mui/material";
+import { stepsInfo } from '../../utils/steps.json';
+import Step from './Step';
 
 
-export default function MyStepper({ steps, activeStep }) {
-    const [expanded, setExpanded] = useState(0)
+export default function MyStepper({ activeStep, expandedStep, setExpandedStep, setLogs }) {
 
     const handleClick = (index) => {
         if(index > activeStep) return;
-        setExpanded(index); 
+        if(index === expandedStep) return;
+        setExpandedStep(index); 
     };
 
-    useEffect(() => { 
-        setExpanded(activeStep) 
-    }, [activeStep])
 
     return (
         <div className="max-w-96">
             <MuiStepper activeStep={activeStep} orientation="vertical">
-                {(steps || []).map((step, index) => (
+                { stepsInfo.map((step, index) => (
+                    <MuiStep 
+                        key={index} 
+                        onClick={() => handleClick(index)} 
+                        expanded={expandedStep == index}
+                        className={index === expandedStep ? 'cursor-default' : 'cursor-pointer'} >
 
-                    <Step key={index}  expanded={expanded == index} >
-                        <StepLabel 
-                            error={step.error} 
-                            className={index <= activeStep ? 'cursor-pointer' : 'cursor-default'} 
-                            onClick={() => handleClick(index)} icon={null}
-                            optional={activeStep === index && <div className='w-full h-1 bg-primary-500'></div>} >
-                            {step.title}
-                        </StepLabel>
-
-                        <StepContent >
-                            <Collapse 
-                                in={expanded === index} 
-                                timeout="auto" 
-                                unmountOnExit >
-                                { step.content }
-                            </Collapse>
-                        </StepContent>
-                    </Step>
+                        <Step
+                            index={index}
+                            title={step.label} 
+                            content={step.content} 
+                            isActive={index === activeStep}
+                            isExpanded={index === expandedStep}
+                            setLogs={setLogs}
+                        /> 
+                    </MuiStep>
                 ))}
             </MuiStepper>
         </div>
