@@ -2,6 +2,11 @@
 
 <br>
 
+- To create a virtual environment
+  ```
+    python -m venv venv
+  ```
+  
 - To Activate the venv
   ```
     .\venv\Scripts\Activate.ps1
@@ -25,16 +30,6 @@
 - To Update the requirements.txt
   ```
     pip freeze > requirements.txt
-  ```
-
-- To run as Administrator
-  ```
-    Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
-  ```
-  
-- To create virtual environment
-  ```
-    python -m venv venv
   ```
 
 - To Remove venv
