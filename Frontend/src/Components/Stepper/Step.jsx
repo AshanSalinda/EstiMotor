@@ -1,39 +1,33 @@
-import React, { useState, useEffect } from 'react';
-import { StepLabel, StepContent, Collapse } from "@mui/material";
+import React from 'react';
+import { StepLabel, StepContent, Collapse, LinearProgress } from "@mui/material";
+import { useStepDataContext } from '../../context/StepDataContext';
 
-const Step = ({ title, content, isActive, isExpanded }) => {
-    const [isFailed, setIsFailed] = useState(false);
 
-    const startProcessing = async () => {
-        await new Promise(resolve => setTimeout(resolve, 2000));
-
-        setIsFailed(true);
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        
-        setIsFailed(false);
-    }
-
-    useEffect(() => {
-        if(isActive) startProcessing();
-    }, [isActive])
-
+const Step = ({ index, title, content, isActive, isExpanded }) => {
+    const { progress, isFailed } = useStepDataContext();
 
     return (
         <>
             <StepLabel 
-                optional={isActive && <div className='w-full h-1 bg-primary-500'></div>}
-                error={isFailed}>
+                optional={ isActive && <ProgressBar progress={progress} /> } 
+                error={isFailed[index]}>
                 {title}
             </StepLabel>
             <StepContent>
-                <Collapse 
-                    in={isExpanded} 
-                    timeout="auto" 
-                    unmountOnExit >
-                    { content }
-                </Collapse>
+                <Collapse in={isExpanded} timeout="auto" unmountOnExit >{ content }</Collapse>
             </StepContent>
         </>
+    );
+}
+
+
+const ProgressBar = ({ progress }) => {
+    return (
+        <div className='flex items-center justify-between'>
+            <LinearProgress className='w-10/12' variant="determinate" value={progress} />
+            <span className='text-sm font-medium text-gray-400'>{progress + '%'}</span>
+        </div>
+        
     );
 }
 

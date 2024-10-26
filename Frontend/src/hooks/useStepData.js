@@ -6,6 +6,8 @@ export default function useStepData() {
     const [activeStep, setActiveStep] = useState(-1);
     const [expandedStep, setExpandedStep] = useState(-1);
     const [expandedStepLogs, setExpandedStepLogs] = useState([]);
+    const [isFailed, setIsFailed] = useState(Array(stepsInfo.length).fill(false));
+    // TODO: Array(stepsInfo.length).fill([])
     const allLogs = useRef({ 0: [], 1: [], 2: [], 3: [], 4: [] });
 
     const setLogs = (payload) => {
@@ -41,6 +43,7 @@ export default function useStepData() {
 
     return {
         stepsInfo,
+        isFailed,
         progress,
         activeStep,
         expandedStep,

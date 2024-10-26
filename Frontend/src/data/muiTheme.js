@@ -47,6 +47,11 @@ const muiTheme = createTheme({
     },
     components: {
         ...stepperStyles,
+        MuiLinearProgress: {
+            styleOverrides: {
+                root: { borderRadius: "3px", },
+            }
+        },
     },
 });
 
