@@ -2,13 +2,15 @@ import React, { useState, useEffect, useRef } from 'react'
 import Stepper from '../components/Stepper/Stepper';
 import DataPanel from '../sections/DataPanel';
 import { stepsInfo } from '../utils/steps.json';
+import useWebSocket from '../hooks/useWebSocket';
 
 
 export default function ManualTraining() {
-    const [activeStep, setActiveStep] = useState(0);
-    const [expandedStep, setExpandedStep] = useState(0);
+    const [activeStep, setActiveStep] = useState(-1);
+    const [expandedStep, setExpandedStep] = useState(-1);
     const [expandedStepLogs, setExpandedStepLogs] = useState([]);
     const allLogs = useRef({ 0: [], 1: [], 2: [], 3: [], 4: [] });
+    const { sendMessage } = useWebSocket();
 
     const setLogs = (message) => {
         allLogs.current[activeStep].unshift(message);
@@ -19,7 +21,7 @@ export default function ManualTraining() {
     };
 
     const handleNext = () => {
-        const nextStep = (activeStep + 1) % stepsInfo.length;
+        const nextStep = activeStep < 0 ? 0 : (activeStep + 1) % stepsInfo.length;
 
         setExpandedStep(nextStep);
         setActiveStep(nextStep);
