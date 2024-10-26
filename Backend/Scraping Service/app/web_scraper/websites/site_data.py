@@ -1,6 +1,6 @@
 patpat = {
     'url': 'https://www.patpat.lk/vehicle',
-    'page_no': 676,
+    'page_no': 722,
     'selectors': {
         'ads_link': 'div.result-img a',
         'next_button': 'ul.pagination li:last-child.disabled',
@@ -24,7 +24,7 @@ ikman = {
 
 riyasewana = {
     'url': 'https://riyasewana.com/search',
-    'page_no': 1432,
+    'page_no': 1430,
     'selectors': {
         'ads_link': 'ul li.item.round h2 a',
         'next_button': 'div.pagination a:last-of-type',
