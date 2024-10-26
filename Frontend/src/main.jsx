@@ -1,14 +1,14 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { ThemeProvider } from '@mui/material/styles';
-import muiTheme from "./utils/muiTheme.js";
+import MuiThemeProvider from "./context/MuiThemeContext.jsx";
+import StepDataProvider from "./context/StepDataContext.jsx";
 import Routes from "./Routes.jsx";
 import "./index.css";
 
 createRoot(document.getElementById("root")).render(
     <StrictMode>
-        <ThemeProvider theme={muiTheme}>
+        <MuiThemeProvider>
             <Routes />
-        </ThemeProvider>
+        </MuiThemeProvider>
     </StrictMode>
 );

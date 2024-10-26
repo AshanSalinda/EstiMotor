@@ -1,22 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { StepLabel, StepContent, Collapse } from "@mui/material";
 
-const Step = ({ index, title, content, isActive, isExpanded, setLogs }) => {
+const Step = ({ title, content, isActive, isExpanded }) => {
     const [isFailed, setIsFailed] = useState(false);
 
     const startProcessing = async () => {
-        setLogs(`${title} is starting...`);
-        await new Promise(resolve => setTimeout(resolve, 2000));
-
-        setLogs(`Processing...`);
         await new Promise(resolve => setTimeout(resolve, 2000));
 
         setIsFailed(true);
-        setLogs(`${title} Error occurred...`);
         await new Promise(resolve => setTimeout(resolve, 2000));
         
         setIsFailed(false);
-        setLogs(`${title} Completed...`);
     }
 
     useEffect(() => {
