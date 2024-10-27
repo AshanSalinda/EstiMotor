@@ -4,12 +4,13 @@ import { useStepDataContext } from "../context/StepDataContext";
 export default function useWebSocket() {
     const { setLogs } = useStepDataContext();
     const setLogsRef = useRef(setLogs);
-    const [isConnected, setIsConnected] = useState(false);
     const ws = useRef(null);
+    const [isConnected, setIsConnected] = useState(false);
 
     useEffect(() => {
         setLogsRef.current = setLogs;
     }, [setLogs]);
+    
 
     useEffect(() => {
         // Initialize WebSocket

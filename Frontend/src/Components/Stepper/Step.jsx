@@ -3,18 +3,21 @@ import { StepLabel, StepContent, Collapse, LinearProgress } from "@mui/material"
 import { useStepDataContext } from '../../context/StepDataContext';
 
 
-const Step = ({ index, title, content, isActive, isExpanded }) => {
+export default function Step({ title, content, isActive, isExpanded }) {
     const { progress, isFailed } = useStepDataContext();
 
     return (
         <>
             <StepLabel 
                 optional={ isActive && <ProgressBar progress={progress} /> } 
-                error={isFailed[index]}>
+                error={isActive && isFailed}>
                 {title}
             </StepLabel>
+
             <StepContent>
-                <Collapse in={isExpanded} timeout="auto" unmountOnExit >{ content }</Collapse>
+                <Collapse in={isExpanded} timeout="auto" unmountOnExit >
+                    <Content>{ content }</Content>
+                </Collapse>
             </StepContent>
         </>
     );
@@ -23,17 +26,51 @@ const Step = ({ index, title, content, isActive, isExpanded }) => {
 
 const ProgressBar = ({ progress }) => {
     return (
-        // <div className='flex items-center justify-between'>
-        //     <LinearProgress className='w-10/12' variant="determinate" value={progress} />
-        //     <span className='text-sm font-medium text-gray-400'>{progress + '%'}</span>
-        // </div>
-
         <div className=''>
             <LinearProgress className='mt-2' variant="determinate" value={progress} />
             <span className='block w-full text-sm font-medium text-right text-gray-400'>{progress + '%'}</span>
         </div>
-        
     );
 }
 
-export default Step;
+
+const Content = ({ children }) => {
+    return (
+        <div className='box-border p-4 rounded bg-dark-400'>
+            <table>
+                <tbody>
+                    <tr>
+                        <td>Status:</td>
+                        <td>Completed</td>
+                    </tr>
+                    <tr>
+                        <td>Time Taken:</td>
+                        <td>1m 30s</td>
+                    </tr>
+                    <tr>
+                        <td>Sent Requests:</td>
+                        <td>50</td>
+                    </tr>
+                    <tr>
+                        <td>Field Requests:</td>
+                        <td>50</td>
+                    </tr>
+                    <tr>
+                        <td>Success Responses:</td>
+                        <td>50</td>
+                    </tr>
+                    <tr>
+                        <td>Errors Responses:</td>
+                        <td>0</td>
+                    </tr>
+                    <tr>
+                        <td>Success Rate:</td>
+                        <td>100%</td>
+                    </tr>
+
+                </tbody>
+            </table>
+        </div>
+    );
+}
+

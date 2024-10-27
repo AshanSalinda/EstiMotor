@@ -25,7 +25,6 @@ export default function MyStepper() {
                         className={index === expandedStep ? 'cursor-default' : 'cursor-pointer'} >
 
                         <Step
-                            index={index}
                             title={step.label} 
                             content={step.content} 
                             isActive={index === activeStep}
