@@ -3,7 +3,7 @@ from threading import Thread
 from twisted.internet import reactor, defer
 from scrapy.crawler import CrawlerRunner
 from app.utils.logger import info, warn, err
-from app.api.websocket import set_enqueue_access
+from app.api.websocket import set_enqueue_access, enqueue_for_sending
 from .websites.ikman_scraper import IkmanScraper
 from .websites.patpat_scraper import PatpatScraper
 from .websites.riyasewana_scraper import RiyasewanaScraper
@@ -41,7 +41,7 @@ def on_all_spiders_finished(result):
     is_scraping = False
     storage = Storage()
     print(storage.get_stats())
-    print("All spiders finished.")
+    print("All spiders finished.", result)
 
 
 async def stop_scraping():

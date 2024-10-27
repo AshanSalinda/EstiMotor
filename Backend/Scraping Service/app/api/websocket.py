@@ -71,16 +71,24 @@ async def broadcast(message: List[dict]):
 async def check_for_send():
     while True:
         payload = {}
-        while not message_queue.empty() and len(payload) < batch_size:
+        for _ in range(batch_size):
             data = await message_queue.get()
-            if data['progress']:
+            print("From Socket", _)
+            
+            if 'progress' in data:
                 payload['progress'] = data['progress']
-            elif data['log']:
+                
+            if 'log' in data:
+                if 'logs' not in payload:
+                    payload['logs'] = []
                 payload['logs'].append(data['log'])
+                
+            if message_queue.empty():
+                break
 
         if payload:
             await broadcast(payload)
-        
+            
         await asyncio.sleep(0.1)
 
 

@@ -18,6 +18,7 @@ class Storage(object):
         self.vehicles.append(vehicle)
 
     def add_stat(self, spider, stats):
+        print(f"Adding stats for {spider}: {stats}")
         self.stats[spider] = stats
 
     def get(self):
