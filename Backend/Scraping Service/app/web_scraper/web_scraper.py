@@ -5,7 +5,7 @@ from urllib.parse import urlparse, parse_qs, urlencode
 from .storage import Storage
 
 # custom signal for indicate that reached to the end of pagination
-pagination_ended = object()
+pagination_ended_signal = object()
 
 
 class WebScraper(scrapy.Spider):
@@ -43,7 +43,7 @@ class WebScraper(scrapy.Spider):
             else:
                 # Send signal when pagination ends with the count of ads
                 self.crawler.signals.send_catch_log(
-                    signal=pagination_ended, 
+                    signal=pagination_ended_signal, 
                     spider=self, 
                     data={'ads_count': len(self.ad_links)}
                 )
