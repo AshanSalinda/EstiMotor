@@ -19,10 +19,10 @@ export default function useStepData() {
         }
 
         if(newLogs) {
-            allLogs.current[activeStep].unshift(...newLogs);
+            allLogs.current[1].unshift(...newLogs);
 
             if (activeStep === expandedStep) {
-                setExpandedStepLogs([...allLogs.current[activeStep]]);
+                setExpandedStepLogs([...allLogs.current[1]]);
             }
         }
 
@@ -35,6 +35,7 @@ export default function useStepData() {
         setActiveStep(nextStep);
         setExpandedStepLogs([]);
     };
+
 
     useEffect(() => {
         setExpandedStepLogs(allLogs.current[expandedStep] || []);

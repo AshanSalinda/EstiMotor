@@ -6,8 +6,8 @@ import StepDataProvider, { useStepDataContext } from '../context/StepDataContext
 
 
 function ManualTraining() {
-    useWebSocket();
     const { logs, handleNext } = useStepDataContext();
+    useWebSocket();
 
 
     return (

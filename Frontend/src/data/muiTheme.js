@@ -49,7 +49,8 @@ const muiTheme = createTheme({
         ...stepperStyles,
         MuiLinearProgress: {
             styleOverrides: {
-                root: { borderRadius: "3px", },
+                root: { borderRadius: "3px" },
+                bar: { transition: "none" }
             }
         },
     },

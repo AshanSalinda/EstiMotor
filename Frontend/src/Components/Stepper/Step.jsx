@@ -23,9 +23,14 @@ const Step = ({ index, title, content, isActive, isExpanded }) => {
 
 const ProgressBar = ({ progress }) => {
     return (
-        <div className='flex items-center justify-between'>
-            <LinearProgress className='w-10/12' variant="determinate" value={progress} />
-            <span className='text-sm font-medium text-gray-400'>{progress + '%'}</span>
+        // <div className='flex items-center justify-between'>
+        //     <LinearProgress className='w-10/12' variant="determinate" value={progress} />
+        //     <span className='text-sm font-medium text-gray-400'>{progress + '%'}</span>
+        // </div>
+
+        <div className=''>
+            <LinearProgress className='mt-2' variant="determinate" value={progress} />
+            <span className='block w-full text-sm font-medium text-right text-gray-400'>{progress + '%'}</span>
         </div>
         
     );
