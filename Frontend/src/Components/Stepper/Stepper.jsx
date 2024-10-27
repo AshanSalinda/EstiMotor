@@ -1,10 +1,11 @@
 import React from 'react'
 import { Stepper as MuiStepper, Step as MuiStep } from "@mui/material";
-import { stepsInfo } from '../../data/steps.json';
+import { useStepDataContext } from '../../context/StepDataContext';
 import Step from './Step';
 
 
-export default function MyStepper({ activeStep, expandedStep, setExpandedStep }) {
+export default function MyStepper() {
+    const { activeStep, expandedStep, setExpandedStep, stepsInfo } = useStepDataContext();
 
     const handleClick = (index) => {
         if(index > activeStep) return;

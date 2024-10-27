@@ -1,40 +1,76 @@
-import React, { useState, useEffect } from 'react';
-import { StepLabel, StepContent, Collapse } from "@mui/material";
+import React from 'react';
+import { StepLabel, StepContent, Collapse, LinearProgress } from "@mui/material";
+import { useStepDataContext } from '../../context/StepDataContext';
 
-const Step = ({ title, content, isActive, isExpanded }) => {
-    const [isFailed, setIsFailed] = useState(false);
 
-    const startProcessing = async () => {
-        await new Promise(resolve => setTimeout(resolve, 2000));
-
-        setIsFailed(true);
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        
-        setIsFailed(false);
-    }
-
-    useEffect(() => {
-        if(isActive) startProcessing();
-    }, [isActive])
-
+export default function Step({ title, content, isActive, isExpanded }) {
+    const { progress, isFailed } = useStepDataContext();
 
     return (
         <>
             <StepLabel 
-                optional={isActive && <div className='w-full h-1 bg-primary-500'></div>}
-                error={isFailed}>
+                optional={ isActive && <ProgressBar progress={progress} /> } 
+                error={isActive && isFailed}>
                 {title}
             </StepLabel>
+
             <StepContent>
-                <Collapse 
-                    in={isExpanded} 
-                    timeout="auto" 
-                    unmountOnExit >
-                    { content }
+                <Collapse in={isExpanded} timeout="auto" unmountOnExit >
+                    <Content>{ content }</Content>
                 </Collapse>
             </StepContent>
         </>
     );
 }
 
-export default Step;
+
+const ProgressBar = ({ progress }) => {
+    return (
+        <div className=''>
+            <LinearProgress className='mt-2' variant="determinate" value={progress} />
+            <span className='block w-full text-sm font-medium text-right text-gray-400'>{progress + '%'}</span>
+        </div>
+    );
+}
+
+
+const Content = ({ children }) => {
+    return (
+        <div className='box-border p-4 rounded bg-dark-400'>
+            <table>
+                <tbody>
+                    <tr>
+                        <td>Status:</td>
+                        <td>Completed</td>
+                    </tr>
+                    <tr>
+                        <td>Time Taken:</td>
+                        <td>1m 30s</td>
+                    </tr>
+                    <tr>
+                        <td>Sent Requests:</td>
+                        <td>50</td>
+                    </tr>
+                    <tr>
+                        <td>Field Requests:</td>
+                        <td>50</td>
+                    </tr>
+                    <tr>
+                        <td>Success Responses:</td>
+                        <td>50</td>
+                    </tr>
+                    <tr>
+                        <td>Errors Responses:</td>
+                        <td>0</td>
+                    </tr>
+                    <tr>
+                        <td>Success Rate:</td>
+                        <td>100%</td>
+                    </tr>
+
+                </tbody>
+            </table>
+        </div>
+    );
+}
+

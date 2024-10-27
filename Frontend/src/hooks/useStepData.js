@@ -3,10 +3,11 @@ import { stepsInfo } from '../data/steps.json';
 
 export default function useStepData() {
     const [progress, setProgress] = useState(0);
-    const [activeStep, setActiveStep] = useState(-1);
-    const [expandedStep, setExpandedStep] = useState(-1);
+    const [activeStep, setActiveStep] = useState(0);
+    const [expandedStep, setExpandedStep] = useState(0);
     const [expandedStepLogs, setExpandedStepLogs] = useState([]);
-    const allLogs = useRef({ 0: [], 1: [], 2: [], 3: [], 4: [] });
+    const [isFailed, setIsFailed] = useState(false);
+    const allLogs = useRef(stepsInfo.map(() => []));
 
     const setLogs = (payload) => {
         const newProgress = payload?.progress;
@@ -22,6 +23,7 @@ export default function useStepData() {
             if (activeStep === expandedStep) {
                 setExpandedStepLogs([...allLogs.current[activeStep]]);
             }
+            
         }
 
     };
@@ -31,16 +33,17 @@ export default function useStepData() {
 
         setExpandedStep(nextStep);
         setActiveStep(nextStep);
-        setExpandedStepLogs([]);
     };
 
+
     useEffect(() => {
-        setExpandedStepLogs(allLogs.current[expandedStep] || []);
+        setExpandedStepLogs(allLogs.current[expandedStep]);
     }, [expandedStep]);
 
 
     return {
         stepsInfo,
+        isFailed,
         progress,
         activeStep,
         expandedStep,

@@ -3,8 +3,14 @@ import { useStepDataContext } from "../context/StepDataContext";
 
 export default function useWebSocket() {
     const { setLogs } = useStepDataContext();
-    const [isConnected, setIsConnected] = useState(false);
+    const setLogsRef = useRef(setLogs);
     const ws = useRef(null);
+    const [isConnected, setIsConnected] = useState(false);
+
+    useEffect(() => {
+        setLogsRef.current = setLogs;
+    }, [setLogs]);
+    
 
     useEffect(() => {
         // Initialize WebSocket
@@ -21,9 +27,7 @@ export default function useWebSocket() {
         // On message
         ws.current.onmessage = (event) => {
             const data = JSON.parse(event.data);
-            setLogs(data);
-            // setMessages((prevMessages) => [...prevMessages, event.data]);
-            // console.log("Received message:", data);
+            setLogsRef.current(data); 
         };
 
         // On close
