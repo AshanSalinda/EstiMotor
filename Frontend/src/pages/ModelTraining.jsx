@@ -1,27 +1,23 @@
-import React from 'react'
+import React from 'react';
+import AdminLayout from '../sections/AdminLayout';
 import Stepper from '../components/Stepper/Stepper';
 import DataPanel from '../sections/DataPanel';
 import useWebSocket from '../hooks/useWebSocket';
 import StepDataProvider, { useStepDataContext } from '../context/StepDataContext';
 
 
-function ManualTraining() {
+function ModelTraining() {
     const { logs, handleNext } = useStepDataContext();
     useWebSocket();
 
 
     return (
-        <>
-            <button 
-                onClick={handleNext} 
-                className="px-4 py-2 ml-auto mr-10 bg-blue-500 rounded w-fit hover:bg-blue-700" >
-                Next
-            </button>
+        <AdminLayout title="Model Training" onClick={handleNext}>
             <div className='flex justify-between h-full mx-8 my-4 overflow-y-auto'>
                 <Stepper />
                 <DataPanel data={logs}/>
             </div>  
-        </>
+        </AdminLayout>
     )
 }
 
@@ -29,7 +25,7 @@ function ManualTraining() {
 export default function WrappedManualTraining() {
     return (
         <StepDataProvider>
-            <ManualTraining />
+            <ModelTraining />
         </StepDataProvider>
     );
 }

@@ -53,6 +53,54 @@ const muiTheme = createTheme({
                 bar: { transition: "none" }
             }
         },
+        MuiOutlinedInput: {
+            styleOverrides: {
+                root: {
+                    backgroundColor: colors.black,
+                    color: colors.gray[300],
+                    borderRadius: "5px",
+                    width: "20rem",
+                    height: "3rem",
+
+                    '& .MuiOutlinedInput-notchedOutline': {
+                        borderWidth: "1px",
+                        borderColor: "#FFFFFFA0",
+                    },
+
+                    '&:hover .MuiOutlinedInput-notchedOutline': {
+                        borderWidth: "2px",
+                        borderColor: "#FFFFFF90",
+                    },
+
+                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                        borderColor: "white",
+                    },
+                },
+                notchedOutline: {
+                    borderWidth: "2px",
+                },
+                input: {
+                    '&:-webkit-autofill': {
+                        // WebkitBoxShadow: '0 0 0 100px #121212 inset',
+                        WebkitTextFillColor: colors.gray[300],
+                        transition: 'background-color 5000s ease-in-out 0s',
+                    },
+                  },
+            },
+        },
+        MuiInputLabel: {
+            styleOverrides: {
+                root: { 
+                    color: colors.gray[400],
+                    transform: "translate(14px, 13px) scale(1)",
+
+                    '&.MuiFormLabel-filled, &.Mui-focused': { 
+                        color: colors.white,
+                        transform: "translate(14px, -9px) scale(0.75)"
+                    },
+                },
+            },
+        },
     },
 });
 
