@@ -19,7 +19,7 @@ function Login() {
             </form>
             <p className='mt-8 text-center cursor-pointer text-primary-500 hover:underline'>Forgot Password?</p>
 
-            <img className='mx-auto mt-14 w-36' src={logo} alt="logo" />
+            <img className='w-24 mx-auto mt-14' src={logo} alt="logo" />
         </div>
     </div>
   )

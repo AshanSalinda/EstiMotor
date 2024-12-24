@@ -4,7 +4,7 @@ import OutlinedInput from '@mui/material/TextField';
 function input(props) {
     return (
         <OutlinedInput
-            size='small'
+            size='large'
             {...props}
         />
     )

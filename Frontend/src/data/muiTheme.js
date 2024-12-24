@@ -60,6 +60,7 @@ const muiTheme = createTheme({
                     color: colors.gray[300],
                     borderRadius: "5px",
                     width: "20rem",
+                    height: "3rem",
 
                     '& .MuiOutlinedInput-notchedOutline': {
                         borderWidth: "1px",
@@ -91,7 +92,12 @@ const muiTheme = createTheme({
             styleOverrides: {
                 root: { 
                     color: colors.gray[400],
-                    '&.MuiFormLabel-filled, &.Mui-focused': { color: colors.white },
+                    transform: "translate(14px, 13px) scale(1)",
+
+                    '&.MuiFormLabel-filled, &.Mui-focused': { 
+                        color: colors.white,
+                        transform: "translate(14px, -9px) scale(0.75)"
+                    },
                 },
             },
         },
