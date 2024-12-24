@@ -1,7 +1,7 @@
 import React from 'react';
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import AdminLayout from './sections/AdminLayout.jsx';
-import ManualTraining from './pages/ManualTraining.jsx';
+import ModelTraining from './pages/ModelTraining.jsx';
 import Login from './pages/Login.jsx';
 
 export default function Router() {
@@ -9,11 +9,10 @@ export default function Router() {
         {
             path: "/",
             element: <AdminLayout/>,
-            children: [
-                { index: true, element: <ManualTraining/>, handle: { title: 'Manual Training' } },
-                { path: "about", element: <h1>About</h1>, handle: { title: 'About - EstiMotor' } },
-                { path: "contact", element: <h1>Contact</h1>, handle: { title: 'Contact - EstiMotor' } },         
-            ]
+        },
+        {
+            path: "/model-training",
+            element: <ModelTraining/>,
         },
         {
             path: "/login",
