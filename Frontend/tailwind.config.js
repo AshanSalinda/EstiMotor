@@ -6,6 +6,15 @@ export default {
             fontFamily: {
                 sans: ["Inter", "sans-serif"],
             },
+            keyframes: {
+                gradientMove: {
+                    '0%': { backgroundPosition: '0% 100%' },
+                    '100%': { backgroundPosition: '0% 0%' },
+                },
+            },
+            animation: {
+                gradientMove: 'gradientMove 3s ease',
+            },
             colors: {
                 dark: {
                     100: "#827E7E",     // Header Title
@@ -36,5 +45,13 @@ export default {
             },
         }
     },
-    plugins: [],
+    plugins: [
+        function ({ addUtilities }) {
+            addUtilities({
+              '.text-shadow': {
+                textShadow: '3px 3px 15px #000000, -3px 3px 15px #000000, 3px -3px 15px #000000, -3px -3px 15px #000000',
+              },
+            });
+        }
+    ],
 };
