@@ -3,7 +3,7 @@ import Input from '../../components/input/Input';
 
 function InputSection() {
   return (
-    <div className='flex flex-col items-center' id='input-section'>
+    <div className='flex min-h-[100vh] flex-col items-center' id='input-section'>
         <h1 className='px-8 text-2xl font-medium text-justify lg:mt-32'>Know Your Vehicle's Market Value Instantly</h1>
 
         <div className="grid grid-cols-1 gap-5 mt-16 md:gap-4 md:grid-cols-2">
