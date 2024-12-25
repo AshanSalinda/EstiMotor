@@ -1,6 +1,7 @@
 import React from 'react';
 import logo from '../../assets/logo.svg';
-import car from '../../assets/white_car.png';
+import background1 from '../../assets/white_car.png';
+import background from '../../assets/home_background.webp';
 
 function LandingSection() {
     const handleClick = () => {
@@ -8,21 +9,25 @@ function LandingSection() {
     }
 
     return (
-        // <div className='w-full min-h-[100vh] py-8 flex items-center justify-between relative bg-[url(src/assets/background.jpeg)] bg-cover bg-no-repeat bg-center'>
-        <div className='w-full min-h-[100vh] py-8 flex items-center'>
-            <div className='px-10 space-y-10 md:px-20 lg:px-32'>
-                <img src={logo} alt="EstiMotor" className='w-44 md:w-48 drop-shadow-[#000000] mx-auto md:mx-0' />
-                <h1 className='text-3xl md:text-[2.6rem] leading-tight font-semibold drop-shadow-2xl'>Accelerate with<br />Confident Pricing</h1>
-                <p className='text-lg max-w-[30rem] font-light text-[#E0E0E0]'>Our AI-driven platform brings transparency to the used vehicle market by providing accurate price predictions for your vehicle.</p>
+        <div className='w-full min-h-[100vh] flex flex-col relative'>
+
+            {/* Background */}
+            <div className='absolute bg-gradient-to-t from-black to-transparent from-[45%] bg-[0%_0%] animate-gradientMove z-[-1] w-full h-full' style={{backgroundSize: "100% 200%"}}></div>
+            <img src={background} alt="Background" className='absolute object-cover w-full h-full z-[-2] brightness-125'/>
+            {/* <img src={background1} alt="Background" className='absolute right-0 z-[-1]' /> */}
+
+            {/* Logo */}
+            <img src={logo} alt="EstiMotor" className='w-40 pt-20 mx-auto lg:mx-32 md:w-44 text-shadow' />
+
+            {/* Content */}
+            <div className='px-10 py-16 mt-3 md:mt-10 lg:mt-5 space-y-14 md:px-20 lg:px-32'>
+                <h1 className='text-3xl md:text-[3rem] md:leading-[3.5rem] font-semibold text-shadow'>Accelerate with<br />Confident Pricing</h1>
+                <p className='text-lg text-justify md:max-w-[30rem] font-light text-[#E0E0E0] text-shadow'>Our AI-driven platform brings transparency to the used vehicle market by providing accurate price predictions for your vehicle.</p>
                 <button
                     onClick={handleClick}
                     className="px-4 py-2 bg-blue-500 rounded w-fit hover:bg-blue-700" >
                     Try it now
                 </button>
-            </div>
-
-            <div className='absolute right-0 z-[-1]'>
-                <img src={car} alt="Car" />
             </div>
         </div>
     )
