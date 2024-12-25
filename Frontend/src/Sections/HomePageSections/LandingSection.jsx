@@ -2,6 +2,7 @@ import React from 'react';
 import logo from '../../assets/logo.svg';
 import background1 from '../../assets/white_car.png';
 import background from '../../assets/home_background.webp';
+import Button from '../../components/input/Button';
 
 function LandingSection() {
     const handleClick = () => {
@@ -21,13 +22,17 @@ function LandingSection() {
 
             {/* Content */}
             <div className='px-10 py-16 mt-3 md:mt-10 lg:mt-5 space-y-14 md:px-20 lg:px-32'>
-                <h1 className='text-3xl md:text-[3rem] md:leading-[3.5rem] font-semibold text-shadow'>Accelerate with<br />Confident Pricing</h1>
-                <p className='text-lg text-justify md:max-w-[30rem] font-light text-[#E0E0E0] text-shadow'>Our AI-driven platform brings transparency to the used vehicle market by providing accurate price predictions for your vehicle.</p>
-                <button
+                <h1 className='text-[2rem] leading-tight md:text-[3rem] md:leading-[3.5rem] font-semibold text-shadow'>Accelerate with<br />Confident Pricing</h1>
+                <p className='text-base md:text-lg text-justify md:max-w-[30rem] font-light text-[#E0E0E0] text-shadow'>Our AI-driven platform brings transparency to the used vehicle market by providing accurate price predictions for your vehicle.</p>
+                
+                <Button
                     onClick={handleClick}
-                    className="px-4 py-2 bg-blue-500 rounded w-fit hover:bg-blue-700" >
-                    Try it now
-                </button>
+                    label="Try It Now"
+                    size="large"
+                    outlined
+                    sx={{width: "8.5rem"}}
+                />
+
             </div>
         </div>
     )
