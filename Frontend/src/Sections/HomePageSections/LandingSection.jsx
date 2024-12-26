@@ -13,7 +13,7 @@ function LandingSection() {
         <div className='w-full min-h-[100vh] flex flex-col relative'>
 
             {/* Background */}
-            <div className='absolute bg-gradient-to-t from-black to-transparent from-[45%] bg-[0%_0%] animate-gradientMove z-[-1] w-full h-full' style={{backgroundSize: "100% 200%"}}></div>
+            <div className='absolute bg-gradient-to-t from-black to-transparent from-[50%] bg-[0%_0%] animate-gradientMove z-[-1] w-full h-full' style={{backgroundSize: "100% 200%"}}></div>
             <img src={background} alt="Background" className='absolute object-cover w-full h-full z-[-2] brightness-125'/>
             {/* <img src={background1} alt="Background" className='absolute right-0 z-[-1]' /> */}
 

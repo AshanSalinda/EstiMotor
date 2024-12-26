@@ -125,7 +125,7 @@ const muiTheme = createTheme({
                     backgroundColor: "#00000050",
                     color: colors.primary[450],
                     '&:hover': { 
-                        boxShadow: "0 0 10px #1E90FF, 0 0 75px 15px #000000",
+                        boxShadow: "0 0 14px #1E90FF, 0 0 75px 15px #000000",
                     },
                 },
                 sizeMedium: {

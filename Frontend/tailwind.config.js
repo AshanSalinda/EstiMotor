@@ -9,11 +9,23 @@ export default {
             keyframes: {
                 gradientMove: {
                     '0%': { backgroundPosition: '0% 100%' },
-                    '100%': { backgroundPosition: '0% 0%' },
+                    '100%': { backgroundPosition: '0% 0%' }
                 },
+                fadeIn: {
+                    '0%': { opacity: 0, transform: "scale(0.5)" },
+                    '50%': { opacity: 0.5, transform: "scale(1)" },
+                    '100%': { opacity: 1, transform: "scale(1)" }
+                },
+                glow: {
+                    '0%': { textShadow: '5px 0 20px #1E90FF80, -5px 0 20px #1E90FF80, 0 -5px 20px #1E90FF80, 0 5px 20px #1E90FF80' },
+                    '30%': { textShadow: '5px 0 35px #1E90FFC0, -5px 0 35px #1E90FFC0, 0 -5px 35px #1E90FFC0, 0 5px 35px #1E90FFC0' },
+                    '100%': { textShadow: '1px 0 20px #1E90FF20, -1px 0 20px #1E90FF20, 0 -1px 20px #1E90FF20, 0 1px 20px #1E90FF20' },
+                }
             },
             animation: {
                 gradientMove: 'gradientMove 3s ease',
+                fadeIn: 'fadeIn 0.8s ease',
+                glow: 'glow 2s ease',
             },
             colors: {
                 dark: {
@@ -49,9 +61,12 @@ export default {
     plugins: [
         function ({ addUtilities }) {
             addUtilities({
-              '.text-shadow': {
-                textShadow: '3px 3px 15px #000000, -3px 3px 15px #000000, 3px -3px 15px #000000, -3px -3px 15px #000000',
-              },
+                '.text-shadow': {
+                    textShadow: '3px 3px 15px #000000, -3px 3px 15px #000000, 3px -3px 15px #000000, -3px -3px 15px #000000',
+                },
+                '.text-shadow-white': {
+                    textShadow: '0 0 4px #FFFFFF, 0 0 4px #FFFFFF',
+                },
             });
         }
     ],
