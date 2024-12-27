@@ -17,15 +17,15 @@ export default {
                     '100%': { opacity: 1, transform: "scale(1)" }
                 },
                 glow: {
-                    '0%': { textShadow: '5px 0 20px #1E90FF80, -5px 0 20px #1E90FF80, 0 -5px 20px #1E90FF80, 0 5px 20px #1E90FF80' },
-                    '30%': { textShadow: '5px 0 35px #1E90FFC0, -5px 0 35px #1E90FFC0, 0 -5px 35px #1E90FFC0, 0 5px 35px #1E90FFC0' },
-                    '100%': { textShadow: '1px 0 20px #1E90FF20, -1px 0 20px #1E90FF20, 0 -1px 20px #1E90FF20, 0 1px 20px #1E90FF20' },
+                    '0%': { textShadow: '5px 0 var(--glow-spade-0) var(--glowBlue), -5px 0 var(--glow-spade) var(--glowBlue), 0 -5px var(--glow-spade) var(--glowBlue), 0 5px var(--glow-spade) var(--glowBlue)' },
+                    '30%': { textShadow: '3px 0 var(--glow-spade) var(--glowBlue-50), -3px 0 var(--glow-spade) var(--glowBlue-50), 0 -3px var(--glow-spade) var(--glowBlue-50), 0 3px var(--glow-spade) var(--glowBlue-50)' },
+                    '100%': { textShadow: '1px 0 20px var(--glowBlue), -1px 0 20px var(--glowBlue), 0 -1px 20px var(--glowBlue), 0 1px 20px var(--glowBlue)' },
                 }
             },
             animation: {
                 gradientMove: 'gradientMove 3s ease',
                 fadeIn: 'fadeIn 0.8s ease',
-                glow: 'glow 2s ease',
+                glow: 'glow 2s ease forwards',
             },
             colors: {
                 dark: {
@@ -54,7 +54,8 @@ export default {
                 },
                 custom:{
                     main: '#14B5FF'
-                }
+                },
+                glowBlue: "#1E90FFF0",
             },
         }
     },
@@ -66,6 +67,16 @@ export default {
                 },
                 '.text-shadow-white': {
                     textShadow: '0 0 4px #FFFFFF, 0 0 4px #FFFFFF',
+                },
+            });
+        },
+        function ({ addBase }) {
+            addBase({
+                ":root": { // values glow animation
+                    "--glowBlue": "##0057ac",
+                    "--glowBlue-50": "#0057ac",
+                    "--glow-spade-0": "20px",
+                    "--glow-spade": "30px",
                 },
             });
         }

@@ -13,7 +13,7 @@ function InputSection() {
 
         const finalValue = 455000;
         const steps = 25;
-        const endSpeed = 200;
+        const endSpeed = 250;
         const increment = finalValue / steps;
 
         let currentValue = 0;
