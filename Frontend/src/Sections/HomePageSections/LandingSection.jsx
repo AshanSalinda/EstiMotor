@@ -6,11 +6,11 @@ import Button from '../../components/input/Button';
 
 function LandingSection() {
     const handleClick = () => {
-        document.getElementById('input-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        document.getElementById('input-section').scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
 
     return (
-        <div className='w-full min-h-[100vh] flex flex-col relative'>
+        <div className='relative flex flex-col w-full min-h-screen'>
 
             {/* Background */}
             <div className='absolute bg-gradient-to-t from-black to-transparent from-[40%] bg-[0%_0%] animate-gradientMove z-[-1] w-full h-full' style={{backgroundSize: "100% 200%"}}></div>

@@ -3,8 +3,12 @@ export default {
     content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
     theme: {
         extend: {
+            screens: {
+                onlyMd: { min: "768px", max: "1023px" },
+            },
             fontFamily: {
                 sans: ["Inter", "sans-serif"],
+                monoSpace: ["Azeret Mono", "Inter", "sans-serif"]
             },
             keyframes: {
                 gradientMove: {
@@ -12,20 +16,24 @@ export default {
                     '100%': { backgroundPosition: '0% 0%' }
                 },
                 fadeIn: {
-                    '0%': { opacity: 0, transform: "scale(0.5)" },
-                    '50%': { opacity: 0.5, transform: "scale(1)" },
+                    '0%': { opacity: 0, transform: "scale(0.9)" },
+                    '40%': { opacity: 0.5, transform: "scale(1.05)" },
                     '100%': { opacity: 1, transform: "scale(1)" }
+                },
+                bounce: {
+                    '0%, 100%': { transform: 'translateY(0)' },
+                    '50%': { transform: 'translateY(-10px)' },
                 },
                 glow: {
                     '0%': { textShadow: '5px 0 var(--glow-spade-0) var(--glowBlue), -5px 0 var(--glow-spade) var(--glowBlue), 0 -5px var(--glow-spade) var(--glowBlue), 0 5px var(--glow-spade) var(--glowBlue)' },
-                    '30%': { textShadow: '3px 0 var(--glow-spade) var(--glowBlue-50), -3px 0 var(--glow-spade) var(--glowBlue-50), 0 -3px var(--glow-spade) var(--glowBlue-50), 0 3px var(--glow-spade) var(--glowBlue-50)' },
+                    '30%': { textShadow: '12px 12px var(--glow-spade) var(--glowBlue-50), -12px 12px var(--glow-spade) var(--glowBlue-50), 12px -12px var(--glow-spade) var(--glowBlue-50), -12px -12px var(--glow-spade) var(--glowBlue-50)' },
                     '100%': { textShadow: '1px 0 20px var(--glowBlue), -1px 0 20px var(--glowBlue), 0 -1px 20px var(--glowBlue), 0 1px 20px var(--glowBlue)' },
                 }
             },
             animation: {
-                gradientMove: 'gradientMove 3s ease',
-                fadeIn: 'fadeIn 0.8s ease',
-                glow: 'glow 2s ease forwards',
+                gradientMove: 'gradientMove 3.5s ease',
+                fadeIn: 'fadeIn 1s ease',
+                glow: 'glow 3.5s ease',
             },
             colors: {
                 dark: {
@@ -73,10 +81,10 @@ export default {
         function ({ addBase }) {
             addBase({
                 ":root": { // values glow animation
-                    "--glowBlue": "##0057ac",
-                    "--glowBlue-50": "#0057ac",
+                    "--glowBlue": "#005ebb20",
+                    "--glowBlue-50": "#005ebb",
                     "--glow-spade-0": "20px",
-                    "--glow-spade": "30px",
+                    "--glow-spade": "20px",
                 },
             });
         }
