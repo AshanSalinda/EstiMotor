@@ -1,12 +1,19 @@
 import React, { useState } from 'react';
 import Input from '../../components/input/Input';
 import Button from '../../components/input/Button';
+import Select from '../../components/input/Select'
 import useDisplayValueAnimation from '../../hooks/useDisplayValueAnimation';
 import { getPrediction } from '../../api/userApi';
 
 function InputSection() {
     const [ isLoading, setIsLoading ] = useState(false);
     const { displayValue, animateCount } = useDisplayValueAnimation();
+
+    const options = [
+        { value: 'chocolate', label: 'Chocolate' },
+        { value: 'strawberry', label: 'Strawberry' },
+        { value: 'vanilla', label: 'Vanilla' }
+    ]
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -34,21 +41,20 @@ function InputSection() {
     
     return (
         <div id='input-section' className='flex justify-center min-h-screen px-2 mb-40 md:px-10 md:-mt-52 lg:mt-28 onlyMd:min-h-fit'>
-            {/* <form onSubmit={handleSubmit} className='flex lg:min-w-[48vw] flex-col items-center justify-center space-y-16 text-center bg-gradient-to-tl from-[#0b1b2b] shadow-[0_0_20px_-5px_#444444] to-[#000720] border border-slate-900 rounded-2xl md:rounded-3xl md:px-16 lg:px-16'> */}
             <form onSubmit={handleSubmit} className='flex lg:min-w-[48vw] flex-col items-center justify-center space-y-16 text-center bg-gradient-to-tl from-[#0b0b0b] to-[#171717] border border-slate-900 rounded-2xl md:rounded-3xl md:px-16 lg:px-16'>
 
                 <h1 className='px-10 pt-20 text-3xl font-semibold text-gray-200 max-w-[32rem] md:text-3xl'>Know Your Vehicle's Market Value Instantly</h1>
 
-                <div className="grid grid-cols-1 gap-5 md:grid-cols-2 md:gap-4 lg:min-w-[34rem]">
+                <div className="grid w-[85vw] md:w-fit grid-cols-1 gap-6 md:grid-cols-2 md:gap-4 lg:min-w-[34rem]">
+                    <Select name="Make" label="Make" options={options} />
+                    <Select name="Model" label="Model" options={options} />
+                    <Select name="Year" label="Year" options={options} />
                     <Input type="text" label="Input 1" />
                     <Input type="text" label="Input 2" />
                     <Input type="text" label="Input 3" />
                     <Input type="text" label="Input 4" />
                     <Input type="text" label="Input 5" />
                     <Input type="text" label="Input 6" />
-                    <Input type="text" label="Input 7" />
-                    <Input type="text" label="Input 8" />
-                    <Input type="text" label="Input 9" />
                 </div>
 
                 <Button
