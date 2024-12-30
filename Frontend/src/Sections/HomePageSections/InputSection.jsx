@@ -33,11 +33,13 @@ function InputSection() {
     
     
     return (
-        <div id='input-section' className='flex justify-center min-h-screen mb-40 md:-mt-52 lg:mt-28 onlyMd:min-h-fit'>
-            <form onSubmit={handleSubmit} className='flex flex-col items-center justify-center -mb-10 space-y-16'>
-                <h1 className='px-8 text-2xl font-medium text-justify md:text-3xl'>Know Your Vehicle's Market Value Instantly</h1>
+        <div id='input-section' className='flex justify-center min-h-screen px-2 mb-40 md:px-10 md:-mt-52 lg:mt-28 onlyMd:min-h-fit'>
+            {/* <form onSubmit={handleSubmit} className='flex lg:min-w-[48vw] flex-col items-center justify-center space-y-16 text-center bg-gradient-to-tl from-[#0b1b2b] shadow-[0_0_20px_-5px_#444444] to-[#000720] border border-slate-900 rounded-2xl md:rounded-3xl md:px-16 lg:px-16'> */}
+            <form onSubmit={handleSubmit} className='flex lg:min-w-[48vw] flex-col items-center justify-center space-y-16 text-center bg-gradient-to-tl from-[#0b0b0b] to-[#171717] border border-slate-900 rounded-2xl md:rounded-3xl md:px-16 lg:px-16'>
 
-                <div className="grid grid-cols-1 gap-5 md:grid-cols-2 md:gap-4">
+                <h1 className='px-10 pt-20 text-3xl font-semibold text-gray-200 max-w-[32rem] md:text-3xl'>Know Your Vehicle's Market Value Instantly</h1>
+
+                <div className="grid grid-cols-1 gap-5 md:grid-cols-2 md:gap-4 lg:min-w-[34rem]">
                     <Input type="text" label="Input 1" />
                     <Input type="text" label="Input 2" />
                     <Input type="text" label="Input 3" />
@@ -66,7 +68,7 @@ function InputSection() {
                         </div>
                     }
                     
-                    <p id='display-value' className="pb-10 text-3xl font-medium tracking-tight opacity-0 text-slate-100 md:text-4xl tabular-nums font-monoSpace">
+                    <p id='display-value' className="pb-16 text-3xl font-medium tracking-tight opacity-0 text-slate-100 md:text-4xl tabular-nums font-monoSpace">
                         {`LKR ${displayValue}`}
                     </p>
                 </div>

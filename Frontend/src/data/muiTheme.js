@@ -43,7 +43,6 @@ const inputStyles = {
                 backgroundColor: colors.black,
                 color: colors.gray[300],
                 borderRadius: "5px",
-                width: "20rem",
                 height: "3rem",
 
                 '& .MuiOutlinedInput-notchedOutline': {

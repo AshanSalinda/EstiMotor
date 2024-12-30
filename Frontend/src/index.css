@@ -9,3 +9,10 @@ html {
 body {
   @apply text-white bg-black;
 }
+
+.my-class {
+    background: radial-gradient(circle at top left, #003366, transparent), 
+    radial-gradient(circle at bottom right, #000022, transparent), 
+    linear-gradient(to bottom, #0a0a0a, #121212);
+
+}
