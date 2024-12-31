@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Input from '../../components/input/Input';
+import Input from '../../components/input';
 import Button from '../../components/input/Button';
 import Select from '../../components/input/Select'
 import useDisplayValueAnimation from '../../hooks/useDisplayValueAnimation';
@@ -46,15 +46,13 @@ function InputSection() {
                 <h1 className='px-10 pt-20 text-3xl font-semibold text-gray-200 max-w-[32rem] md:text-3xl'>Know Your Vehicle's Market Value Instantly</h1>
 
                 <div className="grid w-[85vw] md:w-fit grid-cols-1 gap-6 md:grid-cols-2 md:gap-4 lg:min-w-[34rem]">
-                    <Select name="Make" label="Make" options={options} />
+                    <Select name="Make" label="Manufacturer" options={options} />
                     <Select name="Model" label="Model" options={options} />
-                    <Select name="Year" label="Year" options={options} />
-                    <Input type="text" label="Input 1" />
-                    <Input type="text" label="Input 2" />
-                    <Input type="text" label="Input 3" />
-                    <Input type="text" label="Input 4" />
-                    <Input type="text" label="Input 5" />
-                    <Input type="text" label="Input 6" />
+                    <Select name="Year" label="Make Year" options={options} />
+                    <Select name="Transmission" label="Transmission" options={options} />
+                    <Select name="Fuel type" label="Fuel type" options={options} />
+                    <Input type="text" label="Engine capacity" prefix="CC" autoComplete='off' />
+                    <Input type="number" label="Mileage" prefix="Km " autoComplete='off' />
                 </div>
 
                 <Button

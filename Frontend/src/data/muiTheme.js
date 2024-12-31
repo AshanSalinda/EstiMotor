@@ -20,7 +20,7 @@ const stepperStyles = {
     },
     MuiStepConnector: {
         styleOverrides: {
-            root: { marginLeft: "15px"},
+            root: { marginLeft: "15px" },
             line: { borderColor: colors.dark[200] },
         },
     },
@@ -72,12 +72,15 @@ const inputStyles = {
                     WebkitTextFillColor: colors.gray[300],
                     transition: 'background-color 5000s ease-in-out 0s',
                 },
-              },
+            },
+            InputAdornment: {
+                color: "red"
+            }
         },
     },
     MuiInputLabel: {
         styleOverrides: {
-            root: { 
+            root: {
                 color: colors.gray[400],
                 userSelect: "none",
                 transform: "translate(14px, 17px) scale(1)",
@@ -86,7 +89,7 @@ const inputStyles = {
                     transform: "translate(14px, 12px) scale(1)"
                 },
 
-                '&.MuiFormLabel-filled, &.Mui-focused': { 
+                '&.MuiFormLabel-filled, &.Mui-focused': {
                     color: colors.white,
                     transform: "translate(14px, -8px) scale(0.75)"
                 },
@@ -109,6 +112,7 @@ const muiTheme = createTheme({
     components: {
         ...stepperStyles,
         ...inputStyles,
+
         MuiLinearProgress: {
             styleOverrides: {
                 root: { borderRadius: "3px" },
@@ -137,7 +141,7 @@ const muiTheme = createTheme({
                     border: "1px solid " + colors.primary[500],
                     backgroundColor: "#00000050",
                     color: colors.primary[450],
-                    '&:hover': { 
+                    '&:hover': {
                         boxShadow: "0 0 14px #1E90FF, 0 0 75px 15px #000000",
                     },
                 },

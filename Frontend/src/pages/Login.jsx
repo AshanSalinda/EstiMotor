@@ -3,7 +3,7 @@ import logo from '../assets/logo.png';
 import background from '../assets/background.jpeg';
 import background1 from '../assets/background1.webp';
 import background2 from '../assets/background2.jpg';
-import Input from '../components/input/Input';
+import Input from '../components/input';
 import Button from '../components/input/Button';
 
 function Login() {
