@@ -43,8 +43,11 @@ const inputStyles = {
                 backgroundColor: colors.black,
                 color: colors.gray[300],
                 borderRadius: "5px",
-                width: "20rem",
-                height: "3rem",
+                width: "100%",
+
+                '@media (min-width: 768px)': {
+                    height: '3rem'
+                },
 
                 '& .MuiOutlinedInput-notchedOutline': {
                     borderWidth: "1px",
@@ -76,11 +79,16 @@ const inputStyles = {
         styleOverrides: {
             root: { 
                 color: colors.gray[400],
-                transform: "translate(14px, 13px) scale(1)",
+                userSelect: "none",
+                transform: "translate(14px, 17px) scale(1)",
+
+                '@media (min-width: 768px)': {
+                    transform: "translate(14px, 12px) scale(1)"
+                },
 
                 '&.MuiFormLabel-filled, &.Mui-focused': { 
                     color: colors.white,
-                    transform: "translate(14px, -9px) scale(0.75)"
+                    transform: "translate(14px, -8px) scale(0.75)"
                 },
             },
         },
@@ -105,6 +113,11 @@ const muiTheme = createTheme({
             styleOverrides: {
                 root: { borderRadius: "3px" },
                 bar: { transition: "none" }
+            }
+        },
+        MuiFormControl: {
+            styleOverrides: {
+                root: { width: "100%" }
             }
         },
         MuiButton: {
