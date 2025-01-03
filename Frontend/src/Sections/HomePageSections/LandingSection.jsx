@@ -10,11 +10,11 @@ function LandingSection() {
     }
 
     return (
-        <div className='relative flex flex-col w-full min-h-screen'>
+        <div className='relative flex flex-col w-full min-h-screen onlyMd:min-h-fit'>
 
             {/* Background */}
-            <div className='absolute bg-gradient-to-t from-black to-transparent from-[40%] bg-[0%_0%] animate-gradientMove z-[-1] w-full h-full' style={{backgroundSize: "100% 200%"}}></div>
-            <img src={background} alt="Background" className='absolute object-cover w-full h-full z-[-2] brightness-75'/>
+            <div className='absolute bg-gradient-to-t from-black to-transparent from-[40%] bg-[0%_0%] animate-gradientMove z-[-1] w-full min-h-full h-screen' style={{backgroundSize: "100% 200%"}}></div>
+            <img src={background} alt="Background" className='absolute object-cover w-full min-h-full h-screen z-[-2] brightness-90 md:brightness-125'/>
             {/* <img src={background1} alt="Background" className='absolute right-0 z-[-1]' /> */}
 
             {/* Logo */}
