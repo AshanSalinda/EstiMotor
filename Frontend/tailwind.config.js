@@ -4,7 +4,8 @@ export default {
     theme: {
         extend: {
             screens: {
-                onlyMd: { min: "768px", max: "1023px" },
+                onlyMd: { min: "600px", max: "1023px" },
+                md: { min: "600px"},
             },
             fontFamily: {
                 sans: ["Inter", "sans-serif"],
