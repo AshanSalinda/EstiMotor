@@ -1,23 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Input from '../../components/input';
 import Button from '../../components/input/Button';
-import Select from '../../components/input/Select'
+import Select from '../../components/input/Select';
+import selectItems from '../../data/selectItems.json'
 import useDisplayValueAnimation from '../../hooks/useDisplayValueAnimation';
-import { getPrediction } from '../../api/userApi';
+import { getPrediction, getMakeList, getModelList } from '../../api/userApi';
 
 function InputSection() {
-    const [ isLoading, setIsLoading ] = useState(false);
+    const [ isValueLoading, setIsValueLoading ] = useState(false);
+    const [ isMakeLoading, setIsMakeLoading ] = useState(false);
+    const [ isModelLoading, setIsModelLoading ] = useState(false);
+    const [ makeList, setMakeList ] = useState([]);
+    const [ modelList, setModelList ] = useState([]);
     const { displayValue, animateCount } = useDisplayValueAnimation();
 
-    const options = [
-        { value: 'chocolate', label: 'Chocolate' },
-        { value: 'strawberry', label: 'Strawberry' },
-        { value: 'vanilla', label: 'Vanilla' }
-    ]
+    const yearOptions = selectItems.year.map((year) => ({value: year, label: year}));
+    const transmissionOptions = selectItems.transmission.map((transmission) => ({value: transmission, label: transmission}));
+    const fuelOptions = selectItems.fuel.map((fuel) => ({value: fuel, label: fuel}));
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setIsLoading(true);
+        setIsValueLoading(true);
     
         const element = document.getElementById('display-value');
         element.classList.add('opacity-0');
@@ -27,7 +30,7 @@ function InputSection() {
         }
 
         const vehicleValue = await getPrediction();
-        setIsLoading(false);
+        setIsValueLoading(false);
 
         element.classList.remove('opacity-0', 'animate-glow');
         element.classList.add('animate-fadeIn');
@@ -37,20 +40,44 @@ function InputSection() {
         element.classList.add('animate-glow');
         element.classList.remove('animate-fadeIn');
     };
+
+
+    const handleMakeChange = (option) => {
+        if (option) {
+            setIsModelLoading(true);
+            setModelList([]);
+
+            getModelList(option.value)
+                .then((modelList) => setModelList(modelList))
+                .finally(() => setIsModelLoading(false));
+        } else {
+            setModelList([]);
+        }
+    };
+
+
+    useEffect(() => {
+        setIsMakeLoading(true);
+
+        getMakeList()
+            .then((makeList) => setMakeList(makeList))
+            .finally(() => setIsMakeLoading(false));
+    }, []);
     
     
     return (
         <div id='input-section' className='flex justify-center min-h-screen px-2 mb-40 md:px-10 md:mt-40 lg:mt-28 onlyMd:min-h-fit'>
-            <form onSubmit={handleSubmit} className='flex lg:min-w-[48vw] flex-col items-center justify-center space-y-16 text-center bg-gradient-to-tl from-[#0b0b0b] to-[#171717] border border-slate-900 rounded-2xl md:rounded-3xl md:px-16 lg:px-16'>
+            {/* <form onSubmit={handleSubmit} className='flex lg:min-w-[48vw] flex-col items-center justify-center space-y-16 text-center bg-gradient-to-tl from-[#0b0b0b] to-[#171717] border border-slate-900 rounded-2xl md:rounded-3xl md:px-16 lg:px-16'> */}
+            <form onSubmit={handleSubmit} className='flex lg:min-w-[48vw] flex-col items-center justify-center space-y-16 text-center bg-gradient-to-t from-[#000000] to-[#0d0d0d] rounded-2xl md:rounded-3xl md:px-16 lg:px-16'>
 
                 <h1 className='px-10 pt-20 text-3xl font-semibold text-gray-200 max-w-[32rem] md:text-3xl'>Know Your Vehicle's Market Value Instantly</h1>
 
-                <div className="grid w-[85vw] md:w-fit grid-cols-1 gap-6 md:grid-cols-2 md:gap-4 lg:min-w-[34rem]">
-                    <Select name="Make" label="Manufacturer" options={options} />
-                    <Select name="Model" label="Model" options={options} />
-                    <Select name="Year" label="Make Year" options={options} />
-                    <Select name="Transmission" label="Transmission" options={options} />
-                    <Select name="Fuel type" label="Fuel type" options={options} />
+                <div className="grid w-[85vw] md:w-fit grid-cols-1 gap-6 md:grid-cols-2 md:gap-4 lg:w-[36rem]">
+                    <Select name="make" label="Manufacturer" options={makeList} isLoading={isMakeLoading} onChange={handleMakeChange} />
+                    <Select name="model" label="Model" options={modelList} isLoading={isModelLoading} />
+                    <Select name="year" label="Make Year" options={yearOptions} />
+                    <Select name="transmission" label="Transmission" options={transmissionOptions} />
+                    <Select name="fuel" label="Fuel type" options={fuelOptions} />
                     <Input type="text" label="Engine capacity" prefix="CC" autoComplete='off' />
                     <Input type="number" label="Mileage" prefix="Km " autoComplete='off' />
                 </div>
@@ -64,7 +91,7 @@ function InputSection() {
 
 
                 <div className='relative'>
-                    { isLoading &&                    
+                    { isValueLoading &&                    
                         <div className="absolute flex items-center justify-center w-full h-10 space-x-2">
                             <div className="w-3 h-3 bg-gray-500 rounded-full animate-[bounce_1.5s_ease-in-out_infinite]"></div>
                             <div className="w-3 h-3 bg-gray-500 rounded-full animate-[bounce_1.5s_ease-in-out_200ms_infinite]"></div>

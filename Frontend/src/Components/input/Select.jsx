@@ -51,13 +51,30 @@ const styles = {
     }),
 };
 
-function SelectInput({label, name, options = []}) {
-    const [isLabelShrink, setLabelShrink] = useState(false);
+function SelectInput({label, name, isLoading, options = [], onChange}) {
+    const [isLabelShrink, setIsLabelShrink] = useState(false);
     const [selected, setSelected] = useState(null);
 
     const handleLabelShrink = (e) => {
-        setLabelShrink(e.type === 'focus');
+        setIsLabelShrink(e.type === 'focus');
     }
+
+
+    const handleChange = (option) => {
+        setSelected(option);
+
+        if (typeof(onChange) === 'function') {
+            onChange(option);
+        }
+    }
+
+    useEffect(() => {
+        if (options.length === 1){
+            setSelected(options[0]);
+        } else if(options.length === 0){
+            setSelected(null);
+        }
+    }, [options]);
     
 
     return (
@@ -73,9 +90,11 @@ function SelectInput({label, name, options = []}) {
                 placeholder={false}
                 isClearable
                 blurInputOnSelect
+                isLoading={isLoading}
+                value={selected}
                 onFocus={e => handleLabelShrink(e)}
                 onBlur={e => handleLabelShrink(e)}
-                onChange={option => setSelected(option)}
+                onChange={option => handleChange(option)}
             />
 
             <input type="hidden" name={name} value={selected?.value || ''} />
