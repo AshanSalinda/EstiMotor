@@ -51,16 +51,16 @@ const inputStyles = {
 
                 '& .MuiOutlinedInput-notchedOutline': {
                     borderWidth: "1px",
-                    borderColor: "#FFFFFFA0",
+                    borderColor: colors.neutral[500],
                 },
 
                 '&:hover .MuiOutlinedInput-notchedOutline': {
                     borderWidth: "2px",
-                    borderColor: "#FFFFFF90",
+                    borderColor: colors.neutral[500],
                 },
 
                 '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                    borderColor: "white",
+                    borderColor: colors.neutral[300],
                 },
             },
             notchedOutline: {
@@ -68,7 +68,6 @@ const inputStyles = {
             },
             input: {
                 '&:-webkit-autofill': {
-                    // WebkitBoxShadow: '0 0 0 100px #121212 inset',
                     WebkitTextFillColor: colors.gray[300],
                     transition: 'background-color 5000s ease-in-out 0s',
                 },
@@ -76,6 +75,13 @@ const inputStyles = {
             InputAdornment: {
                 color: "red"
             }
+        },
+    },
+    MuiFormHelperText: {
+        styleOverrides: {
+            root: {
+                color: colors.gray[300],
+            },
         },
     },
     MuiInputLabel: {

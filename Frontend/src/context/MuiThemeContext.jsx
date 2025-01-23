@@ -1,5 +1,5 @@
 import { ThemeProvider } from '@mui/material/styles';
-import muiTheme from "../data/muiTheme";
+import muiTheme from "../theme/muiTheme";
 
 const MuiThemeProvider = ({ children }) => {
     return (
