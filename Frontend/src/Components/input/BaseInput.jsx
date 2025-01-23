@@ -1,10 +1,11 @@
 import React from 'react';
 import OutlinedInput from '@mui/material/TextField';
 
-function input({ unit, ...rest }) {
+function input({ unit, helperText, ...rest }) {
     return (
         <OutlinedInput
             size='large'
+            helperText={helperText || " "}
             {...rest}
             // slotProps={{
             //     input: {

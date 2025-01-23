@@ -72,7 +72,7 @@ function InputSection() {
 
                 <h1 className='px-10 pt-20 text-3xl font-semibold text-gray-200 max-w-[32rem] md:text-3xl'>Know Your Vehicle's Market Value Instantly</h1>
 
-                <div className="grid w-[85vw] md:w-fit grid-cols-1 gap-6 md:grid-cols-2 md:gap-4 lg:w-[36rem]">
+                <div className="grid w-[85vw] md:w-fit grid-cols-1 gap-3 md:grid-cols-2 md:gap-x-4 md:gap-y-2 lg:w-[36rem]">
                     <Select name="make" label="Manufacturer" options={makeList} isLoading={isMakeLoading} onChange={handleMakeChange} />
                     <Select name="model" label="Model" options={modelList} isLoading={isModelLoading} />
                     <Select name="year" label="Make Year" options={yearOptions} />
