@@ -4,18 +4,14 @@ import tailwindConfig from "../../tailwind.config.js";
 const colors = resolveConfig(tailwindConfig).theme.colors;
 
 const styles = {
-    control: (styles, { isFocused, hasValue }) => ({
+    control: (styles) => ({
         ...styles,
         backgroundColor: colors.black,
         height: '3.5rem',
         boxShadow: "none",
-        borderRadius: '5px',
-        border: '2px solid transparent',	
+        border: 'none',	
         '@media (min-width: 768px)': {
             height: '3rem',
-        },
-        ':hover': {
-            borderColor: hasValue || isFocused ? 'transparent' : '#737373',
         },
     }),
     singleValue: (styles) => ({

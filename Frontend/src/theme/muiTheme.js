@@ -73,8 +73,14 @@ const inputStyles = {
                 },
             },
             InputAdornment: {
-                color: "red"
-            }
+                color: "red",
+                endAdornment: {
+                    color: colors.gray[300],
+                },
+            },
+            EndAdornment: {
+                color: colors.gray[300],
+            },
         },
     },
     MuiFormHelperText: {
@@ -102,6 +108,22 @@ const inputStyles = {
             },
         },
     },
+    MuiInputAdornment: {
+        styleOverrides: {
+          root: {
+            color: colors.neutral[300],
+            fontWeight: '500',
+          },
+        },
+    },
+    MuiTypography: {
+        styleOverrides: {
+            root: {
+                color: 'inherit',
+                fontWeight: 'inherit',
+            },
+        },
+    },
 };
 
 
@@ -109,6 +131,7 @@ const muiTheme = createTheme({
     palette: {
         primary: { main: colors.primary[500] },
         secondary: { main: colors.primary[900] },
+        error: { main: colors.red[600] },
         text: { primary: "#FFFFFF", secondary: 'yellow', disabled: 'orange' },
         grey: { 400: "#ff0000" },
     },

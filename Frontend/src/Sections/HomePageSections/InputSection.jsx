@@ -4,6 +4,7 @@ import Button from '../../components/input/Button';
 import Select from '../../components/input/Select';
 import selectItems from '../../data/selectItems.json'
 import useDisplayValueAnimation from '../../hooks/useDisplayValueAnimation';
+import useVehicleInputValidation from '../../hooks/validations/useVehicleInputValidation';
 import { getPrediction, getMakeList, getModelList } from '../../api/userApi';
 
 function InputSection() {
@@ -14,14 +15,17 @@ function InputSection() {
     const [ modelList, setModelList ] = useState([]);
     const { displayValue, animateCount } = useDisplayValueAnimation();
 
+    const { getAttributes, handleSubmit } = useVehicleInputValidation();
+
     const yearOptions = selectItems.year.map((year) => ({value: year, label: year}));
     const transmissionOptions = selectItems.transmission.map((transmission) => ({value: transmission, label: transmission}));
-    const fuelOptions = selectItems.fuel.map((fuel) => ({value: fuel, label: fuel}));
+    const fuelTypeOptions = selectItems.fuelType.map((fuelType) => ({value: fuelType, label: fuelType}));
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+    const onSubmit = async (formData) => {
         setIsValueLoading(true);
-    
+
+        console.log(formData);
+
         const element = document.getElementById('display-value');
         element.classList.add('opacity-0');
         
@@ -42,12 +46,12 @@ function InputSection() {
     };
 
 
-    const handleMakeChange = (option) => {
-        if (option) {
+    const handleMakeChange = (e) => {
+        if (e?.target?.value) {
             setIsModelLoading(true);
             setModelList([]);
 
-            getModelList(option.value)
+            getModelList(e?.target?.value)
                 .then((modelList) => setModelList(modelList))
                 .finally(() => setIsModelLoading(false));
         } else {
@@ -67,19 +71,18 @@ function InputSection() {
     
     return (
         <div id='input-section' className='flex justify-center min-h-screen px-2 mb-40 md:px-10 md:mt-40 lg:mt-28 onlyMd:min-h-fit'>
-            {/* <form onSubmit={handleSubmit} className='flex lg:min-w-[48vw] flex-col items-center justify-center space-y-16 text-center bg-gradient-to-tl from-[#0b0b0b] to-[#171717] border border-slate-900 rounded-2xl md:rounded-3xl md:px-16 lg:px-16'> */}
-            <form onSubmit={handleSubmit} className='flex lg:min-w-[48vw] flex-col items-center justify-center space-y-16 text-center bg-gradient-to-t from-[#000000] to-[#0d0d0d] rounded-2xl md:rounded-3xl md:px-16 lg:px-16'>
+            <form onSubmit={handleSubmit(onSubmit)} className='flex lg:min-w-[48vw] flex-col items-center justify-center space-y-16 text-center bg-gradient-to-t from-[#000000] to-[#0d0d0d] rounded-2xl md:rounded-3xl md:px-16 lg:px-16'>
 
                 <h1 className='px-10 pt-20 text-3xl font-semibold text-gray-200 max-w-[32rem] md:text-3xl'>Know Your Vehicle's Market Value Instantly</h1>
 
                 <div className="grid w-[85vw] md:w-fit grid-cols-1 gap-3 md:grid-cols-2 md:gap-x-4 md:gap-y-2 lg:w-[36rem]">
-                    <Select name="make" label="Manufacturer" options={makeList} isLoading={isMakeLoading} onChange={handleMakeChange} />
-                    <Select name="model" label="Model" options={modelList} isLoading={isModelLoading} />
-                    <Select name="year" label="Make Year" options={yearOptions} />
-                    <Select name="transmission" label="Transmission" options={transmissionOptions} />
-                    <Select name="fuel" label="Fuel type" options={fuelOptions} />
-                    <Input type="text" label="Engine capacity" prefix="CC" autoComplete='off' />
-                    <Input type="number" label="Mileage" prefix="Km " autoComplete='off' />
+                    <Select {...getAttributes("Manufacturer", "make", handleMakeChange)} id="make" options={makeList} isLoading={isMakeLoading} />
+                    <Select {...getAttributes("Model")} id="model" options={modelList} isLoading={isModelLoading} />
+                    <Select {...getAttributes("Make Year", "year")} id="year" options={yearOptions} />
+                    <Select {...getAttributes("Transmission")} id="transmission" options={transmissionOptions} />
+                    <Select {...getAttributes("Fuel Type")} id="fuelType" options={fuelTypeOptions} />
+                    <Input {...getAttributes("Engine Capacity")} unit="CC" type="text" autoComplete='off'  />
+                    <Input {...getAttributes("Mileage")} unit="KM" type="number" autoComplete='off' />
                 </div>
 
                 <Button
