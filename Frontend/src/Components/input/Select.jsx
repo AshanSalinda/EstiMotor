@@ -40,7 +40,6 @@ const SelectInput = forwardRef((props, ref) => {
         if (typeof (onChange) === 'function') {
             onChange({
                 target: { value: option?.value, name: name },
-                type: "change",
             });
         }
     }
