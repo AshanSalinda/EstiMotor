@@ -64,7 +64,7 @@
         "Manual"
     ],
 
-    "fuel": [
+    "fuelType": [
         "Petrol",
         "Diesel",
         "Electric",

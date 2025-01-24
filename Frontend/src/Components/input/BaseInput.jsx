@@ -1,19 +1,15 @@
-import React from 'react';
+import { forwardRef } from 'react';
 import OutlinedInput from '@mui/material/TextField';
 
-function input({ unit, helperText, ...rest }) {
+const Input = forwardRef(({ unit, helperText, ...rest }, ref) => {
     return (
         <OutlinedInput
             size='large'
+            inputRef={ref}
             helperText={helperText || " "}
             {...rest}
-            // slotProps={{
-            //     input: {
-            //         endAdornment: <InputAdornment position="end">Km</InputAdornment>
-            //     },
-            // }}
         />
-    )
-}
+    );
+});
 
-export default input
+export default Input

@@ -109,6 +109,7 @@ const muiTheme = createTheme({
     palette: {
         primary: { main: colors.primary[500] },
         secondary: { main: colors.primary[900] },
+        error: { main: colors.red[600] },
         text: { primary: "#FFFFFF", secondary: 'yellow', disabled: 'orange' },
         grey: { 400: "#ff0000" },
     },
