@@ -81,7 +81,7 @@ const SelectInput = forwardRef((props, ref) => {
     return (
         <FormControl className='relative'>
             <InputLabel
-                filled={isFocused || !!selected?.value} error={error} >
+                filled={isFocused || !!selected?.value} >
                 {label}
             </InputLabel>
 

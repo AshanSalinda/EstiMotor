@@ -97,6 +97,10 @@ const inputStyles = {
                 userSelect: "none",
                 transform: "translate(14px, 17px) scale(1)",
 
+                '&.Mui-error': {
+                    color: colors.gray[400],
+                },
+
                 '@media (min-width: 768px)': {
                     transform: "translate(14px, 12px) scale(1)"
                 },
