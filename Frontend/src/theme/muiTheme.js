@@ -72,21 +72,16 @@ const inputStyles = {
                     transition: 'background-color 5000s ease-in-out 0s',
                 },
             },
-            InputAdornment: {
-                color: "red",
-                endAdornment: {
-                    color: colors.gray[300],
-                },
-            },
-            EndAdornment: {
-                color: colors.gray[300],
-            },
         },
     },
     MuiFormHelperText: {
         styleOverrides: {
             root: {
-                color: colors.gray[300],
+                marginLeft: '5px',
+
+                '&.Mui-error': {
+                    color: colors.red[600],
+                },
             },
         },
     },
@@ -96,6 +91,10 @@ const inputStyles = {
                 color: colors.gray[400],
                 userSelect: "none",
                 transform: "translate(14px, 17px) scale(1)",
+
+                '&.Mui-error': {
+                    color: colors.gray[400],
+                },
 
                 '@media (min-width: 768px)': {
                     transform: "translate(14px, 12px) scale(1)"

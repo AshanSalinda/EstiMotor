@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import OutlinedInput from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 
-const Input = forwardRef(({ unit, helperText, ...rest }, ref) => {
+const Input = forwardRef(({ ending, helperText, ...rest }, ref) => {
     return (
         <OutlinedInput
             size='large'
@@ -12,7 +12,7 @@ const Input = forwardRef(({ unit, helperText, ...rest }, ref) => {
             {...rest}
             slotProps={{
                 input: {
-                    endAdornment: unit && <InputAdornment position="end">{ unit }</InputAdornment>
+                    endAdornment: ending && <InputAdornment position="end">{ ending }</InputAdornment>
                 },
             }}
         />
@@ -20,7 +20,7 @@ const Input = forwardRef(({ unit, helperText, ...rest }, ref) => {
 });
 
 Input.propTypes = {
-    unit: PropTypes.string,
+    ending: PropTypes.node || PropTypes.string,
     helperText: PropTypes.string,
 };
 

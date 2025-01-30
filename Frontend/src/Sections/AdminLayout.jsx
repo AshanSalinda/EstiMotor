@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 import Header from "./Header";
 import SideNavbar from "./SideNavbar";
 
@@ -16,4 +17,8 @@ export default function AdminLayout(props) {
             </div>
         </div>
     );
+}
+
+AdminLayout.propTypes = {
+    children: PropTypes.node,
 }
