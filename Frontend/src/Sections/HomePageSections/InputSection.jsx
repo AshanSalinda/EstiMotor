@@ -81,8 +81,8 @@ function InputSection() {
                     <Select {...getAttributes("Make Year", "year")} id="year" options={yearOptions} />
                     <Select {...getAttributes("Transmission")} id="transmission" options={transmissionOptions} />
                     <Select {...getAttributes("Fuel Type")} id="fuelType" options={fuelTypeOptions} />
-                    <Input {...getAttributes("Engine Capacity")} unit="CC" type="text" autoComplete='off'  />
-                    <Input {...getAttributes("Mileage")} unit="KM" type="number" autoComplete='off' />
+                    <Input {...getAttributes("Engine Capacity")} ending="CC" type="number" autoComplete='off'  />
+                    <Input {...getAttributes("Mileage")} ending="KM" type="number" autoComplete='off' />
                 </div>
 
                 <Button

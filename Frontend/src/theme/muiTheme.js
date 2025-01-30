@@ -72,21 +72,16 @@ const inputStyles = {
                     transition: 'background-color 5000s ease-in-out 0s',
                 },
             },
-            InputAdornment: {
-                color: "red",
-                endAdornment: {
-                    color: colors.gray[300],
-                },
-            },
-            EndAdornment: {
-                color: colors.gray[300],
-            },
         },
     },
     MuiFormHelperText: {
         styleOverrides: {
             root: {
-                color: colors.gray[300],
+                marginLeft: '5px',
+
+                '&.Mui-error': {
+                    color: colors.red[600],
+                },
             },
         },
     },
