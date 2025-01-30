@@ -2,7 +2,7 @@ import { useForm } from "react-hook-form";
 
 
 const useLoginValidation = () => {
-    const { register, handleSubmit, reset, formState: { errors } } = useForm();
+    const { register, handleSubmit, formState: { errors } } = useForm();
 
     const attributes = {
         email: {
@@ -38,7 +38,7 @@ const useLoginValidation = () => {
         }
     }
 
-    return { attributes, handleSubmit, reset };
+    return { attributes, handleSubmit };
 };
 
 export default useLoginValidation;

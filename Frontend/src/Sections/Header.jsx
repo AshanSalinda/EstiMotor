@@ -3,14 +3,13 @@ import { MdCloudSync } from "react-icons/md";
 import { FaUsersGear } from "react-icons/fa6";
 import { Link, useLocation } from "react-router-dom";
 import PropTypes from "prop-types";
-import logo from "../assets/logo.svg";
 
 export default function Header({ title, buttonLabel, onClick }) {
     const { pathname } = useLocation();
 
     return (
         <div className="relative flex items-center justify-center h-[8vh] px-2 bg-dark-300">
-            <img src={logo} alt="EstiMotor" className="absolute w-20 h-auto left-2"/>
+            <img src="/logo.svg" alt="EstiMotor" className="absolute w-20 h-auto left-2"/>
 
             <div className="absolute flex items-center space-x-4 text-2xl text-neutral-400 left-36">
                 <Link to="/model-training">
