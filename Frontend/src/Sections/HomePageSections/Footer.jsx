@@ -1,5 +1,4 @@
 import React from 'react';
-import logo from '../../assets/logo.svg';
 
 
 function Footer() {
@@ -11,7 +10,7 @@ function Footer() {
 
                     {/* Logo and Description */}
                     <div className="flex flex-col items-center md:items-start">
-                        <img src={logo} alt="EstiMotor Logo" className="w-40 mb-6" />
+                        <img src="/logo.svg" alt="EstiMotor Logo" className="w-40 mb-6" />
                         <p className="max-w-sm text-sm text-center text-gray-300 md:text-left">
                             EstiMotor leverages AI-driven analytics to bring transparency and accuracy to the used vehicle market. Get reliable price insights instantly.
                         </p>

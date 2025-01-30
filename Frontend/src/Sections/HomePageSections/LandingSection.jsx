@@ -1,7 +1,4 @@
 import React from 'react';
-import logo from '../../assets/logo.svg';
-import background1 from '../../assets/white_car.png';
-import background from '../../assets/home_background.webp';
 import Button from '../../components/input/Button';
 
 function LandingSection() {
@@ -14,11 +11,10 @@ function LandingSection() {
 
             {/* Background */}
             <div className='absolute bg-gradient-to-t from-black to-transparent from-[40%] bg-[0%_0%] animate-gradientMove z-[-1] w-full min-h-full h-screen' style={{backgroundSize: "100% 200%"}}></div>
-            <img src={background} alt="Background" className='absolute object-cover w-full min-h-full h-screen z-[-2] brightness-90 md:brightness-125'/>
-            {/* <img src={background1} alt="Background" className='absolute right-0 z-[-1]' /> */}
+            <img src="/home-background.webp" alt="Background" className='absolute object-cover w-full min-h-full h-screen z-[-2] brightness-90 md:brightness-125'/>
 
             {/* Logo */}
-            <img src={logo} alt="EstiMotor" className='w-40 pt-20 mx-auto lg:mx-32 md:w-44 text-shadow' />
+            <img src="/logo.svg" alt="EstiMotor" className='w-40 pt-20 mx-auto lg:mx-32 md:w-44 text-shadow' />
 
             {/* Content */}
             <div className='px-10 py-16 mt-3 md:mt-10 lg:mt-5 space-y-14 md:px-20 lg:px-32'>
