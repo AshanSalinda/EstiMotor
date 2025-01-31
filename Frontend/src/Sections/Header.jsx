@@ -8,8 +8,12 @@ export default function Header({ title, buttonLabel, onClick }) {
     const { pathname } = useLocation();
 
     return (
-        <div className="relative flex items-center justify-center h-[8vh] px-2 bg-dark-300">
-            <img src="/logo.svg" alt="EstiMotor" className="absolute w-20 h-auto left-2"/>
+        <div className="relative flex items-center justify-center h-[8vh] px-2 bg-dark-350">
+
+            <Link to="/" className="absolute left-2">
+                <img src="/logo.svg" alt="EstiMotor" className="w-20 h-auto"/>
+            </Link>
+
 
             <div className="absolute flex items-center space-x-4 text-2xl text-neutral-400 left-36">
                 <Link to="/model-training">

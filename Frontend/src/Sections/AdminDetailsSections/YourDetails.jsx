@@ -4,7 +4,7 @@ import Button from '../../components/input/Button';
 
 export default function YourDetails() {
   return (
-    <div className="flex flex-col items-center flex-grow h-full p-4 space-y-16 lg:overflow-y-auto">
+    <div className="flex flex-col items-center flex-1 h-full p-4 space-y-16 lg:overflow-y-auto">
         <h2 className="text-2xl font-semibold">Your Details</h2>
 
         <form className="flex flex-col items-center space-y-1 w-[90vw] md:w-80">

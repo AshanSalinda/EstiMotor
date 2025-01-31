@@ -13,7 +13,7 @@ function ModelTraining() {
 
     return (
         <AdminLayout title="Model Training" onClick={handleNext}>
-            <div className='flex justify-between h-full mx-8 my-4 min-w-[1000px] overflow-y-auto'>
+            <div className='flex justify-between h-full px-8 py-4 min-w-[960px] overflow-y-auto'>
                 <Stepper />
                 <DataPanel data={logs}/>
             </div>  

@@ -10,7 +10,7 @@ function LandingSection() {
         <div className='relative flex flex-col w-full min-h-screen onlyMd:min-h-fit'>
 
             {/* Background */}
-            <div className='absolute bg-gradient-to-t from-black to-transparent from-[40%] bg-[0%_0%] animate-gradientMove z-[-1] w-full min-h-full h-screen' style={{backgroundSize: "100% 200%"}}></div>
+            <div className='absolute bg-gradient-to-t from-black to-transparent from-[40%] bg-[0%_100%] animate-gradientMove z-[-1] w-full min-h-full h-screen' style={{backgroundSize: "100% 200%"}}></div>
             <img src="/home-background.webp" alt="Background" className='absolute object-cover w-full min-h-full h-screen z-[-2] md:brightness-125'/>
 
             {/* Logo */}

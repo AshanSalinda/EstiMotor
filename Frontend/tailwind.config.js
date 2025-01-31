@@ -32,7 +32,7 @@ export default {
                 }
             },
             animation: {
-                gradientMove: 'gradientMove 3.5s ease',
+                gradientMove: 'gradientMove 3.5s ease 500ms forwards',
                 fadeIn: 'fadeIn 1s ease',
                 glow: 'glow 3.5s ease',
             },
@@ -41,6 +41,7 @@ export default {
                     100: "#827E7E",     // Header Title
                     200: "#666666",     // Stepper
                     300: "#2A2A2A",     // Header
+                    350: "#282828",
                     400: "#202020",
                     500: "#1B1B1B",     // SideNavbar, DataPanel Header
                     600: "#171717",     
