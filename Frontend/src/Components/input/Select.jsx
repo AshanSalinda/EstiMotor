@@ -81,12 +81,14 @@ const SelectInput = forwardRef((props, ref) => {
     return (
         <FormControl className='relative'>
             <InputLabel
-                filled={isFocused || !!selected?.value} >
+                filled={isFocused || !!selected?.value}
+                htmlFor={`${id}-select-input`} >
                 {label}
             </InputLabel>
 
             <Select
                 id={id}
+                inputId={`${id}-select-input`}
                 ref={ref}
                 name={name}
                 options={options}

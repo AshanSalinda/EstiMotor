@@ -19,7 +19,7 @@ function Footer() {
                     {/* Quick Links */}
                     <div className="flex justify-center">
                         <div className="flex flex-col space-y-4">
-                            <h3 className="text-lg font-semibold text-gray-100">Quick Links</h3>
+                            <p className="text-lg font-semibold text-gray-100">Quick Links</p>
                             <ul className="space-y-2">
                                 <li>
                                     <a href="/privacy-policy" className="text-sm text-gray-300 transition-colors hover:text-white">
@@ -44,7 +44,7 @@ function Footer() {
                     {/* Contact */}
                     <div className="flex justify-center">
                         <div className="flex flex-col items-center space-y-4">
-                            <h3 className="text-lg font-semibold text-gray-100">Contact</h3>
+                            <p className="text-lg font-semibold text-gray-100">Contact</p>
                             <p className="text-sm text-gray-300">Have questions? Reach out to us:</p>
                             <a href="mailto:contact@estimotor.com" className="text-sm text-blue-400 transition-colors hover:text-blue-300">
                                 contact@estimotor.com

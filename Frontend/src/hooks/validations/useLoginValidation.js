@@ -8,6 +8,9 @@ const useLoginValidation = () => {
         email: {
             name: "email",
             label: "Email",
+            autoComplete: "email",
+            type: "text",
+            inputMode: "email",
             helperText: errors?.['email']?.message,
             error: !!errors?.email,
             ...register('email', { 
@@ -22,6 +25,7 @@ const useLoginValidation = () => {
         password: {
             name: "password",
             label: "Password",
+            autoComplete: "current-password",
             helperText: errors?.['password']?.message,
             error: !!errors?.password,
             ...register('password', { 
