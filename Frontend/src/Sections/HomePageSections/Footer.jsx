@@ -3,7 +3,7 @@ import React from 'react';
 
 function Footer() {
     return (
-        <footer className="py-16 text-white bg-gray-900 bg-opacity-45">
+        <footer className="py-16 mt-40 text-white bg-gray-900 bg-opacity-45">
             <div className="container px-6 mx-auto md:px-12 lg:px-20">
                 {/* Grid Layout */}
                 <div className="grid grid-cols-1 gap-12 md:grid-cols-3">
@@ -19,7 +19,7 @@ function Footer() {
                     {/* Quick Links */}
                     <div className="flex justify-center">
                         <div className="flex flex-col space-y-4">
-                            <h3 className="text-lg font-semibold text-gray-100">Quick Links</h3>
+                            <p className="text-lg font-semibold text-gray-100">Quick Links</p>
                             <ul className="space-y-2">
                                 <li>
                                     <a href="/privacy-policy" className="text-sm text-gray-300 transition-colors hover:text-white">
@@ -44,7 +44,7 @@ function Footer() {
                     {/* Contact */}
                     <div className="flex justify-center">
                         <div className="flex flex-col items-center space-y-4">
-                            <h3 className="text-lg font-semibold text-gray-100">Contact</h3>
+                            <p className="text-lg font-semibold text-gray-100">Contact</p>
                             <p className="text-sm text-gray-300">Have questions? Reach out to us:</p>
                             <a href="mailto:contact@estimotor.com" className="text-sm text-blue-400 transition-colors hover:text-blue-300">
                                 contact@estimotor.com

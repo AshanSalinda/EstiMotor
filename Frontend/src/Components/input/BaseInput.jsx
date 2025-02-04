@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import OutlinedInput from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 
-const Input = forwardRef(({ ending, helperText, ...rest }, ref) => {
+const Input = forwardRef(({ ending, helperText, inputMode, ...rest }, ref) => {
     return (
         <OutlinedInput
             size='large'
@@ -14,6 +14,9 @@ const Input = forwardRef(({ ending, helperText, ...rest }, ref) => {
                 input: {
                     endAdornment: ending && <InputAdornment position="end">{ ending }</InputAdornment>
                 },
+                htmlInput: { 
+                    inputMode: inputMode || 'text'
+                }
             }}
         />
     );
@@ -22,6 +25,7 @@ const Input = forwardRef(({ ending, helperText, ...rest }, ref) => {
 Input.propTypes = {
     ending: PropTypes.node || PropTypes.string,
     helperText: PropTypes.string,
+    inputMode: PropTypes.string
 };
 
 export default Input

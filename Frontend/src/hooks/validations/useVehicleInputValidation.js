@@ -11,6 +11,7 @@ const useVehicleInputValidation = () => {
     *    - `label`: The label text for the input field.
     *    - `name` : The name of the input field (optional). If not provided, it's derived from the label.
     * @returns {object} The attributes to spread on the input component, including:
+    *    - `id`: Field id (camelCase version of label).
     *    - `name`: Field name (camelCase version of label).
     *    - `onBlur`: Validation trigger for blur event.
     *    - `onChange`: Handles input changes.
@@ -45,6 +46,7 @@ const useVehicleInputValidation = () => {
             helperText: errors?.[name]?.message,
             error: !!errors?.[name],
             label,
+            id: name,
         };
     };
 

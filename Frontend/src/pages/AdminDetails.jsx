@@ -19,7 +19,7 @@ export default function AdminDetails() {
     ]
 
     return (
-        <AdminLayout title="Admin Details" buttonLabel="New Admin" onClick={() => console.log("New Admin")}>
+        <AdminLayout title="Admin Details" >
             <div className="flex flex-col h-full py-5 mx-8 lg:flex-row">
                 <YourDetails />
 

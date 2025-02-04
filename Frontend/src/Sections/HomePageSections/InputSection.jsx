@@ -27,7 +27,7 @@ function InputSection() {
         console.log(formData);
 
         const element = document.getElementById('display-value');
-        element.classList.add('opacity-0');
+        element.classList.add('opacity-0', 'pointer-events-none');
         
         if(element.getBoundingClientRect().bottom >= window.innerHeight){
             element.scrollIntoView({ behavior: 'smooth', block: 'end' });
@@ -36,7 +36,7 @@ function InputSection() {
         const vehicleValue = await getPrediction();
         setIsValueLoading(false);
 
-        element.classList.remove('opacity-0', 'animate-glow');
+        element.classList.remove('opacity-0', 'pointer-events-none', 'animate-glow');
         element.classList.add('animate-fadeIn');
         
         await animateCount(vehicleValue);
@@ -70,17 +70,17 @@ function InputSection() {
     
     
     return (
-        <div id='input-section' className='flex justify-center min-h-screen px-2 mb-40 md:px-10 md:mt-40 lg:mt-28 onlyMd:min-h-fit'>
+        <div id='input-section' className='flex justify-center min-h-screen px-2 md:px-10 md:mt-40 lg:mt-28 onlyMd:min-h-fit'>
             <form onSubmit={handleSubmit(onSubmit)} className='flex lg:min-w-[48vw] flex-col items-center justify-center space-y-16 text-center bg-gradient-to-t from-[#000000] to-[#0d0d0d] rounded-2xl md:rounded-3xl md:px-16 lg:px-16'>
 
                 <h1 className='px-10 pt-20 text-3xl font-semibold text-gray-200 max-w-[32rem] md:text-3xl'>Know Your Vehicle's Market Value Instantly</h1>
 
                 <div className="grid w-[85vw] md:w-fit grid-cols-1 gap-3 md:grid-cols-2 md:gap-x-4 md:gap-y-2 lg:w-[36rem]">
-                    <Select {...getAttributes("Manufacturer", "make", handleMakeChange)} id="make" options={makeList} isLoading={isMakeLoading} />
-                    <Select {...getAttributes("Model")} id="model" options={modelList} isLoading={isModelLoading} />
-                    <Select {...getAttributes("Make Year", "year")} id="year" options={yearOptions} />
-                    <Select {...getAttributes("Transmission")} id="transmission" options={transmissionOptions} />
-                    <Select {...getAttributes("Fuel Type")} id="fuelType" options={fuelTypeOptions} />
+                    <Select {...getAttributes("Manufacturer", "make", handleMakeChange)} options={makeList} isLoading={isMakeLoading} />
+                    <Select {...getAttributes("Model")} options={modelList} isLoading={isModelLoading} />
+                    <Select {...getAttributes("Make Year", "year")} options={yearOptions} />
+                    <Select {...getAttributes("Transmission")} options={transmissionOptions} />
+                    <Select {...getAttributes("Fuel Type")} options={fuelTypeOptions} />
                     <Input {...getAttributes("Engine Capacity")} ending="CC" type="number" autoComplete='off'  />
                     <Input {...getAttributes("Mileage")} ending="KM" type="number" autoComplete='off' />
                 </div>
@@ -102,7 +102,7 @@ function InputSection() {
                         </div>
                     }
                     
-                    <p id='display-value' className="pb-16 text-3xl font-medium tracking-tight opacity-0 text-slate-100 md:text-4xl tabular-nums font-monoSpace">
+                    <p id='display-value' className="pb-16 text-3xl font-medium tracking-tight opacity-0 pointer-events-none text-slate-100 md:text-4xl tabular-nums font-monoSpace">
                         {`LKR ${displayValue}`}
                     </p>
                 </div>

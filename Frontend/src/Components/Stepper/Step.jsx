@@ -27,7 +27,7 @@ export default function Step({ title, content, isActive, isExpanded }) {
 const ProgressBar = ({ progress }) => {
     return (
         <div className=''>
-            <LinearProgress className='mt-2' variant="determinate" value={progress} />
+            <LinearProgress className='mt-2' variant="determinate" value={progress} aria-label="Step Progress Bar" />
             <span className='block w-full text-sm font-medium text-right text-gray-400'>{progress + '%'}</span>
         </div>
     );

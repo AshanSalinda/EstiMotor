@@ -25,7 +25,7 @@ const NumberInput = forwardRef(({onBlur, onChange, ...props}, ref) => {
     const handlePaste = (e) => {
         e.preventDefault();
 
-        const pastedValue = e.clipboardData.getData('text');
+        const pastedValue = (e.clipboardData.getData('text')).replace(/,/g, '');
     
         if (!isNaN(pastedValue) || pastedValue.trim() !== '') {
             const cursorStart = e.target.selectionStart;
@@ -40,15 +40,15 @@ const NumberInput = forwardRef(({onBlur, onChange, ...props}, ref) => {
     };
 
     const handleKeyDown = (e) => {
-        const key = e.key;
+        const key = e.nativeEvent.data || e.nativeEvent.inputType;
 
         if (key === '.') {
             setValue(prev => !prev.includes('.') ? (prev || 0) + key : prev);
             return;
         }
 
-        if (key === 'Backspace') {
-            const cursorPosition = e.target.selectionStart;
+        if (key === "deleteContentBackward") {
+            const cursorPosition = e.target.selectionStart + 1;
 
             if (cursorPosition === 0) return;
 
@@ -92,11 +92,13 @@ const NumberInput = forwardRef(({onBlur, onChange, ...props}, ref) => {
             {...props} 
             ref={ref} 
             value={value} 
-            onKeyDown={handleKeyDown} 
-            onCopy={handleCopy} 
+            onInput={handleKeyDown} 
+            onCopy={handleCopy}
+            onCut={(e) => { handleCopy(e); setValue(''); }}
             onPaste={handlePaste} 
             onBlur={handleBlur} 
-            type="text" 
+            inputMode="decimal"
+            type="text"
         />
     )
 });

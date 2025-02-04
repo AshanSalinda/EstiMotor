@@ -1,19 +1,15 @@
 import React from "react";
 import PropTypes from "prop-types";
 import Header from "./Header";
-import SideNavbar from "./SideNavbar";
 
 export default function AdminLayout(props) {
     const { children, ...headerProps } = props;
 
     return (
-        <div>
+        <div className="flex flex-col h-screen bg-dark-700">
             <Header {...headerProps} />
-            <div className="flex h-[92vh]">
-                <SideNavbar />
-                <div className="flex flex-col flex-grow h-full overflow-y-auto bg-dark-700">
-                    { children }
-                </div>
+            <div className="flex-1 overflow-y-auto">
+                { children }
             </div>
         </div>
     );

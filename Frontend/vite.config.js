@@ -15,9 +15,9 @@ export default defineConfig({
                 name: "EstiMotor",
                 short_name: "EstiMotor",
                 description: "Used Vehicle Price Prediction System",
-                theme_color: "#000000",
-                background_color: "#ffffff",
-                display: "standalone",
+                theme_color: "#1E90FF",
+                background_color: "#000000",
+                display: "fullscreen",
                 start_url: "/",
                 icons: [
                     {
@@ -43,14 +43,20 @@ export default defineConfig({
             includeAssets: [    // cache images
                 "/em192.png",
                 "/logo.svg",
-                "/home-background.webp"
+                "/home-background.webp",
             ],
         }),
     ],
     server: {
         port: 3000,
+        allowedHosts: [
+            'uncommon-mallard-absolutely.ngrok-free.app',
+        ]
     },
     preview: {
-        port: 3000
-    }
+        port: 3000,
+        allowedHosts: [
+            'uncommon-mallard-absolutely.ngrok-free.app',
+        ]
+    },
 });
