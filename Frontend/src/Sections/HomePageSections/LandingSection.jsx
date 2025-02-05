@@ -11,7 +11,7 @@ function LandingSection() {
 
             {/* Background */}
             <div className='absolute bg-gradient-to-t from-black to-transparent from-[40%] bg-[0%_100%] animate-gradientMove z-[-1] w-full min-h-full h-screen' style={{backgroundSize: "100% 200%"}}></div>
-            <img src="/home-background.webp" alt="Background" className='absolute object-cover w-full min-h-full h-screen z-[-2] md:brightness-125'/>
+            <img src="/home-background.webp" alt="Background" className='absolute object-cover w-full min-h-full h-screen z-[-2] brightness-110 contrast-100 md:brightness-125'/>
 
             {/* Logo */}
             <img src="/logo.svg" alt="EstiMotor" className='w-40 pt-20 mx-auto lg:mx-32 md:w-44 text-shadow' />

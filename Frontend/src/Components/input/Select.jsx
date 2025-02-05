@@ -34,7 +34,7 @@ const SelectInput = forwardRef((props, ref) => {
     }
 
 
-    const handleChange = (option) => {
+    const handleChange = (option, e, b) => {
         setSelected(option);
 
         if (typeof (onChange) === 'function') {
@@ -96,12 +96,14 @@ const SelectInput = forwardRef((props, ref) => {
                 placeholder={false}
                 isClearable
                 blurInputOnSelect
+                menuPortalTarget={document.body}
+                menuShouldScrollIntoView={false}
                 isLoading={isLoading}
                 value={selected}
                 aria-invalid={error}
                 onFocus={e => setIsFocused(true)}
                 onBlur={e => handleBlur(e)}
-                onChange={(option) => handleChange(option)}
+                onChange={(option, e, b) => handleChange(option, e, b)}
             />
 
             <FormHelperText error={error} >{helperText || " "}</FormHelperText>
