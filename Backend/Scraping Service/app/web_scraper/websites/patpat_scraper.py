@@ -22,7 +22,7 @@ class PatpatScraper(WebScraper):
         try:
             disabled_next_button = response.css(self.next_button).get()
             return disabled_next_button != None
-  
+        
         except Exception as e:
             err(f"Failed to check if it is_last_page for {response.url} \n {e}")
 
@@ -34,23 +34,23 @@ class PatpatScraper(WebScraper):
 
         if price:
             if price == ': Negotiable':
-                raise Exception("Price is negotiable") 
+                raise RuntimeError("Price is negotiable") 
             else:
                 vehicle_details['price'] = price.strip()
         else:
-            raise Exception("Price not found")
+            raise RuntimeError("Price not found")
 
 
         if title:
             vehicle_details['title'] = title.strip()
         else:
-            raise Exception("Title not found")
+            raise RuntimeError("Title not found")
 
 
         for row in table:
             key = self.get_key(row.css('td:nth-child(1)::text').get())
             value = row.css('td:nth-child(2)::text').get()
-            if key and value and type(value) == str:
+            if key and value and isinstance(value, str):
                 vehicle_details[key] = value.strip()
 
         return vehicle_details

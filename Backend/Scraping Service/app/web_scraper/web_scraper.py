@@ -1,7 +1,6 @@
 import scrapy
 from ..utils.logger import info, warn, err
 from datetime import datetime, timezone
-from urllib.parse import urlparse, parse_qs, urlencode
 from .storage import Storage
 
 # custom signal for indicate that reached to the end of pagination
@@ -15,7 +14,6 @@ class WebScraper(scrapy.Spider):
         self.start_urls = [args[0]]
         self.page_no = args[1]
         self.ad_selector = args[2]
-        self.storage = Storage()
         self.ad_links = set()
 
 
@@ -34,7 +32,7 @@ class WebScraper(scrapy.Spider):
             # Extract All Ad's links
             new_links = response.css(f"{self.ad_selector}::attr(href)").getall()
             self.ad_links.update(new_links)
-
+                        
             # Handle pagination
             last_page = self.is_last_page(response)
             if not last_page:
@@ -74,11 +72,11 @@ class WebScraper(scrapy.Spider):
             url = response.url
             index = response.meta.get('index')
             vehicle_details = self.get_vehicle_info(response, {'url': url, 'index': index})
-            self.storage.add(vehicle_details)
-            print(f"{index}\t{url}")
+            Storage.add_vehicle(vehicle_details)
+            # print(f"{index}\t{url}")
         
         except Exception as e:
-            # err(f"{index}\t{url}\n{e}")
+            # err(f"{index}\t{url}\t{e}")
             pass
 
     
@@ -105,7 +103,7 @@ class WebScraper(scrapy.Spider):
             'Mileage (km)': 'Mileage',
         } 
 
-        key = key.strip() if key and type(key) == str else None
+        key = key.strip() if key and isinstance(key, str) else None
         return keys.get(key)
 
 

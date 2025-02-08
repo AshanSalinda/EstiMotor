@@ -9,6 +9,7 @@ class RiyasewanaScraper(WebScraper):
     def __init__(self):
         selectors = riyasewana['selectors']
         self.next_button = selectors['next_button']
+        self.current_button = selectors['current_button']
         self.title = selectors['title']
         self.table = selectors['table']
         ad_selector = selectors['ads_link']
@@ -19,8 +20,10 @@ class RiyasewanaScraper(WebScraper):
 
     def is_last_page(self, response):
         try:
+            requested_page = response.url.split('page=')[-1] if 'page=' in response.url else '1'
             last_button_text = response.css(f"{self.next_button}::text").get()
-            return last_button_text != "Next"
+            current_button_text = response.css(f"{self.current_button}::text").get()
+            return requested_page != current_button_text or last_button_text != "Next"
   
         except Exception as e:
             err(f"Failed to check if it is_last_page for {response.url} \n {e}")
@@ -45,17 +48,17 @@ class RiyasewanaScraper(WebScraper):
 
         if price:
             if price == 'Negotiable':
-                raise Exception("Price is negotiable") 
+                raise RuntimeError("Price is negotiable") 
             else:
                 vehicle_details['price'] = price.strip()
         else:
-            raise Exception("Price not found")
+            raise RuntimeError("Price not found")
 
 
         if title:
             vehicle_details['title'] = title.strip()
         else:
-            raise Exception("Title not found")
+            raise RuntimeError("Title not found")
 
 
         for row in range(0, 4):
@@ -63,7 +66,7 @@ class RiyasewanaScraper(WebScraper):
                 key = self.get_key(table[row].css(f"td:nth-child({col}) p::text").get())
                 value = table[row].css(f"td:nth-child({col+1})::text").get()
                 
-                if key and value and type(value) == str:
+                if key and value and isinstance(value, str):
                     vehicle_details[key] = value.strip()
 
         return vehicle_details

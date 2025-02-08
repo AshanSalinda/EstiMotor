@@ -1,41 +1,26 @@
 from scrapy import signals
 from datetime import datetime, timezone
-from app.api.websocket import enqueue_for_sending
+from twisted.internet import reactor
+from app.utils.message_queue import MessageQueue
 from .web_scraper import pagination_ended_signal
+from .storage import Storage
 
 
 class RequestStats:
-    start_time = None
-    running_spiders_count = 0
-    total_links = 0
-    response_count = 0
-    request_count = 0
-    success_responses = 0
-    error_responses = []
-    failed_requests = []
+    _start_time = None
+    _running_spiders_count = 0
+    _total_links = 0
+    _request_count = 0
+    _response_count = 0
+    _success_count = 0
+    _failed_requests = []
+    _task_running = False 
+    
 
     def __init__(self):
-        if not RequestStats.start_time:
-            RequestStats.start_time = datetime.now(timezone.utc)
-        RequestStats.running_spiders_count += 1
-        print(RequestStats.start_time)
-        print(RequestStats.running_spiders_count)
-        print(RequestStats.total_links)
-        print(RequestStats.response_count)
-        print(RequestStats.request_count)
-        print(RequestStats.success_responses)
-        print(RequestStats.error_responses)
-        print(RequestStats.failed_requests)
-        # if RequestStats.start_time:
-        #     RequestStats.start_time = datetime.now(timezone.utc)
-        #     RequestStats.total_links = 0
-        #     RequestStats.response_count = 0
-        
-        # self.request_count = 0
-        # self.success_responses = 0
-        # self.error_responses = []
-        # self.failed_requests = []
-        pass
+        RequestStats._running_spiders_count += 1
+        if not RequestStats._start_time:
+            RequestStats._start_time = datetime.now(timezone.utc)
 
 
     @classmethod
@@ -44,72 +29,92 @@ class RequestStats:
         middleware = cls()
         crawler.signals.connect(middleware.spider_closed, signal=signals.spider_closed)
         crawler.signals.connect(middleware.on_pagination_end, signal=pagination_ended_signal)
+        if not RequestStats._task_running:
+            RequestStats._task_running = True
+            reactor.callLater(1, middleware.scheduled_task, crawler)
         return middleware
+    
+    def scheduled_task(self, crawler):
+        """This function runs every 2 seconds."""
+        if RequestStats._task_running:            
+            stats = self.calculate_stats()
+            
+            MessageQueue.enqueue({'stats': {
+                'Status': 'Running',
+                **stats,
+                'Failure count': len(RequestStats._failed_requests),
+            }})
+
+            reactor.callLater(1, self.scheduled_task, crawler)
+            
+            
+    def calculate_stats(self):
+        """Calculate the total time taken and success rate."""
+        if not RequestStats._start_time:
+            return None  # Avoid errors if start time is None
+
+        current_time = datetime.now(timezone.utc)
+        time_taken = str(current_time - RequestStats._start_time).split('.')[0]
+
+        success_rate = str(int((RequestStats._success_count * 100) / RequestStats._request_count)) + '%'
+
+        return {
+            'Time Taken': time_taken,
+            'Success Rate': success_rate,
+            'Request Count': RequestStats._request_count,
+            'Success Count': RequestStats._success_count
+        }
         
         
     def on_pagination_end(self, spider, data):
         ads_count = data.get('ads_count', 0)
-        RequestStats.total_links += ads_count
+        RequestStats._total_links += ads_count
     
     
-    def spider_closed(self, spider):
-        """Print stats when spider is closed"""
-        RequestStats.running_spiders_count -= 1
-        
-        finish_time = datetime.now(timezone.utc)
-        [time, ms] = str(finish_time - RequestStats.start_time).split('.')
-        time_taken = f"{time}.{int(ms) // 1000}"
-        
-        success_rate = int((RequestStats.success_responses * 100) / RequestStats.request_count)
-                
-        if RequestStats.running_spiders_count == 0:
-            spider.storage.add_stat("stats", {
-                'Time Taken': time_taken,
-                'Success Rate': success_rate,
-                'Request Count': RequestStats.request_count,
-                'Success Responses': RequestStats.success_responses,
-                'Error Responses': RequestStats.error_responses,
-                'Failed Requests': RequestStats.failed_requests,
+    def spider_closed(self, spider, reason):
+        print(f"Spider {spider.name} closed. Reason: {reason}")
+
+        RequestStats._running_spiders_count -= 1
+                        
+        if RequestStats._running_spiders_count == 0:
+            RequestStats._task_running = False
+            
+            stats = self.calculate_stats()
+
+            Storage.add_stat({
+                **stats,
+                'Failed Requests': RequestStats._failed_requests,
             })
-            print('All spiders closed')
             
-            RequestStats.start_time = None
-            RequestStats.running_spiders_count = 0
-            RequestStats.total_links = 0
-            RequestStats.response_count = 0
-            RequestStats.request_count = 0
-            RequestStats.success_responses = 0
-            RequestStats.error_responses = []
-            RequestStats.failed_requests = []
-
-
-        # spider.storage.add_stat('Total Time Taken', time_taken)
-
-        # spider.storage.add_stat(spider.name, {
-        #     'Request Count': self.request_count,
-        #     'Success Responses': self.success_responses,
-        #     'Error Responses': self.error_responses,
-        #     'Failed Requests': self.failed_requests,
-        #     'Time Taken': time_taken
-        # })
+            MessageQueue.enqueue({'stats': {
+                'Status': 'Completed',
+                **stats,
+                'Failure count': len(RequestStats._failed_requests),
+            }})
             
-
+            MessageQueue.enqueue({'control': 'completed'})
+            
+            RequestStats._start_time = None
+            RequestStats._running_spiders_count = 0
+            RequestStats._total_links = 0
+            RequestStats._request_count = 0
+            RequestStats._response_count = 0
+            RequestStats._success_count = 0
+            RequestStats._failed_requests = []
+            
 
     def process_request(self, request, spider):
         """This is called for every request sent"""
-        RequestStats.request_count += 1
-        # enqueue_for_sending({'sent request': request.url})
+        RequestStats._request_count += 1
         return None
 
 
     def process_response(self, request, response, spider):
         """This is called when responded"""
         if 200 <= response.status < 300:
-            RequestStats.success_responses += 1
-            # enqueue_for_sending({'success response': response.url})
+            RequestStats._success_count += 1
         else:
-            # enqueue_for_sending({'error response': response.url})
-            RequestStats.error_responses.append({
+            RequestStats._failed_requests.append({
                 'index': request.meta.get('index'),
                 'url': response.url,
                 'error': response.status
@@ -117,12 +122,12 @@ class RequestStats:
             
         is_ad = request.meta.get('index')
         if is_ad:
-            RequestStats.response_count += 1
+            RequestStats._response_count += 1
             try:
-                percentage = round((RequestStats.response_count * 100) / RequestStats.total_links, 2)
-                enqueue_for_sending({'progress': percentage})
-                enqueue_for_sending({'log': response.url})
-            except Exception as e:
+                percentage = round((RequestStats._response_count * 100) / RequestStats._total_links, 2)
+                MessageQueue.enqueue({'progress': percentage})
+                MessageQueue.enqueue({'log': response.url})
+            except Exception:
                 pass
 
         return response
@@ -130,12 +135,12 @@ class RequestStats:
 
     def process_exception(self, request, exception, spider):
         """This is called when an exception is raised during request processing"""
-        RequestStats.failed_requests.append({
+        RequestStats._failed_requests.append({
             'index': request.meta.get('index'),
             'url': request.url,
             'error': type(exception).__name__
         })
         
-        RequestStats.response_count += 1
-        enqueue_for_sending({'log': request.url})
+        RequestStats._response_count += 1
+        MessageQueue.enqueue({'log': request.url})
         return None
