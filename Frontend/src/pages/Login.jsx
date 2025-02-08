@@ -27,7 +27,7 @@ function Login() {
 
     return (
         <div className='min-w-[100vw] min-h-[100vh] overflow-auto flex items-center justify-center'>
-            <img src="/login-background.webp" alt="background" className='absolute object-cover pointer-events-none w-full h-full brightness-[0.8]' />
+            <img src="/login-background.webp" alt="background" className='absolute object-cover w-full h-full pointer-events-none contrast-[1.1] brightness-90' />
 
             <div className='md:px-[4.4rem] w-full mx-2 md:w-fit py-11 bg-[#000000A0] backdrop-blur-sm rounded-xl shadow-[0_4px_30px_15px_#FFFFFF50] '>
                 <h1 className='text-4xl font-semibold text-center text-white'>Login</h1>

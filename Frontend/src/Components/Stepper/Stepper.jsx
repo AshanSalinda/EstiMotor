@@ -5,7 +5,7 @@ import Step from './Step';
 
 
 export default function MyStepper() {
-    const { activeStep, expandedStep, setExpandedStep, stepsInfo } = useStepDataContext();
+    const { activeStep, expandedStep, setExpandedStep, stepsInfo, stepStats } = useStepDataContext();
 
     const handleClick = (index) => {
         if(index > activeStep) return;
@@ -19,14 +19,14 @@ export default function MyStepper() {
             <MuiStepper activeStep={activeStep} orientation="vertical">
                 { stepsInfo.map((step, index) => (
                     <MuiStep 
-                        key={index} 
+                        key={step.label} 
                         onClick={() => handleClick(index)} 
                         expanded={expandedStep == index}
                         className={index === expandedStep ? 'cursor-default' : 'cursor-pointer'} >
 
                         <Step
                             title={step.label} 
-                            content={step.content} 
+                            content={stepStats}
                             isActive={index === activeStep}
                             isExpanded={index === expandedStep}
                         /> 

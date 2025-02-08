@@ -71,7 +71,7 @@ function InputSection() {
     
     return (
         <div id='input-section' className='flex justify-center min-h-screen px-2 md:px-10 md:mt-40 lg:mt-28 onlyMd:min-h-fit'>
-            <form onSubmit={handleSubmit(onSubmit)} className='flex lg:min-w-[48vw] flex-col items-center justify-center space-y-16 text-center bg-gradient-to-t from-[#000000] to-[#0d0d0d] rounded-2xl md:rounded-3xl md:px-16 lg:px-16'>
+            <form onSubmit={handleSubmit(onSubmit)} className='flex lg:min-w-[48vw] flex-col items-center justify-center space-y-16 text-center bg-gradient-to-t from-[#000000] to-[#121212] rounded-2xl md:rounded-3xl md:px-16 lg:px-16'>
 
                 <h1 className='px-10 pt-20 text-3xl font-semibold text-gray-200 max-w-[32rem] md:text-3xl'>Know Your Vehicle's Market Value Instantly</h1>
 

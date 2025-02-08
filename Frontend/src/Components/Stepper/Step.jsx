@@ -16,7 +16,7 @@ export default function Step({ title, content, isActive, isExpanded }) {
 
             <StepContent>
                 <Collapse in={isExpanded} timeout="auto" unmountOnExit >
-                    <Content>{ content }</Content>
+                    <Content content={content} />
                 </Collapse>
             </StepContent>
         </>
@@ -34,40 +34,17 @@ const ProgressBar = ({ progress }) => {
 }
 
 
-const Content = ({ children }) => {
+const Content = ({ content }) => {
     return (
-        <div className='box-border p-4 rounded bg-dark-400'>
+        <div className='box-border p-4 rounded-md bg-dark-400'>
             <table>
                 <tbody>
-                    <tr>
-                        <td>Status:</td>
-                        <td>Completed</td>
-                    </tr>
-                    <tr>
-                        <td>Time Taken:</td>
-                        <td>1m 30s</td>
-                    </tr>
-                    <tr>
-                        <td>Sent Requests:</td>
-                        <td>50</td>
-                    </tr>
-                    <tr>
-                        <td>Field Requests:</td>
-                        <td>50</td>
-                    </tr>
-                    <tr>
-                        <td>Success Responses:</td>
-                        <td>50</td>
-                    </tr>
-                    <tr>
-                        <td>Errors Responses:</td>
-                        <td>0</td>
-                    </tr>
-                    <tr>
-                        <td>Success Rate:</td>
-                        <td>100%</td>
-                    </tr>
-
+                    { Object.keys(content).map((key) => 
+                        <tr key={key}>
+                            <td className='pr-4'>{key}:</td>
+                            <td className='w-20'>{content[key]}</td>
+                        </tr>
+                    )}
                 </tbody>
             </table>
         </div>
