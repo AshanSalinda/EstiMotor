@@ -33,10 +33,10 @@ class IkmanScraper(WebScraper):
         price = response.css(f"{self.price}::text").get()
         table = response.css(self.table)
 
-        if price and type(price) == str:
+        if price and isinstance(price, str):
             vehicle_details['price'] = price.strip()
 
-        if title and type(title) == str:
+        if title and isinstance(title, str):
             vehicle_details['title'] = title.strip()
 
         for row in table:
@@ -44,7 +44,7 @@ class IkmanScraper(WebScraper):
             value_el = row.css('div:nth-child(2)')
             value = value_el.css('div a span::text').get() or value_el.css('::text').get()
 
-            if key and value and type(value) == str:
+            if key and value and isinstance(value, str):
                 vehicle_details[key] = value.strip()
 
         return vehicle_details

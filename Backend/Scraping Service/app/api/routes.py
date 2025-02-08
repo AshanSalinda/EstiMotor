@@ -33,7 +33,7 @@ async def favicon():
 
 
 
-@router.get("/start")
+@router.post("/start")
 async def start_scraping_task():
     """Start a scraping task in the background."""
 
@@ -47,7 +47,7 @@ async def start_scraping_task():
 
 
 
-@router.get("/stop")
+@router.post("/stop")
 async def stop_scraping_task():
     """Stop an ongoing scraping task."""
    

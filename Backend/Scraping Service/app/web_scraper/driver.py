@@ -3,7 +3,7 @@ from threading import Thread
 from twisted.internet import reactor, defer
 from scrapy.crawler import CrawlerRunner
 from app.utils.logger import info, warn, err
-from app.api.websocket import set_enqueue_access, enqueue_for_sending
+from app.utils.message_queue import MessageQueue
 from .websites.ikman_scraper import IkmanScraper
 from .websites.patpat_scraper import PatpatScraper
 from .websites.riyasewana_scraper import RiyasewanaScraper
@@ -24,7 +24,8 @@ def start_scraping():
         return
 
     print("Starting the crawling process...")
-    set_enqueue_access(True)
+    MessageQueue.set_enqueue_access(True)
+    Storage.clear()
     is_scraping = True
 
     # Start crawling the spiders
@@ -35,13 +36,12 @@ def start_scraping():
     defer.DeferredList([d1, d2, d3]).addCallback(on_all_spiders_finished)
 
 
-def on_all_spiders_finished(result):
+def on_all_spiders_finished(_):
     global is_scraping
     
     is_scraping = False
-    storage = Storage()
-    print(storage.get_stats())
-    print("All spiders finished.", result)
+    print(Storage.get_stats())
+    print("Crawling process Finished...")
 
 
 async def stop_scraping():
@@ -55,7 +55,7 @@ async def stop_scraping():
             print(f"Stopping {crawler.spider.name} spider...")
             crawler.engine.close_spider(crawler.spider, 'Stopped by user')
     
-    set_enqueue_access(False)
+    MessageQueue.set_enqueue_access(False)
     
     # Wait for spiders to gracefully shut down
     while any(crawler.crawling for crawler in runner.crawlers):
@@ -68,7 +68,7 @@ def start_reactor():
     if not reactor.running:
         reactor_thread = Thread(target=reactor.run, args=(False,))
         reactor_thread.start()
-        info("\t  Twisted reactor started.")
+        info("Twisted reactor started.")
 
 
 def stop_reactor():
@@ -78,4 +78,4 @@ def stop_reactor():
         reactor.stop()
         reactor_thread.join()
         reactor_thread = None
-        info("\t  Twisted reactor stopped.")
+        info("Twisted reactor stopped.")
