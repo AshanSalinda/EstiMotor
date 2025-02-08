@@ -3,8 +3,9 @@ import { MdCloudSync } from "react-icons/md";
 import { FaUsersGear } from "react-icons/fa6";
 import { Link, useLocation } from "react-router-dom";
 import PropTypes from "prop-types";
+import Tooltip from '@mui/material/Tooltip';
 
-export default function Header({ title, buttonLabel, onClick }) {
+export default function Header({ title }) {
     const { pathname } = useLocation();
 
     return (
@@ -14,26 +15,21 @@ export default function Header({ title, buttonLabel, onClick }) {
                 <img src="/logo.svg" alt="EstiMotor" className="w-20 h-auto"/>
             </Link>
 
-
-            <div className="absolute flex items-center space-x-4 text-2xl text-neutral-400 left-36">
-                <Link to="/model-training">
-                    <MdCloudSync className={pathname === '/model-training' ? 'text-primary-500' : 'text-neutral-400'} />
-                </Link>
-
-                <Link to="/admin-details">
-                    <FaUsersGear className={pathname === '/admin-details' ? 'text-primary-500' : 'text-neutral-400'} />
-                </Link>
-            </div>
-
             <h1 className="text-xl font-normal text-dark-100">{ title || "EstiMotor" }</h1>
 
-            { typeof(onClick) === "function" &&
-            <button 
-                onClick={onClick} 
-                className="absolute px-4 py-2 bg-blue-500 rounded right-2 w-fit hover:bg-blue-700" >
-                { buttonLabel || "Next" }
-            </button>
-            }
+            <div className="absolute flex items-center space-x-4 text-3xl text-neutral-400 right-8">
+                <Tooltip title="Model Training" arrow>
+                    <Link to="/model-training">
+                        <MdCloudSync className={pathname === '/model-training' ? 'text-primary-500' : 'text-neutral-400'} />
+                    </Link>
+                </Tooltip>
+
+                <Tooltip title="Admin Details" arrow>
+                    <Link to="/admin-details">
+                        <FaUsersGear className={pathname === '/admin-details' ? 'text-primary-500' : 'text-neutral-400'} />
+                    </Link>
+                </Tooltip>
+            </div>
         </div>
     );
 }

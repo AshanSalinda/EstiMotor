@@ -6,15 +6,35 @@ export default function useStepData() {
     const [activeStep, setActiveStep] = useState(0);
     const [expandedStep, setExpandedStep] = useState(0);
     const [expandedStepLogs, setExpandedStepLogs] = useState([]);
+    const [expandedStepStats, setExpandedStepStats] = useState({});
     const [isFailed, setIsFailed] = useState(false);
+    const [isRunning, setIsRunning] = useState(false);
     const allLogs = useRef(stepsInfo.map(() => []));
+    const allStepStats = useRef(stepsInfo.map(() => ({
+        'Status': "Pending",
+        'Time Taken': "00:00:00",
+        'Success Rate': "0%",
+        'Request Count': 0,
+        'Success Count': 0,
+        'Failure Count': 0,
+    })));
 
     const setLogs = (payload) => {
         const newProgress = payload?.progress;
+        const newStats = payload?.stats;
         const newLogs = payload?.logs?.reverse();
+        const newControl = payload?.control;
 
         if(newProgress) {
             setProgress(newProgress);
+        }
+
+        if(newStats) {
+            allStepStats.current[activeStep] = newStats;
+
+            if (activeStep === expandedStep) {
+                setExpandedStepStats(newStats);
+            }
         }
 
         if(newLogs) {
@@ -24,6 +44,13 @@ export default function useStepData() {
                 setExpandedStepLogs([...allLogs.current[activeStep]]);
             }
             
+        }
+
+        if(newControl) {
+            console.log(newControl)
+            if(newControl === 'completed') {
+                setIsRunning(false);
+            }
         }
 
     };
@@ -38,6 +65,7 @@ export default function useStepData() {
 
     useEffect(() => {
         setExpandedStepLogs(allLogs.current[expandedStep]);
+        setExpandedStepStats(allStepStats.current[expandedStep]);
     }, [expandedStep]);
 
 
@@ -47,7 +75,10 @@ export default function useStepData() {
         progress,
         activeStep,
         expandedStep,
+        stepStats: expandedStepStats,
         logs: expandedStepLogs,
+        isRunning,
+        setIsRunning,
         setLogs,
         setActiveStep,
         setExpandedStep,
