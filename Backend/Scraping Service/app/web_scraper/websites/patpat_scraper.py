@@ -33,7 +33,7 @@ class PatpatScraper(WebScraper):
         table = response.css(self.rows)
 
         if price:
-            if price == ': Negotiable':
+            if price == 'Negotiable':
                 raise RuntimeError("Price is negotiable") 
             else:
                 vehicle_details['price'] = price.strip()
@@ -48,8 +48,8 @@ class PatpatScraper(WebScraper):
 
 
         for row in table:
-            key = self.get_key(row.css('td:nth-child(1)::text').get())
-            value = row.css('td:nth-child(2)::text').get()
+            key = self.get_key(row.css('th::text').get())
+            value = row.css('td::text').get()
             if key and value and isinstance(value, str):
                 vehicle_details[key] = value.strip()
 

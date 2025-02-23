@@ -73,12 +73,11 @@ class WebScraper(scrapy.Spider):
             index = response.meta.get('index')
             vehicle_details = self.get_vehicle_info(response, {'url': url, 'index': index})
             Storage.add_vehicle(vehicle_details)
-            # print(f"{index}\t{url}")
+            print(f"{index}\t{url}")
         
         except Exception as e:
-            # err(f"{index}\t{url}\t{e}")
-            pass
-
+            err(f"{index}\t{url}\t{e}")
+            
     
     def get_key(self, key):
         keys = {

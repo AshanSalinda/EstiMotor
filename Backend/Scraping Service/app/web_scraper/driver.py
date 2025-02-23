@@ -4,6 +4,7 @@ from twisted.internet import reactor, defer
 from scrapy.crawler import CrawlerRunner
 from app.utils.logger import info, warn, err
 from app.utils.message_queue import MessageQueue
+from app.db.repository.vehicle_repository import vehicles_repo
 from .websites.ikman_scraper import IkmanScraper
 from .websites.patpat_scraper import PatpatScraper
 from .websites.riyasewana_scraper import RiyasewanaScraper
@@ -26,6 +27,7 @@ def start_scraping():
     print("Starting the crawling process...")
     MessageQueue.set_enqueue_access(True)
     Storage.clear()
+    vehicles_repo.drop()
     is_scraping = True
 
     # Start crawling the spiders
@@ -42,6 +44,7 @@ def on_all_spiders_finished(_):
     is_scraping = False
     print(Storage.get_stats())
     print("Crawling process Finished...")
+    vehicles_repo.save_all()
 
 
 async def stop_scraping():
@@ -65,17 +68,26 @@ async def stop_scraping():
 def start_reactor():
     """Start the Twisted reactor in a separate thread."""
     global reactor_thread
-    if not reactor.running:
-        reactor_thread = Thread(target=reactor.run, args=(False,))
-        reactor_thread.start()
-        info("Twisted reactor started.")
+    
+    try:
+        if not reactor.running:
+            reactor_thread = Thread(target=reactor.run, args=(False,))
+            reactor_thread.start()
+            info("Twisted reactor started.")
+    except Exception as e:
+        err(f"Failed to start reactor: {e}")
+    
 
 
 def stop_reactor():
     """Stop the Twisted reactor."""
     global reactor_thread
-    if reactor.running:
-        reactor.stop()
-        reactor_thread.join()
-        reactor_thread = None
-        info("Twisted reactor stopped.")
+
+    try:
+        if reactor.running:
+            reactor.stop()
+            reactor_thread.join()
+            reactor_thread = None
+            info("Twisted reactor stopped.")
+    except Exception as e:
+        err(f"Failed to stop reactor: {e}")

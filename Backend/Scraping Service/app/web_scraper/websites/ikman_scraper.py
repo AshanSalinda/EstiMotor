@@ -35,9 +35,13 @@ class IkmanScraper(WebScraper):
 
         if price and isinstance(price, str):
             vehicle_details['price'] = price.strip()
+        else:
+            raise RuntimeError("Price not found")
 
         if title and isinstance(title, str):
             vehicle_details['title'] = title.strip()
+        else:
+            raise RuntimeError("Title not found")
 
         for row in table:
             key = self.get_key(row.css('div:nth-child(1)::text').get())
