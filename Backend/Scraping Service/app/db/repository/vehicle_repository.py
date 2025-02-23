@@ -1,5 +1,5 @@
 from app.db.database import database
-from app.web_scraper.storage import Storage
+from app.utils.storage import Storage
 from app.utils.logger import err, info
 
 

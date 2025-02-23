@@ -1,7 +1,8 @@
 import scrapy
-from ..utils.logger import info, warn, err
+from app.utils.logger import info, warn, err
+from app.utils.storage import Storage
 from datetime import datetime, timezone
-from .storage import Storage
+
 
 # custom signal for indicate that reached to the end of pagination
 pagination_ended_signal = object()

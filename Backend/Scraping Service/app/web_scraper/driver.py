@@ -4,11 +4,12 @@ from twisted.internet import reactor, defer
 from scrapy.crawler import CrawlerRunner
 from app.utils.logger import info, warn, err
 from app.utils.message_queue import MessageQueue
+from app.utils.storage import Storage
 from app.db.repository.vehicle_repository import vehicles_repo
 from .websites.ikman_scraper import IkmanScraper
 from .websites.patpat_scraper import PatpatScraper
 from .websites.riyasewana_scraper import RiyasewanaScraper
-from .storage import Storage
+
 from .settings import settings
 
 

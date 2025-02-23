@@ -2,8 +2,9 @@ from scrapy import signals
 from datetime import datetime, timezone
 from twisted.internet import reactor
 from app.utils.message_queue import MessageQueue
+from app.utils.storage import Storage
 from .web_scraper import pagination_ended_signal
-from .storage import Storage
+
 
 
 class RequestStats:
