@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from app.web_scraper.driver import start_scraping, stop_scraping
+from app.web_scraper.driver import driver
 from app.utils.logger import info, warn, err
 from app.db.repository.vehicle_repository import vehicles_repo
 
@@ -18,7 +18,7 @@ async def start_scraping_task():
     """Start a scraping task in the background."""
 
     try:
-        start_scraping()
+        driver.start_scraping()
         return {"status": "Scraping started!"}
 
     except Exception as e:
@@ -32,7 +32,7 @@ async def stop_scraping_task():
     """Stop an ongoing scraping task."""
    
     try:
-        await stop_scraping()
+        await driver.stop_scraping()
         return {"status": "Scraping stopped!"}
 
     except Exception as e:
