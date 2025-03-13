@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from app.web_scraper.driver import driver
+from app.steps.collecting_ads.driver import driver
 from app.utils.logger import info, warn, err
 from app.db.repository.vehicle_repository import vehicles_repo
 

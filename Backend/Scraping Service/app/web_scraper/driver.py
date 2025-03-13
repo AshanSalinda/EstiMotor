@@ -15,13 +15,11 @@ from .settings import settings
 
 class Driver:
     """Class that manages the scraping process and the Twisted reactor."""
-    steps = ['collecting_ads', 'extracting_details']
 
     def __init__(self):
         self.runner = CrawlerRunner(settings)
         self.reactor_thread = None
         self.is_scraping = False
-        self.current_step = 0
 
 
     def start_scraping(self):
