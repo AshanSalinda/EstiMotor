@@ -2,13 +2,13 @@ from scrapy import signals
 from datetime import datetime
 from twisted.internet import reactor
 from app.utils.message_queue import MessageQueue
-from app.utils.storage import Storage
 from app.utils.logger import info
 
 
 class RequestStats:
     _start_time = None
     _running_spiders_count = 0
+    _total_links = 0
     _request_count = 0
     _response_count = 0
     _success_count = 0
@@ -26,12 +26,17 @@ class RequestStats:
     def from_crawler(cls, crawler):
         """This method is used by Scrapy to create spiders."""
         middleware = cls()
+
+        crawler.signals.connect(middleware.spider_opened, signal=signals.spider_opened)
         crawler.signals.connect(middleware.spider_closed, signal=signals.spider_closed)
+
         if not RequestStats._scheduled_job_started:
             RequestStats._scheduled_job_started = True
             reactor.callLater(1, middleware.scheduled_task, crawler)
+
         return middleware
     
+
     def scheduled_task(self, crawler):
         """This function runs every 2 seconds."""
         if RequestStats._scheduled_job_started:            
@@ -64,6 +69,12 @@ class RequestStats:
             'Request Count': RequestStats._request_count,
             'Success Count': RequestStats._success_count
         }
+
+    
+    def spider_opened(self, spider):
+        """Called when the spider is opened."""
+        RequestStats._total_links += len(spider.start_urls)
+
     
     
     def spider_closed(self, spider, reason):
@@ -73,8 +84,12 @@ class RequestStats:
                         
         if RequestStats._running_spiders_count == 0:
             stats = self.calculate_stats()
+            try:
+                percentage = round((RequestStats._response_count * 100) / RequestStats._total_links, 2)
+            except ZeroDivisionError:
+                percentage = 100
 
-            Storage.add_stat({
+            spider.storage.add_stat({
                 **stats,
                 'Failed Requests': RequestStats._failed_requests,
             })
@@ -85,13 +100,15 @@ class RequestStats:
                     **stats,
                     'Failure count': len(RequestStats._failed_requests),
                 },
-                'control': 'completed'
+                'control': 'completed',
+                'progress': percentage
             })
             
             
             RequestStats._scheduled_job_started = False
             RequestStats._start_time = None
             RequestStats._running_spiders_count = 0
+            RequestStats._total_links = 0
             RequestStats._request_count = 0
             RequestStats._response_count = 0
             RequestStats._success_count = 0
@@ -120,7 +137,12 @@ class RequestStats:
             })
             
         RequestStats._response_count += 1
-        MessageQueue.enqueue({'log': response.url})
+        try:
+            percentage = round((RequestStats._response_count * 100) / RequestStats._total_links, 2)
+            MessageQueue.enqueue({'progress': percentage, 'log': response.url})
+        except Exception:
+            pass
+
         return response
 
 

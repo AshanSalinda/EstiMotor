@@ -1,15 +1,19 @@
 import scrapy
 from app.utils.logger import err
+from app.steps.shared.site_data import ikman
 
 
 class WebScraper(scrapy.Spider):
     """Base class for website-specific scrapers"""
-    def __init__(self, *args):
+
+    def __init__(self, **kwargs):
+        site_data = kwargs.get('site_data')
+        self.storage = kwargs.get('storage')
+        self.name = site_data['name']
+        self.start_urls = [site_data['url']]
+        self.page_no = site_data['page_no']
+        self.ad_selector = site_data['selectors']['ads_link']
         super(WebScraper, self).__init__()
-        self.start_urls = [args[0]]
-        self.page_no = args[1]
-        self.ad_selector = args[2]
-        self.ad_links = set()
 
 
     def start_requests(self):
@@ -26,8 +30,13 @@ class WebScraper(scrapy.Spider):
         """This is the default callback for every request for pages, made by the spider"""
         try:
             # Extract All Ad's links
-            new_links = response.css(f"{self.ad_selector}::attr(href)").getall()
-            self.ad_links.update(new_links)
+            ad_links = response.css(f"{self.ad_selector}::attr(href)").getall()
+
+            if self.name == ikman['name']:
+                # ikman links missing the domain name
+                ad_links = [response.urljoin(link) for link in ad_links]
+
+            self.storage.add((self.name, ad_links))
                         
             # Handle pagination
             last_page = self.is_last_page(response)

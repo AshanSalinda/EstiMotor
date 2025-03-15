@@ -1,5 +1,4 @@
 from app.db.database import database
-from app.utils.storage import Storage
 from app.utils.logger import err, info
 
 
@@ -8,7 +7,7 @@ class Vehicles:
         self.collection = None
 
    
-    def set_collection(self):
+    def set_collection(self) -> None:
         """Ensures the collection is set before using it."""
         if self.collection is None:
             if database.db is None:
@@ -16,18 +15,17 @@ class Vehicles:
             self.collection = database.db["vehicle"]
 
    
-    def save_all(self):
+    def save(self, vehicles: list) -> None:
         """Saves all vehicles to the database."""
         try:
             self.set_collection()
-            vehicles = Storage.get_vehicles()
             self.collection.insert_many(vehicles)
             info("Vehicles saved to the database.")
         except Exception as e:
             err(f"Failed to save vehicles to the database. Error: {e}")
 
 
-    def drop(self):
+    def drop(self) -> None:
         """Drops the 'vehicle' collection."""
         try:
             self.set_collection()

@@ -2,7 +2,6 @@ from scrapy import signals
 from datetime import datetime
 from twisted.internet import reactor
 from app.utils.message_queue import MessageQueue
-from app.utils.storage import Storage
 from app.utils.logger import info
 
 
@@ -74,7 +73,7 @@ class RequestStats:
         if RequestStats._running_spiders_count == 0:
             stats = self.calculate_stats()
 
-            Storage.add_stat({
+            spider.storage.add_stat({
                 **stats,
                 'Failed Requests': RequestStats._failed_requests,
             })

@@ -5,6 +5,7 @@ from app.utils.logger import info, warn, err
 from app.utils.message_queue import MessageQueue
 from app.utils.storage import Storage
 from app.db.repository.ad_links_repository import ad_links_repo
+from app.db.repository.vehicle_repository import vehicles_repo
 from app.steps.shared.base_step import Step
 from app.steps.shared.site_data import ikman, patpat, riyasewana
 from .websites.ikman_scraper import IkmanScraper
@@ -17,24 +18,32 @@ class Driver(Step):
     """Class that manages the scraping process."""
 
     def __init__(self):
-        super().__init__(step_name="Ads Collecting")
+        super().__init__(step_name="Details Extraction")
         self.runner = CrawlerRunner(settings)
 
 
     async def run(self):
         """Start the scraping process."""
         MessageQueue.set_enqueue_access(True)
-        ad_links_repo.drop()
-        storage = Storage(data_type="dict")
+
+        all_links = ad_links_repo.get_all()
+        ikman_links = all_links.get(ikman['name'], [])
+        patpat_links = all_links.get(patpat['name'], [])
+        riyasewana_links = all_links.get(riyasewana['name'], [])
+        all_links.clear()
+        vehicles_repo.drop()
+
+        storage = Storage(data_type="list")
 
         # Start crawling the spiders
-        d1 = self.runner.crawl(IkmanScraper, storage=storage, site_data=ikman)
-        d2 = self.runner.crawl(PatpatScraper, storage=storage, site_data=patpat)
-        d3 = self.runner.crawl(RiyasewanaScraper, storage=storage, site_data=riyasewana)
+        d1 = self.runner.crawl(IkmanScraper, storage=storage, site_data=ikman, links=ikman_links)
+        d2 = self.runner.crawl(PatpatScraper, storage=storage, site_data=patpat, links=patpat_links)
+        d3 = self.runner.crawl(RiyasewanaScraper, storage=storage, site_data=riyasewana, links=riyasewana_links)
 
         await DeferredList([d1, d2, d3])
         print(storage.get_stats())
-        ad_links_repo.save(storage.get_data())
+        vehicles_repo.save(storage.get_data())
+        ad_links_repo.drop()
         storage.clear()
 
 
@@ -57,4 +66,4 @@ class Driver(Step):
             await asyncio.sleep(0.1)
 
 
-ads_collecting = Driver()
+details_extraction = Driver()

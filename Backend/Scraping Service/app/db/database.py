@@ -7,6 +7,7 @@ class Database:
     def __init__(self):
         self.client = None
         self.db = None
+        self.connect()
 
     def connect(self):
         """Connect to MongoDB."""

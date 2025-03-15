@@ -1,19 +1,14 @@
 from app.utils.logger import info, warn, err
-from app.steps.site_data import riyasewana
+from app.steps.shared.site_data import riyasewana
 from .web_scraper import WebScraper
 
 
 class RiyasewanaScraper(WebScraper):
-    name = "riyasewana"
-
-    def __init__(self):
-        selectors = riyasewana['selectors']
+    def __init__(self, **kwargs):
+        selectors = kwargs.get('site_data')['selectors']
         self.next_button = selectors['next_button']
         self.current_button = selectors['current_button']
-        ad_selector = selectors['ads_link']
-        url = riyasewana['url']
-        page_no = riyasewana['page_no']
-        super(RiyasewanaScraper, self).__init__(url, page_no, ad_selector)
+        super(RiyasewanaScraper, self).__init__(**kwargs)
 
 
     def is_last_page(self, response):

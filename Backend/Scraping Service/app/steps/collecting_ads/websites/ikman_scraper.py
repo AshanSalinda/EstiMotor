@@ -1,18 +1,12 @@
-from app.utils.logger import info, warn, err
-from app.steps.site_data import ikman
+from app.utils.logger import err
 from .web_scraper import WebScraper
 
 
 class IkmanScraper(WebScraper):
-    name = "ikman"
 
-    def __init__(self):
-        selectors = ikman['selectors']
-        url = ikman['url']
-        page_no = ikman['page_no']
-        ad_selector = selectors['ads_link']
-        self.pagination = selectors['pagination']
-        super(IkmanScraper, self).__init__(url, page_no, ad_selector)
+    def __init__(self, **kwargs):
+        self.pagination = kwargs.get('site_data')['selectors']['pagination']
+        super(IkmanScraper, self).__init__(**kwargs)
 
 
     def is_last_page(self, response):
