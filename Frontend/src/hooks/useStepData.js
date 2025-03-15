@@ -50,6 +50,7 @@ export default function useStepData() {
             console.log(newControl)
             if(newControl === 'completed') {
                 setIsRunning(false);
+                handleNext();
             }
         }
 

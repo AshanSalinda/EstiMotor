@@ -1,18 +1,18 @@
 {
     "stepsInfo": [
       {
-        "label": "Data Collecting",
-        "description": "Gather vehicle data from multiple sources",
+        "label": "Collecting Ads",
+        "description": "Gather vehicle Ads from multiple sources",
         "content": "Gather vehicle data from multiple sources, including websites and user inputs."
       },
       {
-        "label": "Data Cleaning",
-        "description": "Process and clean the collected data",
+        "label": "Data Extraction",
+        "description": "Extract relevant information from the collected ads",
         "content": "Process and clean the collected data to ensure accuracy and consistency."
       },
       {
-        "label": "Data Transformation",
-        "description": "Transform the data into a structured format",
+        "label": "Data Cleaning",
+        "description": "Process, Clean and Transform the data into a structured format",
         "content": "Transform the cleaned data into a structured format suitable for model training."
       },
       {
