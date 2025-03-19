@@ -26,11 +26,11 @@ class MessageQueue(object):
     def set_enqueue_access(cls, access: bool):
         """To control the access when starting and stopping crawling process"""
         cls._is_enqueue_access_granted = access
-        cls.cleanup()
+        cls.clear()
         
         
     @classmethod
-    def cleanup(cls):
+    def clear(cls):
         cls._queue._queue.clear()
 
     

@@ -1,29 +1,9 @@
 from fastapi import APIRouter
-from app.web_scraper.driver import start_scraping, stop_scraping, start_reactor, stop_reactor
 from app.utils.logger import info, warn, err
+from app.db.repository.vehicle_repository import vehicles_repo
+from app.steps.shared.steps_manager import steps_manager
 
 router = APIRouter()
-
-
-@router.on_event("startup")
-async def on_startup():
-    """Start the reactor when the FastAPI app starts up."""
-    try:
-        start_reactor()
-    except Exception as e:
-        err(f"Failed to start reactor: {e}")
-
-
-
-@router.on_event("shutdown")
-async def on_shutdown():
-    """Stop the reactor when the FastAPI app shuts down."""
-    try:
-        stop_reactor()
-    except Exception as e:
-        err(f"Failed to stop reactor: {e}")
-
-
 
 @router.get("/favicon.ico")
 async def favicon():
@@ -38,7 +18,7 @@ async def start_scraping_task():
     """Start a scraping task in the background."""
 
     try:
-        start_scraping()
+        steps_manager.start()
         return {"status": "Scraping started!"}
 
     except Exception as e:
@@ -52,7 +32,7 @@ async def stop_scraping_task():
     """Stop an ongoing scraping task."""
    
     try:
-        await stop_scraping()
+        # await driver.stop_scraping()
         return {"status": "Scraping stopped!"}
 
     except Exception as e:

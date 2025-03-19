@@ -14,7 +14,7 @@ async def cancel_sender_task():
     global send_task
     if send_task:
         send_task.cancel()  # Cancel the task
-        MessageQueue.cleanup()
+        MessageQueue.clear()
         try:
             await send_task  # Wait for the task to be cancelled
             send_task = None
