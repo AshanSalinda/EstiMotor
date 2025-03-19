@@ -1,7 +1,7 @@
 patpat = {
     'name': 'patpat',
     'url': 'https://www.patpat.lk/vehicle',
-    'page_no': 735,
+    'page_no': 775,
     'selectors': {
         'ads_link': 'div.result-img a',
         'next_button': 'ul.pagination li:last-child.disabled',

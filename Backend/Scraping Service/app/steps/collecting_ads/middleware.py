@@ -16,6 +16,7 @@ class RequestStats:
     
 
     def __init__(self):
+        MessageQueue.enqueue({'progress': -1})
         RequestStats._running_spiders_count += 1
         if not RequestStats._start_time:
             RequestStats._start_time = datetime.now()
