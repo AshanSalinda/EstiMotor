@@ -1,19 +1,7 @@
 import { useState } from 'react';
 import Button from '../components/input/Button';
-import { startTraining, stopTraining } from '../api/modelTrainingApi';
 
-export default function DataPanel({ logs, isRunning, setIsRunning, handleNext}) {
-    const [ isStarted, setIsStarted ] = useState(false);
-
-    const handleStart = async () => {
-        await startTraining();
-        setIsRunning(true);
-    };
-
-    const handleStop = async () => {
-        await stopTraining();
-        setIsRunning(false);
-    };  
+export default function DataPanel({ logs, isRunning, handleRunning, handleNext}) { 
 
     return (
         <div className='sticky top-0 flex flex-col w-3/5'>
@@ -21,7 +9,7 @@ export default function DataPanel({ logs, isRunning, setIsRunning, handleNext}) 
                 <Button 
                     label={isRunning ? 'Stop' : 'Start'}
                     size="small"
-                    onClick={isRunning ? handleStop : handleStart}
+                    onClick={handleRunning}
                     sx={{ borderRadius: "1.3rem", fontSize: "1.1rem", padding: "0.1rem 1.5rem" }}
                 />
 

@@ -7,7 +7,7 @@ import StepDataProvider, { useStepDataContext } from '../context/StepDataContext
 
 
 function ModelTraining() {
-    const { logs, isRunning, setIsRunning, handleNext } = useStepDataContext();
+    const { logs, isRunning, handleRunning, handleNext } = useStepDataContext();
     useWebSocket();
 
 
@@ -15,7 +15,7 @@ function ModelTraining() {
         <AdminLayout title="Model Training" >
             <div className='flex justify-between h-full px-8 py-4 min-w-[960px] overflow-y-auto'>
                 <Stepper />
-                <DataPanel {...{logs, isRunning, setIsRunning, handleNext}}/>
+                <DataPanel {...{logs, isRunning, handleRunning, handleNext}}/>
             </div>  
         </AdminLayout>
     )
