@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
+import { startTraining, stopTraining } from '../api/modelTrainingApi';
 import { stepsInfo } from '../data/steps.json';
+import { all } from 'axios';
 
 export default function useStepData() {
     const [progress, setProgress] = useState(0);
@@ -47,10 +49,12 @@ export default function useStepData() {
         }
 
         if(newControl) {
-            console.log(newControl)
             if(newControl === 'completed') {
-                setIsRunning(false);
                 handleNext();
+
+                if (activeStep === 1) {
+                    setIsRunning(false);
+                }
             }
         }
 
@@ -61,6 +65,29 @@ export default function useStepData() {
 
         setExpandedStep(nextStep);
         setActiveStep(nextStep);
+        setProgress(0);
+    };
+
+    const handleRunning = () => {
+        if(isRunning) {
+            stopTraining().then(() => setIsRunning(false));
+        } else {
+            startTraining().then(() => {
+                setIsRunning(true)
+                setActiveStep(0);
+                setExpandedStep(0);
+                setProgress(0);
+                allLogs.current = stepsInfo.map(() => []);
+                allStepStats.current = stepsInfo.map(() => ({
+                    'Status': "Pending",
+                    'Time Taken': "00:00:00",
+                    'Success Rate': "0%",
+                    'Request Count': 0,
+                    'Success Count': 0,
+                    'Failure Count': 0,
+                }));
+            });
+        }
     };
 
 
@@ -79,7 +106,7 @@ export default function useStepData() {
         stepStats: expandedStepStats,
         logs: expandedStepLogs,
         isRunning,
-        setIsRunning,
+        handleRunning,
         setLogs,
         setActiveStep,
         setExpandedStep,
