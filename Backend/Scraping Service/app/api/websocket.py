@@ -6,7 +6,7 @@ from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 
 router = APIRouter()
 active_connections: List[WebSocket] = []
-send_task: asyncio.Task
+send_task: asyncio.Task = None
 
 
 async def cancel_sender_task():

@@ -1,9 +1,8 @@
-from app.utils.logger import info, warn, err
 from .web_scraper import WebScraper
 
 
 class IkmanScraper(WebScraper):
-    
+
     def __init__(self, **kwargs):
         selectors = kwargs.get('site_data')['selectors']
         name = kwargs.get('site_data')['name']
@@ -11,7 +10,6 @@ class IkmanScraper(WebScraper):
         self.price = selectors['price']
         self.table = selectors['table']
         super(IkmanScraper, self).__init__(name=name, **kwargs)
-
 
     def get_vehicle_info(self, response, vehicle_details):
         title = response.css(f"{self.title}::text").get()

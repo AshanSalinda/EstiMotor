@@ -1,4 +1,5 @@
 import scrapy
+
 from app.utils.logger import err
 from app.steps.shared.site_data import ikman
 
@@ -15,19 +16,17 @@ class WebScraper(scrapy.Spider):
         self.ad_selector = site_data['selectors']['ads_link']
         super(WebScraper, self).__init__()
 
-
     def start_requests(self):
         """Called when the spider starts crawling"""
         for url in self.start_urls:
             yield scrapy.Request(
                 # f"{url}?page={self.page_no}", 
-                url, 
+                url,
                 callback=self.parse,
                 meta={'index': f"{self.name}:{self.page_no}"}
             )
 
-
-    def parse(self, response):
+    def parse(self, response, **kwargs):
         """This is the default callback for every request for pages, made by the spider"""
         try:
             # Extract All Ad's links
@@ -38,32 +37,28 @@ class WebScraper(scrapy.Spider):
                 ad_links = [response.urljoin(link) for link in ad_links]
 
             self.storage.add((self.name, ad_links))
-                        
+
             # Handle pagination
             last_page = self.is_last_page(response)
             if not last_page:
                 yield self.navigate_to_next_page(response)
-                
-        
+
         except Exception as e:
             err(f"An error occurred during scraping: {e}")
 
-    
     def navigate_to_next_page(self, response):
+        next_page_url = ""
         try:
             self.page_no += 1
-            next_page_url = f"{(response.url).split('?')[0]}?page={self.page_no}"
+            next_page_url = f"{response.url.split('?')[0]}?page={self.page_no}"
             return response.follow(
-                next_page_url, 
-                callback=self.parse, 
+                next_page_url,
+                callback=self.parse,
                 meta={'index': f"{self.name}:{self.page_no}"}
             )
-        
+
         except Exception as e:
-            err(f"Failed to navigate next page: {next_page_url}: {e}")	
-
-            
-
+            err(f"Failed to navigate next page: {next_page_url}: {e}")
 
     def is_last_page(self, response):
         """

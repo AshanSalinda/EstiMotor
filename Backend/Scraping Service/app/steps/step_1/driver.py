@@ -1,7 +1,7 @@
 import asyncio
 from twisted.internet.defer import DeferredList
 from scrapy.crawler import CrawlerRunner
-from app.utils.logger import info, warn, err
+from app.utils.logger import err
 from app.utils.message_queue import MessageQueue
 from app.utils.storage import Storage
 from app.db.repository.ad_links_repository import ad_links_repo
@@ -20,11 +20,9 @@ class Driver(Step):
         super().__init__(step_name="Ads Collecting")
         self.runner = CrawlerRunner(settings)
 
-
     async def run(self):
         """Start the scraping process."""
         MessageQueue.set_enqueue_access(True)
-        ad_links_repo.drop()
         storage = Storage(data_type="dict")
 
         # Start crawling the spiders
@@ -36,8 +34,6 @@ class Driver(Step):
         print(storage.get_stats())
         ad_links_repo.save(storage.get_data())
         storage.clear()
-
-
 
     async def stop_scraping(self):
         """Stop the scraping process gracefully."""
