@@ -1,9 +1,7 @@
 patpat = {
     'name': 'patpat',
-    'url': 'https://www.patpat.lk/vehicle/filter/all/toyota/land-cruiser-prado',	
-    'page_no': 1,
-    # 'url_v1': 'https://www.patpat.lk/vehicle',
-    # 'page_no_v1': 798,
+    'url': 'https://www.patpat.lk/vehicle',
+    'page_no': 775,
     'selectors': {
         'ads_link': 'div.result-img a',
         'next_button': 'ul.pagination li:last-child.disabled',
@@ -15,10 +13,8 @@ patpat = {
 
 ikman = {
     'name': 'ikman',
-    'url': 'https://ikman.lk/en/ads/sri-lanka/cars/toyota/land-cruiser-prado',
-    'page_no': 1,
-    # 'url_v1': 'https://ikman.lk/en/ads/sri-lanka/cars',
-    # 'page_no_v1': 165,
+    'url': 'https://ikman.lk/en/ads/sri-lanka/cars',
+    'page_no': 160,
     'selectors': {
         'ads_link': 'ul.list--3NxGO li a',
         'pagination': 'div.pagination--1bp3g nav',
@@ -30,10 +26,8 @@ ikman = {
 
 riyasewana = {
     'name': 'riyasewana',
-    'url': 'https://riyasewana.com/search/toyota/land-cruiser-prado',
-    'page_no': 1,
-    # 'url_v1': 'https://riyasewana.com/search',
-    # 'page_no_v1': 1079,
+    'url': 'https://riyasewana.com/search',
+    'page_no': 1080,
     'selectors': {
         'ads_link': 'ul li.item.round h2 a',
         'next_button': 'div.pagination a:last-of-type',
