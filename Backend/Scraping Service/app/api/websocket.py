@@ -1,12 +1,12 @@
 import asyncio
 from typing import List
-from app.utils.logger import info, warn, err
+from app.utils.logger import err
 from app.utils.message_queue import MessageQueue
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 
 router = APIRouter()
 active_connections: List[WebSocket] = []
-send_task: asyncio.Task = None
+send_task: asyncio.Task
 
 
 async def cancel_sender_task():

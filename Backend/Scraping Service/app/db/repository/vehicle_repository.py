@@ -6,7 +6,6 @@ class Vehicles:
     def __init__(self):
         self.collection = None
 
-   
     def set_collection(self) -> None:
         """Ensures the collection is set before using it."""
         if self.collection is None:
@@ -14,7 +13,6 @@ class Vehicles:
                 raise Exception("Database connection is not initialized.")
             self.collection = database.db["vehicle"]
 
-   
     def save(self, vehicles: list) -> None:
         """Saves all vehicles to the database."""
         try:
@@ -24,7 +22,6 @@ class Vehicles:
         except Exception as e:
             err(f"Failed to save vehicles to the database. Error: {e}")
 
-
     def drop(self) -> None:
         """Drops the 'vehicle' collection."""
         try:
@@ -33,7 +30,6 @@ class Vehicles:
             info("vehicle collection dropped.")
         except Exception as e:
             err(f"Failed to drop vehicles collection. Error: {e}")
-
 
 
 vehicles_repo = Vehicles()

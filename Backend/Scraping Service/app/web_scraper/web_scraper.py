@@ -1,8 +1,6 @@
 import scrapy
-from app.utils.logger import info, warn, err
+from app.utils.logger import err
 from app.utils.storage import Storage
-from datetime import datetime, timezone
-
 
 # custom signal for indicate that reached to the end of pagination
 pagination_ended_signal = object()
@@ -10,6 +8,7 @@ pagination_ended_signal = object()
 
 class WebScraper(scrapy.Spider):
     """Base class for website-specific scrapers"""
+
     def __init__(self, *args):
         super(WebScraper, self).__init__()
         self.start_urls = [args[0]]
@@ -17,15 +16,13 @@ class WebScraper(scrapy.Spider):
         self.ad_selector = args[2]
         self.ad_links = set()
 
-
     def start_requests(self):
         """Called when the spider starts crawling"""
         for url in self.start_urls:
             yield scrapy.Request(
-                f"{url}?page={self.page_no}", 
+                f"{url}?page={self.page_no}",
                 callback=self.parse,
             )
-
 
     def parse(self, response):
         """This is the default callback for every request for pages, made by the spider"""
@@ -33,7 +30,7 @@ class WebScraper(scrapy.Spider):
             # Extract All Ad's links
             new_links = response.css(f"{self.ad_selector}::attr(href)").getall()
             self.ad_links.update(new_links)
-                        
+
             # Handle pagination
             last_page = self.is_last_page(response)
             if not last_page:
@@ -42,31 +39,29 @@ class WebScraper(scrapy.Spider):
             else:
                 # Send signal when pagination ends with the count of ads
                 self.crawler.signals.send_catch_log(
-                    signal=pagination_ended_signal, 
-                    spider=self, 
+                    signal=pagination_ended_signal,
+                    spider=self,
                     data={'ads_count': len(self.ad_links)}
                 )
-                
+
                 for index, link in enumerate(self.ad_links):
                     yield response.follow(
-                        link, 
-                        callback=self.process_the_ad, 
+                        link,
+                        callback=self.process_the_ad,
                         meta={'index': f"{self.name}:{index + 1}"}
                     )
-        
+
         except Exception as e:
             err(f"An error occurred during scraping: {e}")
 
-    
     def navigate_to_next_page(self, response):
         try:
             self.page_no += 1
             next_page_url = f"{(response.url).split('?')[0]}?page={self.page_no}"
             return response.follow(next_page_url, callback=self.parse)
-        
-        except Exception as e:
-            err(f"Failed to navigate next page: {next_page_url}: {e}")	
 
+        except Exception as e:
+            err(f"Failed to navigate next page: {next_page_url}: {e}")
 
     def process_the_ad(self, response):
         try:
@@ -75,11 +70,10 @@ class WebScraper(scrapy.Spider):
             vehicle_details = self.get_vehicle_info(response, {'url': url, 'index': index})
             Storage.add_vehicle(vehicle_details)
             print(f"{index}\t{url}")
-        
+
         except Exception as e:
             err(f"{index}\t{url}\t{e}")
-            
-    
+
     def get_key(self, key):
         keys = {
             'Brand:': 'Make',
@@ -101,11 +95,10 @@ class WebScraper(scrapy.Spider):
             'Mileage:': 'Mileage',
             'Mileage': 'Mileage',
             'Mileage (km)': 'Mileage',
-        } 
+        }
 
         key = key.strip() if key and isinstance(key, str) else None
         return keys.get(key)
-
 
     def get_vehicle_info(self, response, vehicle_details):
         """
@@ -138,7 +131,6 @@ class WebScraper(scrapy.Spider):
         """
         err(f"{self.name} must implement a own get_vehicle_info method")
 
-
     def is_last_page(self, response):
         """
         is_last_page(self, response: scrapy.http.Response) -> bool
@@ -158,5 +150,3 @@ class WebScraper(scrapy.Spider):
             (f"Failed to check if it is_last_page for {response.url} \n {e}")
         """
         err(f"{self.name} must implement a own is_last_page method")
-
-
