@@ -1,4 +1,4 @@
-# Power Shell Commands for the Project
+# PowerShell Commands for the Project
 
 <br>
 

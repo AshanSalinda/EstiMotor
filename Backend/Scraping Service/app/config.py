@@ -1,7 +1,8 @@
 import os
 from dotenv import load_dotenv
 
-load_dotenv() 
+load_dotenv()
+
 
 class Settings:
     PROJECT_NAME: str = "EstiMotor Web Scraper Service"
@@ -15,5 +16,6 @@ class Settings:
         raise ValueError("MONGO_URI is not set in environment variables!")
     if not DATABASE_NAME:
         raise ValueError("DATABASE_NAME is not set in environment variables!")
+
 
 settings = Settings()
