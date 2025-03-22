@@ -1,16 +1,15 @@
 from fastapi import APIRouter
-from app.utils.logger import info, warn, err
-from app.db.repository.vehicle_repository import vehicles_repo
+from app.utils.logger import err
 from app.steps.shared.steps_manager import steps_manager
 
 router = APIRouter()
+
 
 @router.get("/favicon.ico")
 async def favicon():
     """Return the favicon for the API."""
     # return FileResponse("path/to/your/favicon.ico")
     pass
-
 
 
 @router.post("/start")
@@ -26,11 +25,10 @@ async def start_scraping_task():
         return {"status": "Failed to start scraping task!"}
 
 
-
 @router.post("/stop")
 async def stop_scraping_task():
     """Stop an ongoing scraping task."""
-   
+
     try:
         # await driver.stop_scraping()
         return {"status": "Scraping stopped!"}

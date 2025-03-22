@@ -1,6 +1,6 @@
 import asyncio
 from typing import List
-from app.utils.logger import info, warn, err
+from app.utils.logger import err
 from app.utils.message_queue import MessageQueue
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 
