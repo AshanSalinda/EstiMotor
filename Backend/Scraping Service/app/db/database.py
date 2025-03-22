@@ -19,13 +19,12 @@ class Database:
             err("Failed to connect to MongoDB:")
             print("error", e)
 
-
     def close(self):
         """Close the MongoDB connection."""
         if self.client:
             self.client.close()
             info("MongoDB connection closed.")
 
+
 # Create a global instance
 database = Database()
-
