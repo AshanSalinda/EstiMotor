@@ -5,9 +5,9 @@ from app.utils.logger import err
 from app.utils.message_queue import MessageQueue
 from app.utils.storage import Storage
 from app.db.repository.ad_links_repository import ad_links_repo
-from app.db.repository.vehicle_repository import vehicles_repo
+from app.db.repository.scraped_vehicle_data_repository import scraped_vehicles_data_repo
 from app.steps.shared.base_step import Step
-from app.steps.shared.site_data import ikman, patpat, riyasewana
+from app.data.site_data import ikman, patpat, riyasewana
 from .websites.ikman_scraper import IkmanScraper
 from .websites.patpat_scraper import PatpatScraper
 from .websites.riyasewana_scraper import RiyasewanaScraper
@@ -40,8 +40,8 @@ class Driver(Step):
 
         await DeferredList([d1, d2, d3])
         print(storage.get_stats())
-        vehicles_repo.drop()
-        vehicles_repo.save(storage.get_data())
+        scraped_vehicles_data_repo.drop()
+        scraped_vehicles_data_repo.save(storage.get_data())
         ad_links_repo.drop()
         storage.clear()
 
@@ -61,6 +61,3 @@ class Driver(Step):
         # Wait for spiders to gracefully shut down
         while any(crawler.crawling for crawler in self.runner.crawlers):
             await asyncio.sleep(0.1)
-
-
-details_extraction = Driver()

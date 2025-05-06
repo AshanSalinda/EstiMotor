@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 from app.utils.logger import err
-from app.steps.shared.steps_manager import steps_manager
+from app.steps.shared.steps_manager import StepsManager
 
 router = APIRouter()
 
@@ -17,7 +17,7 @@ async def start_scraping_task():
     """Start a scraping task in the background."""
 
     try:
-        steps_manager.start()
+        StepsManager().start()
         return {"status": "Scraping started!"}
 
     except Exception as e:

@@ -1,3 +1,4 @@
+from app.data.parameters import PRICE, TITLE
 from .web_scraper import WebScraper
 
 
@@ -17,12 +18,12 @@ class IkmanScraper(WebScraper):
         table = response.css(self.table)
 
         if price and isinstance(price, str):
-            vehicle_details['price'] = price.strip()
+            vehicle_details[PRICE] = price.strip()
         else:
             raise RuntimeError("Price not found")
 
         if title and isinstance(title, str):
-            vehicle_details['title'] = title.strip()
+            vehicle_details[TITLE] = title.strip()
         else:
             raise RuntimeError("Title not found")
 

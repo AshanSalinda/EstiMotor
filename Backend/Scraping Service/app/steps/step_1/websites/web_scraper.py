@@ -1,7 +1,7 @@
 import scrapy
 
 from app.utils.logger import err
-from app.steps.shared.site_data import ikman
+from app.data.site_data import ikman
 
 
 class WebScraper(scrapy.Spider):

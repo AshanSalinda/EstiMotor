@@ -6,7 +6,7 @@ from app.utils.message_queue import MessageQueue
 from app.utils.storage import Storage
 from app.db.repository.ad_links_repository import ad_links_repo
 from app.steps.shared.base_step import Step
-from app.steps.shared.site_data import ikman, patpat, riyasewana
+from app.data.site_data import ikman, patpat, riyasewana
 from .websites.ikman_scraper import IkmanScraper
 from .websites.patpat_scraper import PatpatScraper
 from .websites.riyasewana_scraper import RiyasewanaScraper
@@ -51,6 +51,3 @@ class Driver(Step):
         # Wait for spiders to gracefully shut down
         while any(crawler.crawling for crawler in self.runner.crawlers):
             await asyncio.sleep(0.1)
-
-
-ads_collecting = Driver()
