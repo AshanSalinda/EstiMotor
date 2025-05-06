@@ -1,4 +1,6 @@
 import scrapy
+
+from app.data.parameters import *
 from app.utils.logger import err
 
 
@@ -37,25 +39,25 @@ class WebScraper(scrapy.Spider):
     @staticmethod
     def get_key(key):
         keys = {
-            'Brand:': 'Make',
-            'Manufacturer': 'Make',
-            'Make': 'Make',
-            'Model:': 'Model',
-            'Model': 'Model',
-            'Year of Manufacture:': 'YOM',
-            'Model Year': 'YOM',
-            'YOM': 'YOM',
-            'Transmission:': 'Transmission',
-            'Transmission': 'Transmission',
-            'Gear': 'Transmission',
-            'Engine capacity:': 'Engine Capacity',
-            'Engine Capacity': 'Engine Capacity',
-            'Engine (cc)': 'Engine Capacity',
-            'Fuel type:': 'Fuel type',
-            'Fuel Type': 'Fuel Type',
-            'Mileage:': 'Mileage',
-            'Mileage': 'Mileage',
-            'Mileage (km)': 'Mileage',
+            'Brand:': MAKE,
+            'Manufacturer': MAKE,
+            'Make': MAKE,
+            'Model:': MODEL,
+            'Model': MODEL,
+            'Year of Manufacture:': YOM,
+            'Model Year': YOM,
+            'YOM': YOM,
+            'Transmission:': TRANSMISSION,
+            'Transmission': TRANSMISSION,
+            'Gear': TRANSMISSION,
+            'Engine capacity:': ENGINE_CAPACITY,
+            'Engine Capacity': ENGINE_CAPACITY,
+            'Engine (cc)': ENGINE_CAPACITY,
+            'Fuel type:': FUEL_TYPE,
+            'Fuel Type': FUEL_TYPE,
+            'Mileage:': MILEAGE,
+            'Mileage': MILEAGE,
+            'Mileage (km)': MILEAGE,
         }
 
         key = key.strip() if key and isinstance(key, str) else None

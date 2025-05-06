@@ -2,16 +2,17 @@ from app.db.database import database
 from app.utils.logger import err, info
 
 
-class Vehicles:
+class CleanedVehicles:
     def __init__(self):
         self.collection = None
+        self.collection_name = "cleaned_vehicle_data"
 
     def set_collection(self) -> None:
         """Ensures the collection is set before using it."""
         if self.collection is None:
             if database.db is None:
                 raise Exception("Database connection is not initialized.")
-            self.collection = database.db["vehicle"]
+            self.collection = database.db[self.collection_name]
 
     def save(self, vehicles: list) -> None:
         """Saves all vehicles to the database."""
@@ -32,4 +33,4 @@ class Vehicles:
             err(f"Failed to drop vehicles collection. Error: {e}")
 
 
-vehicles_repo = Vehicles()
+cleaned_vehicles_data_repo = CleanedVehicles()
