@@ -21,7 +21,7 @@ ikman = {
     # 'page_no_v1': 165,
     'selectors': {
         'ads_link': 'ul.list--3NxGO li a',
-        'pagination': 'div.pagination--1bp3g nav',
+        'pagination': 'span.ads-count-text--1UYy_',
         'title': 'h1.title--3s1R8',
         'price': 'div.amount--3NTpl',
         'table': 'div.ad-meta--17Bqm div.full-width--XovDn',
