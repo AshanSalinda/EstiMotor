@@ -2,6 +2,10 @@
 
 /Frontend/.idea
 /Frontend/.env
+/Frontend/node_modules
+/Frontend/dist
+/Frontend/dev-dist
+/Frontend/dist-ssr
 
 /Backend/Scraping Service/.idea
 /Backend/Scraping Service/.env
