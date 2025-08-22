@@ -1,3 +1,8 @@
 /.idea
+
 /Frontend/.idea
+/Frontend/.env
+
 /Backend/Scraping Service/.idea
+/Backend/Scraping Service/.env
+/Backend/Scraping Service/venv
