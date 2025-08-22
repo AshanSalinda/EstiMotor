@@ -13,6 +13,7 @@ class Database:
         """Connect to MongoDB."""
         try:
             self.client = MongoClient(settings.MONGO_URI)
+            self.client.admin.command('ping')
             self.db = self.client[settings.DATABASE_NAME]
             info("MongoDB Connected.")
         except Exception as e:
