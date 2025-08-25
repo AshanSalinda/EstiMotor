@@ -14,25 +14,25 @@ async def favicon():
 
 @router.post("/start")
 async def start_scraping_task():
-    """Start a scraping task in the background."""
+    """Start Model training process in the background."""
 
     try:
         StepsManager().start()
-        return {"status": "Scraping started!"}
+        return {"message": "Model training process started"}
 
     except Exception as e:
         err(f"Failed to start scraping: {e}")
-        return {"status": "Failed to start scraping task!"}
+        return {"message": "Failed to start Model training process"}
 
 
 @router.post("/stop")
 async def stop_scraping_task():
-    """Stop an ongoing scraping task."""
+    """Stop an ongoing Model training process."""
 
     try:
         # await driver.stop_scraping()
-        return {"status": "Scraping stopped!"}
+        return {"message": "Model training process stopped"}
 
     except Exception as e:
         err(f"Failed to stop scraping: {e}")
-        return {"status": "Failed to stop scraping task!"}
+        return {"message": "Failed to stop Model training process"}
