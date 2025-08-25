@@ -10,3 +10,7 @@
 /Backend/Scraping Service/.idea
 /Backend/Scraping Service/.env
 /Backend/Scraping Service/venv
+
+/Backend/Coordinator Service/.idea
+/Backend/Coordinator Service/.env
+/Backend/Coordinator Service/node_modules
