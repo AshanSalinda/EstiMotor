@@ -4,17 +4,27 @@ import Input from '../components/input';
 import Button from '../components/input/Button';
 import useLoginValidation from '../hooks/validations/useLoginValidation';
 import { PiEye, PiEyeClosed } from "react-icons/pi";
+import { adminLogin } from "../api/adminApi.js";
+import { useAlert } from "../context/AlertContext.jsx";
+import ProgressBar from "../Components/ProgressBar.jsx";
 
 
 function Login() {
     const [ isPasswordVisible, setIsPasswordVisible ] = useState(false);
+    const [ isLoading, setIsLoading ] = useState(false);
     const { attributes, handleSubmit } = useLoginValidation();
 
     const navigate = useNavigate();
+    const { showAlert } = useAlert();
 
     const onSubmit = (formData) => {
-        console.log(formData);
-        navigate('/model-training');
+        setIsLoading(true);
+        adminLogin(formData)
+            .then(() => {
+                navigate('/model-training');
+            })
+            .catch(error => showAlert(error, "apiError"))
+            .finally(() => setIsLoading(false));
     }
 
     const showPasswordIcon = <button 
@@ -34,12 +44,20 @@ function Login() {
                 <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col items-center w-[72vw] mx-auto mt-14 space-y-4 md:space-y-2 md:w-72'>
                     <Input {...attributes.email} />
                     <Input {...attributes.password} type={isPasswordVisible ? 'text' : 'password'} ending={showPasswordIcon} />
-                    <Button label='Login' type='submit' sx={{ width: "100%", }} />
+                    <Button label={!isLoading ? 'Login' : 'Logging In'} type='submit' sx={{ width: "100%" }} />
                 </form>
                 <p className='mt-8 text-center cursor-pointer text-primary-500 hover:underline'>Forgot Password?</p>
 
                 <img className='w-24 mx-auto mt-14' src="/logo.svg" alt="logo" />
             </div>
+
+            {/* Loading overlay */}
+            {
+                isLoading &&
+                <div className="absolute z-[1] h-screen w-screen bg-black bg-opacity-25">
+                    <div className="-mt-2"><ProgressBar progress={-1} /></div>
+                </div>
+            }
         </div>
     )
 }

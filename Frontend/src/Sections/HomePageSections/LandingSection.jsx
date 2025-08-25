@@ -26,7 +26,13 @@ function LandingSection() {
                     label="Try It Now"
                     size="large"
                     outlined
-                    sx={{width: "8.5rem"}}
+                    sx={{
+                        width: "8.5rem",
+                        boxShadow: "0 0 8px #1E90FF, 0 0 2px #1E90FF inset, 0 0 75px 15px #000000",
+                        '&:hover': {
+                            boxShadow: "0 0 14px #1E90FF, 0 0 75px 15px #000000",
+                        },
+                    }}
                 />
 
             </div>
