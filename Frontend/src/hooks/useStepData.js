@@ -1,9 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
 import { startTraining, stopTraining } from '../api/modelTrainingApi';
+import { useAlert } from "../context/AlertContext.jsx";
 import { stepsInfo } from '../data/steps.json';
-import { all } from 'axios';
+import useWebSocket from "./useWebSocket.js";
+
 
 export default function useStepData() {
+    const [isLoading, setIsLoading] = useState(false);
+    const [isWsConnected, setIsWsConnected] = useState(false);
     const [progress, setProgress] = useState(0);
     const [activeStep, setActiveStep] = useState(0);
     const [expandedStep, setExpandedStep] = useState(0);
@@ -20,6 +24,8 @@ export default function useStepData() {
         'Success Count': 0,
         'Failure Count': 0,
     })));
+
+    const { showAlert } = useAlert();
 
     const setLogs = (payload) => {
         const newProgress = payload?.progress;
@@ -69,24 +75,43 @@ export default function useStepData() {
     };
 
     const handleRunning = () => {
+        setIsLoading(true);
+
         if(isRunning) {
-            stopTraining().then(() => setIsRunning(false));
-        } else {
-            startTraining().then(() => {
-                setIsRunning(true)
-                setActiveStep(0);
-                setExpandedStep(0);
-                setProgress(0);
-                allLogs.current = stepsInfo.map(() => []);
-                allStepStats.current = stepsInfo.map(() => ({
-                    'Status': "Pending",
-                    'Time Taken': "00:00:00",
-                    'Success Rate': "0%",
-                    'Request Count': 0,
-                    'Success Count': 0,
-                    'Failure Count': 0,
-                }));
-            });
+            stopTraining()
+                .then((data) => {
+                    showAlert(data?.message);
+                    setIsRunning(false);
+                })
+                .catch(error => showAlert(error, "apiError"))
+                .finally(() => setIsLoading(false));
+        }
+
+        else {
+            if (!isWsConnected) {
+                setIsLoading(false);
+                showAlert("WS not Connected", "error");
+                return
+            }
+            startTraining()
+                .then((data) => {
+                    showAlert(data?.message);
+                    setIsRunning(true);
+                    setActiveStep(0);
+                    setExpandedStep(0);
+                    setProgress(0);
+                    allLogs.current = stepsInfo.map(() => []);
+                    allStepStats.current = stepsInfo.map(() => ({
+                        'Status': "Pending",
+                        'Time Taken': "00:00:00",
+                        'Success Rate': "0%",
+                        'Request Count': 0,
+                        'Success Count': 0,
+                        'Failure Count': 0,
+                    }));
+                })
+                .catch(error => showAlert(error, "apiError"))
+                .finally(() => setIsLoading(false));
         }
     };
 
@@ -95,6 +120,8 @@ export default function useStepData() {
         setExpandedStepLogs(allLogs.current[expandedStep]);
         setExpandedStepStats(allStepStats.current[expandedStep]);
     }, [expandedStep]);
+
+    useWebSocket({ isWsConnected, setIsWsConnected, setLogs } )
 
 
     return {
@@ -106,8 +133,8 @@ export default function useStepData() {
         stepStats: expandedStepStats,
         logs: expandedStepLogs,
         isRunning,
+        isLoading,
         handleRunning,
-        setLogs,
         setActiveStep,
         setExpandedStep,
         handleNext,

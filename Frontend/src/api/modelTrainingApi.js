@@ -1,9 +1,11 @@
-import axios from 'axios';
+import api from "./baseApi.js";
 
-export function startTraining() {
-    return axios.post('http://localhost:8000/start');
-}
+export const startTraining = async () => {
+    const res = await api.post("/scraping/start");
+    return res.data;
+};
 
-export function stopTraining() {
-    return axios.post('http://localhost:8000/stop');
-}
+export const stopTraining = async () => {
+    const res = await api.post("/scraping/stop");
+    return res.data;
+};

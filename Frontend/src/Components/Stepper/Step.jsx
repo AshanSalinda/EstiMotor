@@ -1,6 +1,7 @@
 import React from 'react';
-import { StepLabel, StepContent, Collapse, LinearProgress } from "@mui/material";
+import { StepLabel, StepContent, Collapse } from "@mui/material";
 import { useStepDataContext } from '../../context/StepDataContext';
+import ProgressBar from "../ProgressBar.jsx";
 
 
 export default function Step({ title, content, isActive, isExpanded }) {
@@ -23,20 +24,6 @@ export default function Step({ title, content, isActive, isExpanded }) {
     );
 }
 
-
-const ProgressBar = ({ progress }) => {
-    return (
-        <div className=''>
-            { progress < 0 ? 
-                <LinearProgress className='mt-2' variant="indeterminate" aria-label="Step Progress Bar" /> :
-                <LinearProgress className='mt-2' variant="determinate" value={progress} aria-label="Step Progress Bar" />
-            }
-            <span className='block w-full text-sm font-medium text-right text-gray-400'>{progress < 0 ? " " : progress + '%'}</span>
-        </div>
-    );
-}
-
-
 const Content = ({ content }) => {
     return (
         <div className='box-border p-4 rounded-md bg-dark-400'>
@@ -53,4 +40,3 @@ const Content = ({ content }) => {
         </div>
     );
 }
-

@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import Button from '../components/input/Button';
 
 export default function DataPanel({ logs, isRunning, handleRunning, handleNext}) { 
@@ -8,20 +7,21 @@ export default function DataPanel({ logs, isRunning, handleRunning, handleNext})
             <div className='flex w-full gap-10 p-2 rounded bg-dark-400'>
                 <Button 
                     label={isRunning ? 'Stop' : 'Start'}
+                    color={isRunning ? 'secondary' : 'primary'}
                     size="small"
                     onClick={handleRunning}
-                    sx={{ borderRadius: "1.3rem", fontSize: "1.1rem", padding: "0.1rem 1.5rem" }}
+                    sx={{ width: "8rem", borderRadius: "1.3rem", fontSize: "1.1rem", padding: "0.1rem 1.5rem" }}
                 />
 
                 <Button 
                     label={'Next'}
                     size="small"
                     onClick={handleNext}
-                    sx={{ borderRadius: "1.3rem", fontSize: "1.1rem", padding: "0.1rem 1.5rem" }}
+                    sx={{ width: "8rem", borderRadius: "1.3rem", fontSize: "1.1rem", padding: "0.1rem 1.5rem" }}
                 />
             </div>
             
-            <div className='flex flex-col w-full h-full overflow-y-auto bg-dark-800 overscroll-contain'>
+            <div className='flex flex-col w-full h-full overflow-y-auto scrollable bg-dark-800 overscroll-contain'>
                 {(logs || []).map((item) => (
                     <a href={item} target='_blank' key={item} className='ml-2 text-neutral-300 hover:underline'>{ item }</a>
                 ))}

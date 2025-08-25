@@ -152,6 +152,37 @@ const muiTheme = createTheme({
                 root: { width: "100%" }
             }
         },
+        MuiSnackbar: {
+            styleOverrides: {
+                root: {
+                }
+            }
+        },
+        MuiAlert: {
+            styleOverrides: {
+                root: {
+                    boxShadow: "0 2px 6px rgba(0,0,0,0.3)",
+                },
+                standard: {
+                    '&.MuiAlert-standardSuccess': {
+                        backgroundColor: "#0c400c",
+                        color: "#a8e6a3",
+                    },
+                    '&.MuiAlert-standardInfo': {
+                        backgroundColor: "#062438",
+                        color: "#80dfff",
+                    },
+                    '&.MuiAlert-standardWarning': {
+                        backgroundColor: "#241a0b",
+                        color: "#ffd97d",
+                    },
+                    '&.MuiAlert-standardError': {
+                        backgroundColor: "#480d0d",
+                        color: "#f49797",
+                    },
+                },
+            },
+        },
         MuiButton: {
             styleOverrides: {
                 root: {
@@ -159,18 +190,29 @@ const muiTheme = createTheme({
                     fontSize: "1.1rem",
                     textTransform: "none",
                     boxShadow: "0 2px 4px 0 #FFFFFF50",
+                    '&:hover': { boxShadow: "0 2px 5px 0 #FFFFFF50" }
                 },
                 contained: {
                     backgroundColor: colors.primary[500],
-                    '&:hover': { backgroundColor: `${colors.primary[500]}DD`, color: colors.slate[200] },
+                    '&:hover': { backgroundColor: "#3AA0FF" },
+                    '&.Mui-disabled': {
+                        backgroundColor: colors.primary[500],
+                        color: "inherit",
+                        opacity: "0.4"
+                    },
+                    '&.MuiButton-colorSecondary': {
+                        backgroundColor: colors.red[600],
+                        boxShadow: "none",
+                        '&:hover': { backgroundColor: colors.red[500] }
+                    }
                 },
                 outlined: {
-                    boxShadow: "0 0 8px #1E90FF, 0 0 2px #1E90FF inset, 0 0 75px 15px #000000",
+                    boxShadow: "none",
                     border: "1px solid " + colors.primary[500],
                     backgroundColor: "#00000050",
                     color: colors.primary[450],
                     '&:hover': {
-                        boxShadow: "0 0 14px #1E90FF, 0 0 75px 15px #000000",
+                        boxShadow: "0 1px 4px 0 " + colors.primary[450],
                     },
                 },
                 sizeMedium: {
