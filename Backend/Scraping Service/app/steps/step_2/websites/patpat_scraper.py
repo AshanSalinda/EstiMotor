@@ -31,8 +31,9 @@ class PatpatScraper(WebScraper):
             raise RuntimeError("Title not found")
 
         for row in table:
-            key = self.get_key(row.css('th::text').get())
-            value = row.css('td::text').get()
+            key = self.get_key(row.css("div > span:last-child::text").get())
+            value = row.xpath("span[not(parent::div)][1]/text()").get()
+
             if key and value and isinstance(value, str):
                 vehicle_details[key] = value.strip()
 

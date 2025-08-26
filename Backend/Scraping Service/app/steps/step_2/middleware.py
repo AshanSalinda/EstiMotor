@@ -114,7 +114,10 @@ class RequestStats:
     @staticmethod
     def process_request(request, spider):
         """This is called for every request sent"""
-        RequestStats._request_count += 1
+
+        # Count only real requests (skip auto redirects)
+        if not request.meta.get('redirect_times'):
+            RequestStats._request_count += 1
         return None
 
     @staticmethod

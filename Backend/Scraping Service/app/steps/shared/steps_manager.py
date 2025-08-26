@@ -9,17 +9,22 @@ from app.steps.step_3.driver import Driver as DataCleaning
 
 class StepsManager:
     def __init__(self):
-        self.steps = [AdsCollecting(), DetailsExtraction(), DataCleaning()]
-        self.current_step = 0
+        self.is_running = False
+        self.steps = [
+            AdsCollecting(),
+            DetailsExtraction(),
+            DataCleaning()
+        ]
 
     async def run(self):
         info("Running all steps...")
+        self.is_running = True
 
-        for index, step in enumerate(self.steps):
+        for step in self.steps:
             await step.start()
-            self.current_step = (index + 1) % len(self.steps)
 
         info("Finished all steps...")
+        self.is_running = False
 
     def start(self):
         """Run steps inside the Twisted reactor thread."""
@@ -32,3 +37,6 @@ class StepsManager:
             reactor.callWhenRunning(deferred_run)
         else:
             reactor.callFromThread(deferred_run)
+
+
+stepsManager = StepsManager()

@@ -1,6 +1,7 @@
 from fastapi import APIRouter
+from fastapi.responses import JSONResponse
 from app.utils.logger import err
-from app.steps.shared.steps_manager import StepsManager
+from app.steps.shared.steps_manager import stepsManager
 
 router = APIRouter()
 
@@ -17,12 +18,24 @@ async def start_scraping_task():
     """Start Model training process in the background."""
 
     try:
-        StepsManager().start()
-        return {"message": "Model training process started"}
+        if stepsManager.is_running:
+            return JSONResponse(
+                content={"message": "Model training process is already running."},
+                status_code=409
+            )
+
+        stepsManager.start()
+        return JSONResponse(
+            content={"message": "Model training process started"},
+            status_code=200
+        )
 
     except Exception as e:
         err(f"Failed to start scraping: {e}")
-        return {"message": "Failed to start Model training process"}
+        return JSONResponse(
+            content={"message": "Failed to start Model training process"},
+            status_code=500
+        )
 
 
 @router.post("/stop")
@@ -31,8 +44,14 @@ async def stop_scraping_task():
 
     try:
         # await driver.stop_scraping()
-        return {"message": "Model training process stopped"}
+        return JSONResponse(
+            content={"message": "Model training process stopped"},
+            status_code=200
+        )
 
     except Exception as e:
         err(f"Failed to stop scraping: {e}")
-        return {"message": "Failed to stop Model training process"}
+        return JSONResponse(
+            content={"message": "Failed to stop Model training process"},
+            status_code=500
+        )
