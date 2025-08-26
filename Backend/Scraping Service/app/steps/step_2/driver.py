@@ -25,27 +25,32 @@ class Driver(Step):
 
     async def run(self):
         """Start the scraping process."""
-        MessageQueue.set_enqueue_access(True)
+        try:
+            MessageQueue.set_enqueue_access(True)
 
-        all_links = ad_links_repo.get_all()
-        ikman_links = all_links.get(ikman['name'], [])
-        patpat_links = all_links.get(patpat['name'], [])
-        riyasewana_links = all_links.get(riyasewana['name'], [])
-        all_links.clear()
+            all_links = ad_links_repo.get_all()
+            ikman_links = all_links.get(ikman['name'], [])
+            patpat_links = all_links.get(patpat['name'], [])
+            riyasewana_links = all_links.get(riyasewana['name'], [])
+            all_links.clear()
 
-        storage = Storage(data_type="list")
+            storage = Storage(data_type="list")
 
-        # Start crawling the spiders
-        d1 = self.runner.crawl(IkmanScraper, storage=storage, site_data=ikman, links=ikman_links)
-        d2 = self.runner.crawl(PatpatScraper, storage=storage, site_data=patpat, links=patpat_links)
-        d3 = self.runner.crawl(RiyasewanaScraper, storage=storage, site_data=riyasewana, links=riyasewana_links)
+            # Start crawling the spiders
+            d1 = self.runner.crawl(IkmanScraper, storage=storage, site_data=ikman, links=ikman_links)
+            d2 = self.runner.crawl(PatpatScraper, storage=storage, site_data=patpat, links=patpat_links)
+            d3 = self.runner.crawl(RiyasewanaScraper, storage=storage, site_data=riyasewana, links=riyasewana_links)
 
-        await DeferredList([d1, d2, d3])
-        print(json.dumps(storage.get_stats(), indent=2))
-        scraped_vehicles_data_repo.drop()
-        scraped_vehicles_data_repo.save(storage.get_data())
-        ad_links_repo.drop()
-        storage.clear()
+            await DeferredList([d1, d2, d3])
+            print(json.dumps(storage.get_stats(), indent=2))
+            scraped_vehicles_data_repo.drop()
+            scraped_vehicles_data_repo.save(storage.get_data())
+            ad_links_repo.drop()
+            storage.clear()
+
+        except Exception as e:
+            err(f"Error while running step 1: {e}")
+            raise e
 
     async def stop_scraping(self):
         """Stop the scraping process gracefully."""
