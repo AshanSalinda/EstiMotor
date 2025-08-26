@@ -1,4 +1,6 @@
 import asyncio
+import json
+
 from twisted.internet.defer import DeferredList
 from scrapy.crawler import CrawlerRunner
 from app.utils.logger import err
@@ -39,7 +41,7 @@ class Driver(Step):
         d3 = self.runner.crawl(RiyasewanaScraper, storage=storage, site_data=riyasewana, links=riyasewana_links)
 
         await DeferredList([d1, d2, d3])
-        print(storage.get_stats())
+        print(json.dumps(storage.get_stats(), indent=2))
         scraped_vehicles_data_repo.drop()
         scraped_vehicles_data_repo.save(storage.get_data())
         ad_links_repo.drop()

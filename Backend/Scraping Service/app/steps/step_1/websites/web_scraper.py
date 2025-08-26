@@ -20,8 +20,7 @@ class WebScraper(scrapy.Spider):
         """Called when the spider starts crawling"""
         for url in self.start_urls:
             yield scrapy.Request(
-                # f"{url}?page={self.page_no}", 
-                url,
+                f"{url}?page={self.page_no}",
                 callback=self.parse,
                 meta={'index': f"{self.name}:{self.page_no}"}
             )

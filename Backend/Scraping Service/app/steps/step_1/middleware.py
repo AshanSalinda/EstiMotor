@@ -54,7 +54,10 @@ class RequestStats:
         current_time = datetime.now()
         time_taken = str(current_time - RequestStats._start_time).split('.')[0]
 
-        success_rate = str(int((RequestStats._success_count * 100) / RequestStats._request_count)) + '%'
+        try:
+            success_rate = str(int((RequestStats._success_count * 100) / RequestStats._request_count)) + '%'
+        except ZeroDivisionError:
+            success_rate = '0%'
 
         return {
             'Time Taken': time_taken,
@@ -96,7 +99,10 @@ class RequestStats:
     @staticmethod
     def process_request(request, spider):
         """This is called for every request sent"""
-        RequestStats._request_count += 1
+
+        # Count only real requests (skip auto redirects)
+        if not request.meta.get('redirect_times'):
+            RequestStats._request_count += 1
         return None
 
     @staticmethod
