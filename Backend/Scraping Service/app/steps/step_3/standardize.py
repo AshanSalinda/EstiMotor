@@ -1,43 +1,38 @@
 import re
+import pandas as pd
 from datetime import datetime
 from app.data.parameters import *
 
 
-def clean_vehicle_data(vehicle):
-    """Clean a single vehicle's data."""
+def standardize_vehicle_data(vehicle) -> dict:
+    """"Clean and standardize a single vehicle's data."""
+
+    url = vehicle.get('url', '')
 
     return {
-        'url': vehicle.get('url', ''),
+        'url': url,
         PRICE: clean_numbers(vehicle.get(PRICE, '')),
         MILEAGE: clean_numbers(vehicle.get(MILEAGE, '')),
         YOM: clean_yom(vehicle.get(YOM, '')),
         ENGINE_CAPACITY: clean_numbers(vehicle.get(ENGINE_CAPACITY, '')),
         MAKE: clean_make(vehicle.get(MAKE, '')),
-        TRANSMISSION: clean_transmission(vehicle.get(TRANSMISSION, '')),
-        FUEL_TYPE: clean_fuel_type(vehicle.get(FUEL_TYPE, '')),
+        TRANSMISSION: clean_transmission(vehicle.get(TRANSMISSION, ''), url),
+        FUEL_TYPE: clean_fuel_type(vehicle.get(FUEL_TYPE, ''), url),
         MODEL: clean_model(vehicle.get(MODEL, '')),
     }
 
 
-def clean_numbers(value):
+def clean_numbers(value) -> int | None:
     """Remove symbols, commas, and convert to integer by truncating decimal."""
     if value is None:
         return None
     if isinstance(value, (int, float)):
         return int(float(value))
 
+    # Remove all non-digit characters, except periods surrounded by digits
     value_str = str(value)
-
-    # Keep only dots that are surrounded by digits (e.g., "123.45")
-    value_str = re.sub(r'(?<!\d)\.|\.?(?!\d)', '', value_str)
-
-    # Remove all characters except digits and dots
-    value_str = re.sub(r'[^0-9.]', '', value_str)
-
-    # If multiple valid dots exist, keep the last one only
-    if value_str.count('.') > 1:
-        *rest, last = value_str.split('.')
-        value_str = ''.join(rest) + '.' + last
+    value_str = re.sub(r'(?<!\d)\.(?!\d)', '', value_str)
+    value_str = re.sub(r'[^\d.]', '', value_str)
 
     try:
         return int(float(value_str))
@@ -45,7 +40,7 @@ def clean_numbers(value):
         return None
 
 
-def clean_yom(yom):
+def clean_yom(yom) -> int | None:
     """Ensure YOM is a valid 4-digit year."""
     cleaned_year = clean_numbers(yom)
 
@@ -57,7 +52,8 @@ def clean_yom(yom):
     except (ValueError, TypeError):
         return None
 
-def clean_transmission(transmission):
+
+def clean_transmission(transmission, url) -> str | None:
     """Normalize transmission case and values."""
     if not transmission:
         return None
@@ -69,22 +65,45 @@ def clean_transmission(transmission):
     elif 'manual' in transmission_str:
         return 'manual'
     else:
-        print("Not Supported transmission: ", transmission_str)
+        print(f"Not Supported transmission: {transmission_str} for {url}")
         return None
 
-def clean_fuel_type(fuel_type):
+
+def clean_fuel_type(fuel_type, url) -> str | None:
     """Normalize fuel type case and values."""
     if not fuel_type:
         return None
 
     fuel_str = str(fuel_type).strip().lower()
     valid_fuels = ['petrol', 'diesel', 'electric', 'hybrid']
-    return fuel_str if fuel_str in valid_fuels else None
 
-def clean_model(model):
-    """Trim whitespace and normalize model name."""
+    if fuel_str in valid_fuels:
+        return fuel_str
+    else:
+        print(f"Not Supported fuel type: {fuel_type} for {url}")
+        return None
+
+
+def clean_model(model) -> str | None:
+    """Normalize model case and values."""
     return model.strip().title() if model else None
 
-def clean_make(make):
-    """Trim whitespace and normalize make name."""
+
+def clean_make(make) -> str | None:
+    """Normalize make case and values."""
     return make.strip().title() if make else None
+
+
+def final_cleanup(vehicles: list) -> list[dict]:
+    essential_fields = [PRICE, YOM, MAKE]
+
+    df = pd.DataFrame(vehicles)
+    df_cleaned = df.dropna(subset=essential_fields)
+
+    df[MILEAGE] = df[MILEAGE].fillna('unknown')
+    df[ENGINE_CAPACITY] = df[ENGINE_CAPACITY].fillna('unknown')
+    df[FUEL_TYPE] = df[FUEL_TYPE].fillna('unknown')
+    df[MODEL] = df[MODEL].fillna('unspecified')
+    df[TRANSMISSION] = df[TRANSMISSION].fillna('unknown')
+
+    return df_cleaned.to_dict(orient='records')

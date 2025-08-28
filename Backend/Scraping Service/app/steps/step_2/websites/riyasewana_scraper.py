@@ -13,7 +13,7 @@ class RiyasewanaScraper(WebScraper):
 
     def get_vehicle_info(self, response, vehicle_details):
         title = response.css(f"{self.title}::text").get()
-        table = response.css('table.moret tr')
+        table = response.css(self.table)
         price = None
 
         # Remove unnecessary upper rows

@@ -35,6 +35,7 @@ class Driver(Step):
 
             await DeferredList([d1, d2, d3])
             print(json.dumps(storage.get_stats(), indent=2))
+            ad_links_repo.drop()
             ad_links_repo.save(storage.get_data())
             storage.clear()
 

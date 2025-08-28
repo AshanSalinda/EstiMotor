@@ -35,11 +35,11 @@ riyasewana = {
     # 'url_v1': 'https://riyasewana.com/search',
     # 'page_no_v1': 1079,
     'selectors': {
-        'ads_link': 'ul li.item.round h2 a',
+        'ads_link': 'ul .item h2 a',
         'next_button': 'div.pagination a:last-of-type',
         'current_button': 'div.pagination a.current',
         'title': '#content h1',
-        'table': 'table.moret tbody',
+        'table': 'table.moret tr',
     }
 }
 

@@ -1,29 +1,45 @@
-from collections import defaultdict, Counter
-import numpy as np
+import pandas as pd
+from datetime import datetime
+from app.utils.logger import warn
 
-def compute_imputation_stats(vehicles):
-    mileage_by_yom = defaultdict(list)
-    engine_capacity_by_make = defaultdict(list)
-    transmission_by_make = defaultdict(list)
 
-    for vehicle in vehicles:
-        yom = clean_yom(vehicle.get(YOM))
-        mileage = clean_numbers(vehicle.get(MILEAGE))
-        make = clean_make(vehicle.get(MAKE))
-        engine_capacity = clean_numbers(vehicle.get(ENGINE_CAPACITY))
-        transmission = clean_transmission(vehicle.get(TRANSMISSION))
+def impute_missing_fields(cleaned_vehicles: list, imputation_stats: dict):
+    median_mileage_by_yom = imputation_stats.get("median_mileage_by_yom", {})
+    mode_engine_capacity_by_make = imputation_stats.get("mode_engine_capacity_by_make", {})
+    mode_transmission_by_make = imputation_stats.get("mode_transmission_by_make", {})
+    current_year = datetime.now().year
 
-        if yom and mileage is not None:
-            mileage_by_yom[yom].append(mileage)
+    df = pd.DataFrame(cleaned_vehicles)
 
-        if make:
-            if engine_capacity is not None:
-                engine_capacity_by_make[make].append(engine_capacity)
-            if transmission:
-                transmission_by_make[make].append(transmission)
+    def fill_mileage(row):
+        if pd.isna(row['mileage']):
+            yom = row.get('yom')
+            imputation = 0 if yom == current_year else median_mileage_by_yom.get(str(yom), None)
+            if imputation is not None:
+                warn(f"Updating mileage '{row['mileage']}' to {imputation}: {row['url']}")
+            return imputation
+        return row['mileage']
 
-    median_mileage = {k: int(np.median(v)) for k, v in mileage_by_yom.items()}
-    mode_engine_capacity = {k: Counter(v).most_common(1)[0][0] for k, v in engine_capacity_by_make.items()}
-    mode_transmission = {k: Counter(v).most_common(1)[0][0] for k, v in transmission_by_make.items()}
+    def fill_engine_capacity(row):
+        if pd.isna(row['engine_capacity']):
+            make = row.get('make', '')
+            imputation = mode_engine_capacity_by_make.get(make, None)
+            if imputation is not None:
+                warn(f"Updating engine_capacity '{row['engine_capacity']}' to {imputation}: {row['url']}")
+            return imputation
+        return row['engine_capacity']
 
-    return median_mileage, mode_engine_capacity, mode_transmission
+    def fill_transmission(row):
+        if pd.isna(row['transmission']):
+            make = row.get('make', '')
+            imputation = mode_transmission_by_make.get(make, None)
+            if imputation is not None:
+                warn(f"Updating transmission '{row['transmission']}' to {imputation}: {row['url']}")
+            return imputation
+        return row['transmission']
+
+    df['mileage'] = df.apply(fill_mileage, axis=1)
+    df['engine_capacity'] = df.apply(fill_engine_capacity, axis=1)
+    df['transmission'] = df.apply(fill_transmission, axis=1)
+
+    return df.to_dict(orient='records')

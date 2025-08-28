@@ -5,7 +5,7 @@ def info(message):
 
 def warn(message):
     """Prints warning messages with Yellow color."""
-    print(f"\033[93mWARNING:\t  {message}\033[0m")
+    print(f"\033[93mWARN:\t  {message}\033[0m")
 
 
 def err(message):
