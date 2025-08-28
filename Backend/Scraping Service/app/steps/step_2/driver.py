@@ -49,7 +49,7 @@ class Driver(Step):
             storage.clear()
 
         except Exception as e:
-            err(f"Error while running step 1: {e}")
+            err(f"Error while running step 2: {e}")
             raise e
 
     async def stop_scraping(self):

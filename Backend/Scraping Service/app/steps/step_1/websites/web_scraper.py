@@ -18,9 +18,11 @@ class WebScraper(scrapy.Spider):
 
     def start_requests(self):
         """Called when the spider starts crawling"""
+        params = f"?page={self.page_no}" if self.page_no and self.page_no > 1 else ""
+
         for url in self.start_urls:
             yield scrapy.Request(
-                f"{url}?page={self.page_no}",
+                url + params,
                 callback=self.parse,
                 meta={'index': f"{self.name}:{self.page_no}"}
             )
