@@ -12,8 +12,8 @@ class StepsManager:
         self.is_running = False
         self.steps = [
             AdsCollecting(),
-            DetailsExtraction(),
-            DataCleaning()
+            # DetailsExtraction(),
+            # DataCleaning()
         ]
 
     async def run(self):

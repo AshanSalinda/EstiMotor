@@ -45,7 +45,7 @@ class Driver(Step):
             print(json.dumps(storage.get_stats(), indent=2))
             scraped_vehicles_data_repo.drop()
             scraped_vehicles_data_repo.save(storage.get_data())
-            ad_links_repo.drop()
+            # ad_links_repo.drop()
             storage.clear()
 
         except Exception as e:
