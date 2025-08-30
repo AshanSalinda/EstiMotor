@@ -1,23 +1,42 @@
-import time, random
+import time
+from app.data.site_data import MAX_REQUESTS_PER_MINUTE
 
-from scrapy.downloadermiddlewares.retry import RetryMiddleware
-from scrapy.utils.response import response_status_message
-from app.utils.logger import info
+class RateLimitMiddleware:
+    def __init__(self):
+        self.last_request_time = {}
 
+    @classmethod
+    def from_crawler(cls, crawler):
+        return cls()
 
-class TooManyRequestsRetryMiddleware(RetryMiddleware):
-    def process_response(self, request, response, spider):
-        if response.status == 429:
-            retry_times = request.meta.get('retry_times', 0) + 1
+    def process_request(self, request, spider):
+        """
+        Enforces per-site request rate limiting.
 
-            delay = 60 * (2 ** (retry_times - 1))  # 1st retry = 60, 2nd = 120, 3rd = 240...
-            delay += random.random() * 5  # small jitter (0s - 5s) to avoid bursts
+        For each site defined in MAX_REQUESTS_PER_MINUTE,
+        ensures we do not send requests faster than the
+        configured requests-per-minute rate.
+        """
 
-            info(f"Sleeping spider {spider.name} for {delay:.1f}s due to Rate limit")
-            time.sleep(delay)  # simple blocking delay
-            info(f"Resuming spider {spider.name}")
+        for site, limit in MAX_REQUESTS_PER_MINUTE.items():
+            if request.url.startswith(site):
+                last_time = self.last_request_time.get(site)
 
-            reason = response_status_message(response.status)
-            return self._retry(request, reason, spider) or response
+                if last_time:
+                    # Time since last request to this site
+                    elapsed = time.time() - last_time
 
-        return super().process_response(request, response, spider)
+                    # Minimum interval allowed between requests
+                    rate = 60 / limit
+
+                    # Delay required to maintain rate limit
+                    delay = max(0, rate - elapsed)
+
+                    # Enforce delay if requests are too fast
+                    if delay > 0:
+                        time.sleep(delay)
+
+                # Update last request time for this site
+                self.last_request_time[site] = time.time()
+
+        return None

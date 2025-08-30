@@ -6,10 +6,10 @@ from app.db.database import database
 from app.utils.logger import err, info
 
 
-class StandardizedVehicles:
+class NormalizedVehicles:
     def __init__(self):
         self.collection = None
-        self.collection_name = "standardized_vehicle_data"
+        self.collection_name = "normalized_vehicle_data"
 
     def set_collection(self) -> None:
         """Ensures the collection is set before using it."""
@@ -119,4 +119,4 @@ class StandardizedVehicles:
             err(f"Failed to drop {self.collection_name} collection. Error: {e}")
 
 
-standardized_vehicle_data_repo = StandardizedVehicles()
+normalized_vehicle_data_repo = NormalizedVehicles()

@@ -1,11 +1,13 @@
+import json
 import re
 import pandas as pd
 from datetime import datetime
 from app.data.parameters import *
+from app.utils.logger import warn
 
 
-def standardize_vehicle_data(vehicle) -> dict:
-    """"Clean and standardize a single vehicle's data."""
+def normalize_vehicle_data(vehicle) -> dict:
+    """Clean and standardize a single vehicle's data."""
 
     url = vehicle.get('url', '')
 
@@ -94,16 +96,61 @@ def clean_make(make) -> str | None:
     return make.strip().title() if make else None
 
 
-def final_cleanup(vehicles: list) -> list[dict]:
+def null_cleanup(vehicles: list) -> list[dict]:
+    """
+    Handle null values in vehicle dataset:
+      1. Drop records missing essential fields (PRICE, YOM, MAKE).
+      3. Fill remaining optional fields with placeholders
+         to avoid leaving nulls in the dataset.
+    """
+
     essential_fields = [PRICE, YOM, MAKE]
 
+    # Convert vehicles list into DataFrame for easier processing
     df = pd.DataFrame(vehicles)
-    df_cleaned = df.dropna(subset=essential_fields)
 
-    df[MILEAGE] = df[MILEAGE].fillna('unknown')
-    df[ENGINE_CAPACITY] = df[ENGINE_CAPACITY].fillna('unknown')
-    df[FUEL_TYPE] = df[FUEL_TYPE].fillna('unknown')
-    df[MODEL] = df[MODEL].fillna('unspecified')
-    df[TRANSMISSION] = df[TRANSMISSION].fillna('unknown')
+    # Keep only rows where essential fields are not null
+    df_cleaned = df.dropna(subset=essential_fields).copy()
 
-    return df_cleaned.to_dict(orient='records')
+    # Identify and log dropped rows
+    dropped_rows = df.loc[~df.index.isin(df_cleaned.index)]
+    if not dropped_rows.empty:
+        for _, row in dropped_rows.iterrows():
+            missing = [field for field in essential_fields if pd.isna(row[field])]
+            url = row.get("url", "N/A")
+            warn(f"Dropped vehicle: {url}\tmissing={missing}")
+
+    # Count nulls before filling
+    null_counts = df_cleaned.isnull().sum()
+
+    # Fill optional fields with placeholders instead of null
+    df_cleaned[MILEAGE] = df_cleaned[MILEAGE].fillna(-1)
+    df_cleaned[ENGINE_CAPACITY] = df_cleaned[ENGINE_CAPACITY].fillna(-1)
+    df_cleaned[FUEL_TYPE] = df_cleaned[FUEL_TYPE].fillna('N/A')
+    df_cleaned[MODEL] = df_cleaned[MODEL].fillna('N/A')
+    df_cleaned[TRANSMISSION] = df_cleaned[TRANSMISSION].fillna('N/A')
+
+    # Log how many placeholders were filled
+    for field in [MILEAGE, ENGINE_CAPACITY, FUEL_TYPE, MODEL, TRANSMISSION]:
+        if null_counts.get(field, 0) > 0:
+            placeholder = '-1' if field in [MILEAGE, ENGINE_CAPACITY] else 'N/A'
+            warn(f"Filled {null_counts[field]} nulls in {field} with {placeholder}")
+
+    # Convert cleaned DataFrame back to list of dicts
+    return df_cleaned.to_dict(orient="records")
+
+# vd = {
+#   "url": "https://riyasewana.com/buy/cat-910-f-sale-horana-9814347",
+#   "index": "riyasewana:1",
+#   "price": "Rs. 4,800,000",
+#   "title": "CAT 910 F 2001 Heavy-Duty (Used)",
+#   "make": "CAT",
+#   "model": "910 F",
+#   "yom": "2001",
+#   "mileage": "500",
+#   "transmission": "Automatic",
+#   "fuel_type": "Diesel",
+#   "engine_capacity": "-"
+# }
+# # print(json.dumps(normalize_vehicle_data(vd), indent=4))
+# print(json.dumps(null_cleanup([vd]), indent=4))

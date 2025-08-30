@@ -1,5 +1,6 @@
 import scrapy
 
+from app.db.repository.ad_links_repository import ad_links_repo
 from app.utils.logger import err
 from app.data.site_data import ikman
 
@@ -14,6 +15,7 @@ class WebScraper(scrapy.Spider):
         self.start_urls = [site_data['url']]
         self.page_no = site_data['page_no']
         self.ad_selector = site_data['selectors']['ads_link']
+        self.ad_links = set()
         super(WebScraper, self).__init__()
 
     def start_requests(self):
@@ -31,17 +33,29 @@ class WebScraper(scrapy.Spider):
         """This is the default callback for every request for pages, made by the spider"""
         try:
             # Extract All Ad's links
-            ad_links = response.css(f"{self.ad_selector}::attr(href)").getall()
+            new_ad_links = response.css(f"{self.ad_selector}::attr(href)").getall()
 
             if self.name == ikman['name']:
                 # ikman links missing the domain name
-                ad_links = [response.urljoin(link) for link in ad_links]
+                new_ad_links = [response.urljoin(link) for link in new_ad_links]
 
-            self.storage.add((self.name, ad_links))
+            # accumulate all extracted new links
+            self.ad_links.update(new_ad_links)
 
             # Handle pagination
             last_page = self.is_last_page(response)
-            if not last_page:
+
+            if last_page:
+                # Save in db
+                ad_links_repo.save(self.name, self.ad_links)
+
+            else:
+                # Save in db only if more than 100 items
+                if len(self.ad_links) > 100:
+                    ad_links_repo.save(self.name, self.ad_links)
+                    self.ad_links.clear()
+
+                # next page
                 yield self.navigate_to_next_page(response)
 
         except Exception as e:

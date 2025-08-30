@@ -25,6 +25,7 @@ class Driver(Step):
     async def run(self):
         """Start the scraping process."""
         try:
+            ad_links_repo.drop()
             MessageQueue.set_enqueue_access(True)
             storage = Storage(data_type="dict")
 
@@ -35,8 +36,6 @@ class Driver(Step):
 
             await DeferredList([d1, d2, d3])
             print(json.dumps(storage.get_stats(), indent=2))
-            ad_links_repo.drop()
-            ad_links_repo.save(storage.get_data())
             storage.clear()
 
         except Exception as e:
