@@ -57,6 +57,7 @@ class WebScraper(scrapy.Spider):
             'Mileage:': MILEAGE,
             'Mileage': MILEAGE,
             'Mileage (km)': MILEAGE,
+            'Vehicle Type': CATEGORY,
         }
 
         key = key.strip() if key and isinstance(key, str) else None
@@ -86,6 +87,7 @@ class WebScraper(scrapy.Spider):
                 Engine Capacity: Must Include,
                 Fuel type: Must Include,
                 Mileage: Must Include,
+                Category: Must Include,
             }
 
         Raises:
