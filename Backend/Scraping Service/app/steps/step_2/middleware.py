@@ -129,7 +129,9 @@ class RequestStats:
         else:
             index = request.meta.get('index')
             url = request.url
-            err(f"{index}\t{url}")
+
+            err(f"{index}\t{response.status}\t{url}")
+
             RequestStats._failed_requests.append({
                 'index': index,
                 'url': url,
@@ -151,11 +153,14 @@ class RequestStats:
 
         index = request.meta.get('index')
         url = request.url
-        err(f"{index}\t{url}")
+        error = type(exception).__name__
+
+        err(f"{index}\t{error}\t{url}")
+
         RequestStats._failed_requests.append({
             'index': index,
             'url': url,
-            'error': type(exception).__name__
+            'error': error
         })
 
         RequestStats._response_count += 1

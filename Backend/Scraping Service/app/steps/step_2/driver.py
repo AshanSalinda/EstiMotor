@@ -1,9 +1,9 @@
 import asyncio
 import json
 
-from twisted.internet.defer import DeferredList
+from twisted.internet.defer import DeferredList, ensureDeferred
 from scrapy.crawler import CrawlerRunner
-from app.utils.logger import err
+from app.utils.logger import err, info
 from app.utils.message_queue import MessageQueue
 from app.utils.storage import Storage
 from app.db.repository.ad_links_repository import ad_links_repo
@@ -22,35 +22,64 @@ class Driver(Step):
     def __init__(self):
         super().__init__(step_name="Details Extraction")
         self.runner = CrawlerRunner(settings)
+        self.storage = Storage(data_type="list")
+        self.batch_size = 100
+        self.websites = [
+            {"data": ikman, "scraper": IkmanScraper},
+            {"data": patpat, "scraper": PatpatScraper},
+            {"data": riyasewana, "scraper": RiyasewanaScraper},
+        ]
 
     async def run(self):
-        """Start the scraping process."""
+        """Run all websites iteratively in batch mode."""
         try:
+            scraped_vehicles_data_repo.drop()
             MessageQueue.set_enqueue_access(True)
 
-            all_links = ad_links_repo.get_all()
-            ikman_links = all_links.get(ikman['name'], [])
-            patpat_links = all_links.get(patpat['name'], [])
-            riyasewana_links = all_links.get(riyasewana['name'], [])
-            all_links.clear()
+            # Create Twisted Deferreds
+            deferreds = [ensureDeferred(self.run_site_batch(site_info)) for site_info in self.websites]
 
-            storage = Storage(data_type="list")
+            # Wait for all sites in parallel
+            await DeferredList(deferreds, fireOnOneErrback=True)
 
-            # Start crawling the spiders
-            d1 = self.runner.crawl(IkmanScraper, storage=storage, site_data=ikman, links=ikman_links)
-            d2 = self.runner.crawl(PatpatScraper, storage=storage, site_data=patpat, links=patpat_links)
-            d3 = self.runner.crawl(RiyasewanaScraper, storage=storage, site_data=riyasewana, links=riyasewana_links)
-
-            await DeferredList([d1, d2, d3])
-            print(json.dumps(storage.get_stats(), indent=2))
-            scraped_vehicles_data_repo.drop()
-            scraped_vehicles_data_repo.save(storage.get_data())
-            # ad_links_repo.drop()
-            storage.clear()
+            print(json.dumps(self.storage.get_stats(), indent=2))
+            self.storage.clear()
 
         except Exception as e:
             err(f"Error while running step 2: {e}")
             raise e
+
+    async def run_site_batch(self, site_info: dict):
+        """Scrape a single website batch-wise."""
+
+        name = site_info["data"]["name"]
+        scraper = site_info["scraper"]
+        page_number = 1
+
+        while True:
+            # Get first batch
+            batch_links = ad_links_repo.get_by_source_in_paginated(name, page=page_number, page_size=self.batch_size)
+            if not batch_links:
+                info(f"No more links for {name}.")
+                break
+
+            link_urls = []
+            link_ids = []
+            scraped_data = []
+
+            for doc in batch_links:
+                link_ids.append(doc.get("_id"))
+                link_urls.append(doc.get("url"))
+
+            info(f"Processing {len(link_urls)} links for {name}...")
+            d = self.runner.crawl(scraper, storage=self.storage, site_data=site_info["data"], scraped_data=scraped_data, links=link_urls)
+            await DeferredList([d])
+
+            # Save scraped data and remove processed links
+            scraped_vehicles_data_repo.save(scraped_data)
+            scraped_data.clear()
+            # ad_links_repo.delete_by_ids(link_ids)
+            page_number += 1
 
     async def stop_scraping(self):
         """Stop the scraping process gracefully."""

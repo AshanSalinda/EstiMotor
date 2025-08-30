@@ -2,8 +2,8 @@ patpat = {
     'name': 'patpat',
     # 'url': 'https://patpat.lk/en/sri-lanka/vehicle/all/toyota/land-cruiser-prado',
     # 'page_no': 8,
-    'url_v1': 'https://www.patpat.lk/vehicle',
-    'page_no_v1': 1,
+    'url': 'https://www.patpat.lk/vehicle',
+    'page_no': 1,
     'selectors': {
         'ads_link': 'section.container-hero > div:nth-last-child(2) > div > div:first-child > div > div:first-child > a',
         'next_button': 'section.container-hero > div:nth-last-child(2) > div:last-child > span:last-child.cursor-not-allowed',
@@ -17,8 +17,8 @@ ikman = {
     'name': 'ikman',
     # 'url': 'https://ikman.lk/en/ads/sri-lanka/cars/toyota/land-cruiser-prado',
     # 'page_no': 11,
-    'url_v1': 'https://ikman.lk/en/ads/sri-lanka/cars',
-    'page_no_v1': 1,
+    'url': 'https://ikman.lk/en/ads/sri-lanka/cars',
+    'page_no': 1,
     'selectors': {
         'ads_link': 'ul.list--3NxGO li a',
         'pagination': 'span.ads-count-text--1UYy_',
