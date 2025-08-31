@@ -1,4 +1,3 @@
-import json
 import re
 import pandas as pd
 from datetime import datetime
@@ -32,7 +31,7 @@ def clean_numbers(value) -> int | None:
         return int(float(value))
 
     # Remove all non-digit characters, except periods surrounded by digits
-    value_str = str(value)
+    value_str = str(value).strip()
     value_str = re.sub(r'(?<!\d)\.(?!\d)', '', value_str)
     value_str = re.sub(r'[^\d.]', '', value_str)
 
@@ -138,19 +137,3 @@ def null_cleanup(vehicles: list) -> list[dict]:
 
     # Convert cleaned DataFrame back to list of dicts
     return df_cleaned.to_dict(orient="records")
-
-# vd = {
-#   "url": "https://riyasewana.com/buy/cat-910-f-sale-horana-9814347",
-#   "index": "riyasewana:1",
-#   "price": "Rs. 4,800,000",
-#   "title": "CAT 910 F 2001 Heavy-Duty (Used)",
-#   "make": "CAT",
-#   "model": "910 F",
-#   "yom": "2001",
-#   "mileage": "500",
-#   "transmission": "Automatic",
-#   "fuel_type": "Diesel",
-#   "engine_capacity": "-"
-# }
-# # print(json.dumps(normalize_vehicle_data(vd), indent=4))
-# print(json.dumps(null_cleanup([vd]), indent=4))

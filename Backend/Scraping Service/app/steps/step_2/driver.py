@@ -3,6 +3,7 @@ import json
 
 from twisted.internet.defer import DeferredList, ensureDeferred
 from scrapy.crawler import CrawlerRunner
+from app.config import settings
 from app.utils.logger import err, info
 from app.utils.message_queue import MessageQueue
 from app.utils.storage import Storage
@@ -13,7 +14,7 @@ from app.data.site_data import ikman, patpat, riyasewana
 from .websites.ikman_scraper import IkmanScraper
 from .websites.patpat_scraper import PatpatScraper
 from .websites.riyasewana_scraper import RiyasewanaScraper
-from .settings import settings
+from .settings import settings as crawler_settings
 
 
 class Driver(Step):
@@ -21,9 +22,9 @@ class Driver(Step):
 
     def __init__(self):
         super().__init__(step_name="Details Extraction")
-        self.runner = CrawlerRunner(settings)
+        self.runner = CrawlerRunner(crawler_settings)
         self.storage = Storage(data_type="list")
-        self.batch_size = 100
+        self.batch_size = settings.SCRAPING_BATCH_SIZE
         self.websites = [
             {"data": ikman, "scraper": IkmanScraper},
             {"data": patpat, "scraper": PatpatScraper},
