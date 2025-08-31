@@ -10,6 +10,7 @@ import adminRoutes from "./routes/admin.js";
 
 const PORT = process.env.PORT;
 const SCRAPING_SERVICE_URL = process.env.SCRAPING_SERVICE_URL;
+const ML_SERVICE_URL = process.env.ML_SERVICE_URL;
 
 
 // Create Express app
@@ -25,15 +26,27 @@ app.use(cors({
 
 
 // -----------------------
+// HTTP Proxy for ML Service
+// -----------------------
+const MlServiceApiProxy = createProxyMiddleware({
+    target: ML_SERVICE_URL,
+    changeOrigin: true,
+    pathRewrite: { '^': '/predict' },
+    logger: console
+})
+app.use('/predict', MlServiceApiProxy);
+
+
+// -----------------------
 // HTTP Proxy for Scraping Service
 // -----------------------
-const apiProxy = createProxyMiddleware({
+const ScrapingServiceApiProxy = createProxyMiddleware({
     target: SCRAPING_SERVICE_URL,
     changeOrigin: true,
     pathRewrite: { '^/scraping': '' },
     logger: console
 })
-app.use('/scraping', authMiddleware, apiProxy);
+app.use('/scraping', authMiddleware, ScrapingServiceApiProxy);
 
 
 // -----------------------
