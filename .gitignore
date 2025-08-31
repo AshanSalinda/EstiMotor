@@ -11,6 +11,11 @@
 /Backend/Scraping Service/.env
 /Backend/Scraping Service/venv
 
+/Backend/ML Service/.idea
+/Backend/ML Service/.env
+/Backend/ML Service/venv
+/Backend/ML Service/**/*.pkl
+
 /Backend/Coordinator Service/.idea
 /Backend/Coordinator Service/.env
 /Backend/Coordinator Service/node_modules
