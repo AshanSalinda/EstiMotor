@@ -1,3 +1,4 @@
+from app.config import settings
 from app.db.repository.cleaned_vehicle_data_repository import cleaned_vehicles_data_repo
 from app.db.repository.imputation_stats_repository import imputation_stats_repo
 from app.db.repository.scraped_vehicle_data_repository import scraped_vehicles_data_repo as sp
@@ -13,14 +14,14 @@ class Driver(Step):
 
     def __init__(self):
         super().__init__(step_name="Data Cleaning")
-        self.batch_size = 400  # Number of vehicles to process in each batch
+        self.batch_size = settings.PROCESSING_BATCH_SIZE  # Number of vehicles to process in each batch
 
     async def run(self):
         """Start the data cleaning process."""
 
-        scraped_vehicles_data_repo.drop()
-        vehicles = sp.get_all()
-        scraped_vehicles_data_repo.save(vehicles)
+        # scraped_vehicles_data_repo.drop()
+        # vehicles = sp.get_all()
+        # scraped_vehicles_data_repo.save(vehicles)
 
         self.normalize_vehicles()
         self.generate_imputation_stats()
@@ -35,36 +36,38 @@ class Driver(Step):
 
     def normalize_vehicles(self):
         normalized_vehicle_data_repo.drop()
+        page_no = 1
 
         while True:
-            vehicles = scraped_vehicles_data_repo.get_paginated(page_size=self.batch_size)
+            vehicles = scraped_vehicles_data_repo.get_paginated(page=page_no , page_size=self.batch_size)
 
             if not vehicles:
                 # Drop the collection after cleaning is done
                 # scraped_vehicles_data_repo.drop()
                 break
 
-            standardized_vehicles = []
+            normalized_vehicles = []
             processed_ids = []
 
             for vehicle in vehicles:
                 vehicle_id = vehicle.pop('_id', None)
                 if vehicle_id:
                     processed_ids.append(vehicle_id)
-                standardized_vehicle = normalize_vehicle_data(vehicle)
-                standardized_vehicles.append(standardized_vehicle)
+                normalized_vehicle = normalize_vehicle_data(vehicle)
+                normalized_vehicles.append(normalized_vehicle)
 
-            normalized_vehicle_data_repo.save(standardized_vehicles)  # Save the standardized vehicle data
+            normalized_vehicle_data_repo.save(normalized_vehicles)  # Save the standardized vehicle data
             # scraped_vehicles_data_repo.delete_by_ids(processed_ids)  # Delete the original raw vehicle data
-            break
+            page_no += 1
 
 
     def impute_vehicles(self):
         imputation_stats = imputation_stats_repo.get_stats()
         cleaned_vehicles_data_repo.drop()
+        page_no = 1
 
         while True:
-            vehicles = normalized_vehicle_data_repo.get_paginated(page_size=self.batch_size)
+            vehicles = normalized_vehicle_data_repo.get_paginated(page=page_no, page_size=self.batch_size)
 
             if not vehicles:
                 # Drop the collection after cleaning is done
@@ -80,4 +83,4 @@ class Driver(Step):
 
             cleaned_vehicles_data_repo.save(cleaned_vehicles)  # Save the cleaned vehicle data
             # normalized_vehicle_data_repo.delete_by_ids(processed_ids)  # Delete the original raw vehicle data
-            break
+            page_no += 1

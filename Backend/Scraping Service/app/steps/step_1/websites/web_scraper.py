@@ -1,5 +1,6 @@
 import scrapy
 
+from app.config import settings
 from app.db.repository.ad_links_repository import ad_links_repo
 from app.utils.logger import err
 from app.data.site_data import ikman
@@ -16,6 +17,7 @@ class WebScraper(scrapy.Spider):
         self.page_no = site_data['page_no']
         self.ad_selector = site_data['selectors']['ads_link']
         self.ad_links = set()
+        self.batch_size = settings.SCRAPING_BATCH_SIZE
         super(WebScraper, self).__init__()
 
     def start_requests(self):
@@ -50,8 +52,8 @@ class WebScraper(scrapy.Spider):
                 ad_links_repo.save(self.name, self.ad_links)
 
             else:
-                # Save in db only if more than 100 items
-                if len(self.ad_links) > 100:
+                # Save in db only if more than batch size
+                if len(self.ad_links) > self.batch_size:
                     ad_links_repo.save(self.name, self.ad_links)
                     self.ad_links.clear()
 

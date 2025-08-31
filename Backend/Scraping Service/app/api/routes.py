@@ -8,8 +8,10 @@ router = APIRouter()
 
 @router.get("/favicon.ico")
 async def favicon():
-    """Return the favicon for the API."""
-    # return FileResponse("path/to/your/favicon.ico")
+    """
+    Return the favicon for the API.
+    This is a placeholder endpoint and not implemented.
+    """
     pass
 
 
