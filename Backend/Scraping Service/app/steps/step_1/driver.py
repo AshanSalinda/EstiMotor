@@ -1,4 +1,6 @@
 import asyncio
+import json
+
 from twisted.internet.defer import DeferredList
 from scrapy.crawler import CrawlerRunner
 from app.utils.logger import err
@@ -22,18 +24,23 @@ class Driver(Step):
 
     async def run(self):
         """Start the scraping process."""
-        MessageQueue.set_enqueue_access(True)
-        storage = Storage(data_type="dict")
+        try:
+            ad_links_repo.drop()
+            MessageQueue.set_enqueue_access(True)
+            storage = Storage(data_type="dict")
 
-        # Start crawling the spiders
-        d1 = self.runner.crawl(IkmanScraper, storage=storage, site_data=ikman)
-        d2 = self.runner.crawl(PatpatScraper, storage=storage, site_data=patpat)
-        d3 = self.runner.crawl(RiyasewanaScraper, storage=storage, site_data=riyasewana)
+            # Start crawling the spiders
+            d1 = self.runner.crawl(IkmanScraper, storage=storage, site_data=ikman)
+            d2 = self.runner.crawl(PatpatScraper, storage=storage, site_data=patpat)
+            d3 = self.runner.crawl(RiyasewanaScraper, storage=storage, site_data=riyasewana)
 
-        await DeferredList([d1, d2, d3])
-        print(storage.get_stats())
-        ad_links_repo.save(storage.get_data())
-        storage.clear()
+            await DeferredList([d1, d2, d3])
+            print(json.dumps(storage.get_stats(), indent=2))
+            storage.clear()
+
+        except Exception as e:
+            err(f"Error while running step 1: {e}")
+            raise e
 
     async def stop_scraping(self):
         """Stop the scraping process gracefully."""

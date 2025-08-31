@@ -114,7 +114,10 @@ class RequestStats:
     @staticmethod
     def process_request(request, spider):
         """This is called for every request sent"""
-        RequestStats._request_count += 1
+
+        # Count only real requests (skip auto redirects)
+        if not request.meta.get('redirect_times'):
+            RequestStats._request_count += 1
         return None
 
     @staticmethod
@@ -126,7 +129,9 @@ class RequestStats:
         else:
             index = request.meta.get('index')
             url = request.url
-            err(f"{index}\t{url}")
+
+            err(f"{index}\t{response.status}\t{url}")
+
             RequestStats._failed_requests.append({
                 'index': index,
                 'url': url,
@@ -148,11 +153,14 @@ class RequestStats:
 
         index = request.meta.get('index')
         url = request.url
-        err(f"{index}\t{url}")
+        error = type(exception).__name__
+
+        err(f"{index}\t{error}\t{url}")
+
         RequestStats._failed_requests.append({
             'index': index,
             'url': url,
-            'error': type(exception).__name__
+            'error': error
         })
 
         RequestStats._response_count += 1

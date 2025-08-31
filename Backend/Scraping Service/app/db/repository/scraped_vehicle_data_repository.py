@@ -36,6 +36,17 @@ class ScrapedVehicles:
             err(f"Failed to get paginated vehicles. Error: {e}")
             return []
 
+    def get_all(self) -> list:
+        """Fetch all vehicles from the database."""
+        try:
+            self.set_collection()
+            vehicles = list(self.collection.find({}))
+            info(f"Fetched {len(vehicles)} vehicles from the database.")
+            return vehicles
+        except Exception as e:
+            err(f"Failed to fetch vehicles from the database. Error: {e}")
+            return []
+
     def delete_by_ids(self, ids: list) -> None:
         """Deletes multiple vehicle documents by their _id."""
         try:

@@ -11,6 +11,7 @@ class WebScraper(scrapy.Spider):
         self.name = kwargs.get('name')
         self.storage = kwargs.get('storage')
         self.start_urls = kwargs.get('links')
+        self.scraped_data = kwargs.get('scraped_data')
         super(WebScraper, self).__init__()
 
     def start_requests(self):
@@ -30,8 +31,8 @@ class WebScraper(scrapy.Spider):
             url = response.url
             index = response.meta.get('index')
             vehicle_details = self.get_vehicle_info(response, {'url': url, 'index': index})
-            self.storage.add(vehicle_details)
-            print(f"{index}\t{url}")
+            self.scraped_data.append(vehicle_details)
+            # self.storage.add(vehicle_details)
 
         except Exception as e:
             err(f"{index}\t{url}\t{e}")
@@ -58,6 +59,7 @@ class WebScraper(scrapy.Spider):
             'Mileage:': MILEAGE,
             'Mileage': MILEAGE,
             'Mileage (km)': MILEAGE,
+            'Vehicle Type': CATEGORY,
         }
 
         key = key.strip() if key and isinstance(key, str) else None
@@ -87,6 +89,7 @@ class WebScraper(scrapy.Spider):
                 Engine Capacity: Must Include,
                 Fuel type: Must Include,
                 Mileage: Must Include,
+                Category: Must Include,
             }
 
         Raises:
