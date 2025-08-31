@@ -6,6 +6,7 @@ import selectItems from '../../data/selectItems.json'
 import useDisplayValueAnimation from '../../hooks/useDisplayValueAnimation';
 import useVehicleInputValidation from '../../hooks/validations/useVehicleInputValidation';
 import { getPrediction, getMakeList, getModelList } from '../../api/userApi';
+import { useAlert } from "../../context/AlertContext.jsx";
 
 function InputSection() {
     const [ isValueLoading, setIsValueLoading ] = useState(false);
@@ -16,6 +17,7 @@ function InputSection() {
     const { displayValue, animateCount } = useDisplayValueAnimation();
 
     const { getAttributes, handleSubmit } = useVehicleInputValidation();
+    const { showAlert } = useAlert();
 
     const yearOptions = selectItems.year.map((year) => ({value: year, label: year}));
     const transmissionOptions = selectItems.transmission.map((transmission) => ({value: transmission, label: transmission}));
@@ -24,23 +26,43 @@ function InputSection() {
     const onSubmit = async (formData) => {
         setIsValueLoading(true);
 
-        console.log(formData);
+        const payload = {
+            make: formData.make,
+            model: formData.model,
+            year: Number(formData.year.replace(',', '')),
+            transmission: formData.transmission,
+            fuelType: formData.fuelType,
+            engineCapacity: Number(formData.engineCapacity.replace(',', '')),
+            mileage: Number(formData.mileage.replace(',', '')),
+        };
+
+        console.log(formData)
+        console.log(payload)
 
         const element = document.getElementById('display-value');
         element.classList.add('opacity-0', 'pointer-events-none');
-        
+
         if(element.getBoundingClientRect().bottom >= window.innerHeight){
             element.scrollIntoView({ behavior: 'smooth', block: 'end' });
         }
 
-        const vehicleValue = await getPrediction();
-        setIsValueLoading(false);
+        let predictedValue = 0;
+        try {
+            predictedValue = await getPrediction(payload);
+        }
+        catch(error) {
+            showAlert(error, "apiError")
+            return;
+        }
+        finally {
+            setIsValueLoading(false);
+        }
 
         element.classList.remove('opacity-0', 'pointer-events-none', 'animate-glow');
         element.classList.add('animate-fadeIn');
-        
-        await animateCount(vehicleValue);
-        
+
+        await animateCount(predictedValue);
+
         element.classList.add('animate-glow');
         element.classList.remove('animate-fadeIn');
     };
@@ -67,8 +89,8 @@ function InputSection() {
             .then((makeList) => setMakeList(makeList))
             .finally(() => setIsMakeLoading(false));
     }, []);
-    
-    
+
+
     return (
         <div id='input-section' className='flex justify-center min-h-screen px-2 md:px-10 md:mt-40 lg:mt-28 onlyMd:min-h-fit'>
             <form onSubmit={handleSubmit(onSubmit)} className='flex lg:min-w-[48vw] flex-col items-center justify-center space-y-16 text-center bg-gradient-to-t from-[#000000] to-[#121212] rounded-2xl md:rounded-3xl md:px-16 lg:px-16'>
@@ -94,7 +116,7 @@ function InputSection() {
 
 
                 <div className='relative'>
-                    { isValueLoading &&                    
+                    { isValueLoading &&
                         <div className="absolute flex items-center justify-center w-full h-10 space-x-2">
                             <div className="w-3 h-3 bg-gray-500 rounded-full animate-[bounce_1.5s_ease-in-out_infinite]"></div>
                             <div className="w-3 h-3 bg-gray-500 rounded-full animate-[bounce_1.5s_ease-in-out_200ms_infinite]"></div>

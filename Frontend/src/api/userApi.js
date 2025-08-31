@@ -1,12 +1,11 @@
 import selectItems from '../data/selectItems.json';
+import api from './baseApi.js'
 
-export function getPrediction() {
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            resolve(Math.random() * 10000000);
-        }, 3000);
-    });
-}
+
+export const getPrediction = async (payload) => {
+    const res = await api.post("/predict", payload);
+    return res.data.value;
+};
 
 
 export function getMakeList() {

@@ -3,8 +3,8 @@ import useLogout from "../hooks/useLogout.js";
 
 
 const api = axios.create({
-    baseURL: import.meta.env.VITE_BASE_URL, // Coordinator service
-    withCredentials: true,                  // send cookies automatically
+    baseURL: import.meta.env.VITE_BE_BASE_URL, // Coordinator service
+    withCredentials: true,                     // send cookies automatically
 });
 
 // Response interceptor
