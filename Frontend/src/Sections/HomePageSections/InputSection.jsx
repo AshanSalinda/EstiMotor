@@ -36,9 +36,6 @@ function InputSection() {
             mileage: Number(formData.mileage.replace(',', '')),
         };
 
-        console.log(formData)
-        console.log(payload)
-
         const element = document.getElementById('display-value');
         element.classList.add('opacity-0', 'pointer-events-none');
 
