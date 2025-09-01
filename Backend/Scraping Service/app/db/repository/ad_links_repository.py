@@ -22,16 +22,6 @@ class AdLinks:
             # Ensure URLs are globally unique
             self.collection.create_index("url", unique=True)
 
-    def save1(self, document: dict) -> None:
-        """Saves dictionary to the database."""
-        try:
-            self.set_collection()
-            document["time"] = datetime.now(timezone.utc).isoformat()
-
-            self.collection.insert_one(document)
-            info("Ad Links saved to the database.")
-        except Exception as e:
-            err(f"Failed to save data to the {self.collection_name} database. Error: {e}")
 
     def save(self, source: str, urls: list) -> None:
         """Saves multiple URLs for a source. Avoids duplicates globally."""
@@ -59,6 +49,17 @@ class AdLinks:
         except Exception as e:
             err(f"Failed to save URLs to the {self.collection_name} database. Error: {e}")
 
+
+    def get_total_ad_count(self) -> int:
+        """Returns the total count of URLs in the collection."""
+        try:
+            self.set_collection()
+            return self.collection.count_documents({})
+        except Exception as e:
+            err(f"Failed to get total ad count from {self.collection_name}. Error: {e}")
+            return 0
+
+
     def get_by_source_in_paginated(self, source: str, page: int = 1, page_size: int = 50) -> list:
         """Returns a paginated list of URLs for a given source."""
         try:
@@ -66,7 +67,7 @@ class AdLinks:
             skip_count = (page - 1) * page_size
             cursor = self.collection.find(
                 {"source": source},
-                {"_id": 0, "url": 1}
+                {"_id": 1, "url": 1}
             ).skip(skip_count).limit(page_size)
 
             return [doc for doc in cursor]
@@ -74,6 +75,7 @@ class AdLinks:
         except Exception as e:
             err(f"Failed to get paginated URLs for {source}. Error: {e}")
             return []
+
 
     def delete_by_ids(self, ids: list) -> None:
         """Deletes multiple url documents by their _id."""
@@ -85,21 +87,6 @@ class AdLinks:
         except Exception as e:
             err(f"Failed to delete urls by ids from {self.collection_name}. Error: {e}")
 
-    def get_all(self) -> dict:
-        """Returns all documents in the 'ad_links' collection as a dictionary without '_id'."""
-        try:
-            self.set_collection()
-            document = self.collection.find_one()
-
-            if document:
-                document.pop("_id", None)  # Remove '_id' if it exists
-                return document  # Return as a dictionary
-
-            return {}
-
-        except Exception as e:
-            err(f"Failed to get all Ad links from the database. Error: {e}")
-            return {}
 
     def drop(self) -> None:
         """Drops the 'ad_links' collection."""

@@ -9,18 +9,20 @@ class WebScraper(scrapy.Spider):
 
     def __init__(self, **kwargs):
         self.name = kwargs.get('name')
-        self.storage = kwargs.get('storage')
+        self.progress_manager = kwargs.get('progress_manager')
         self.start_urls = kwargs.get('links')
         self.scraped_data = kwargs.get('scraped_data')
+        self.processed_so_far = kwargs.get('processed_so_far', 0)
         super(WebScraper, self).__init__()
 
     def start_requests(self):
         """Called when the spider starts crawling"""
-        for index, url in enumerate(self.start_urls):
+        for i, url in enumerate(self.start_urls, start=1):
+            index = self.processed_so_far + i
             yield scrapy.Request(
                 url,
                 callback=self.parse,
-                meta={'index': f"{self.name}:{index + 1}"}
+                meta={'index': f"{self.name}:{index}"}
             )
 
     def parse(self, response, **kwargs):
@@ -32,7 +34,6 @@ class WebScraper(scrapy.Spider):
             index = response.meta.get('index')
             vehicle_details = self.get_vehicle_info(response, {'url': url, 'index': index})
             self.scraped_data.append(vehicle_details)
-            # self.storage.add(vehicle_details)
 
         except Exception as e:
             err(f"{index}\t{url}\t{e}")

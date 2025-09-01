@@ -12,7 +12,7 @@ class StepsManager:
         self.is_running = False
         self.steps = [
             AdsCollecting(),
-            # DetailsExtraction(),
+            DetailsExtraction(),
             # DataCleaning()
         ]
 

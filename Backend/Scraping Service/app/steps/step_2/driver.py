@@ -1,12 +1,10 @@
 import asyncio
-import json
 
 from twisted.internet.defer import DeferredList, ensureDeferred
 from scrapy.crawler import CrawlerRunner
 from app.config import settings
 from app.utils.logger import err, info
 from app.utils.message_queue import MessageQueue
-from app.utils.storage import Storage
 from app.db.repository.ad_links_repository import ad_links_repo
 from app.db.repository.scraped_vehicle_data_repository import scraped_vehicles_data_repo
 from app.steps.shared.base_step import Step
@@ -15,6 +13,7 @@ from .websites.ikman_scraper import IkmanScraper
 from .websites.patpat_scraper import PatpatScraper
 from .websites.riyasewana_scraper import RiyasewanaScraper
 from .settings import settings as crawler_settings
+from ...utils.ProgressManager import ProgressManager
 
 
 class Driver(Step):
@@ -23,7 +22,7 @@ class Driver(Step):
     def __init__(self):
         super().__init__(step_name="Details Extraction")
         self.runner = CrawlerRunner(crawler_settings)
-        self.storage = Storage(data_type="list")
+        self.progress_manager = None
         self.batch_size = settings.SCRAPING_BATCH_SIZE
         self.websites = [
             {"data": ikman, "scraper": IkmanScraper},
@@ -36,6 +35,9 @@ class Driver(Step):
         try:
             scraped_vehicles_data_repo.drop()
             MessageQueue.set_enqueue_access(True)
+            total_links = ad_links_repo.get_total_ad_count()
+            self.progress_manager = ProgressManager(target=total_links)
+            self.progress_manager.start_scheduled_job()
 
             # Create Twisted Deferreds
             deferreds = [ensureDeferred(self.run_site_batch(site_info)) for site_info in self.websites]
@@ -43,8 +45,8 @@ class Driver(Step):
             # Wait for all sites in parallel
             await DeferredList(deferreds, fireOnOneErrback=True)
 
-            print(json.dumps(self.storage.get_stats(), indent=2))
-            self.storage.clear()
+            self.progress_manager.end()
+            ad_links_repo.drop()
 
         except Exception as e:
             err(f"Error while running step 2: {e}")
@@ -55,11 +57,11 @@ class Driver(Step):
 
         name = site_info["data"]["name"]
         scraper = site_info["scraper"]
-        page_number = 1
+        processed_so_far = 0
 
         while True:
             # Get first batch
-            batch_links = ad_links_repo.get_by_source_in_paginated(name, page=page_number, page_size=self.batch_size)
+            batch_links = ad_links_repo.get_by_source_in_paginated(name, page_size=self.batch_size)
             if not batch_links:
                 info(f"No more links for {name}.")
                 break
@@ -73,14 +75,22 @@ class Driver(Step):
                 link_urls.append(doc.get("url"))
 
             info(f"Processing {len(link_urls)} links for {name}...")
-            d = self.runner.crawl(scraper, storage=self.storage, site_data=site_info["data"], scraped_data=scraped_data, links=link_urls)
+            d = self.runner.crawl(
+                scraper,
+                site_data=site_info["data"],
+                progress_manager=self.progress_manager,
+                scraped_data=scraped_data,
+                links=link_urls,
+                processed_so_far=processed_so_far
+            )
+
             await DeferredList([d])
 
             # Save scraped data and remove processed links
             scraped_vehicles_data_repo.save(scraped_data)
             scraped_data.clear()
-            # ad_links_repo.delete_by_ids(link_ids)
-            page_number += 1
+            ad_links_repo.delete_by_ids(link_ids)
+            processed_so_far += len(link_urls)
 
     async def stop_scraping(self):
         """Stop the scraping process gracefully."""
