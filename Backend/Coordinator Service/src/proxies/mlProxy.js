@@ -6,8 +6,6 @@ export function mlProxy(ML_SERVICE_URL) {
         target: ML_SERVICE_URL,
         changeOrigin: true,
         logger: console,
-        pathRewrite: (path, req) => {
-            return '/predict';  // Always forward as '/predict'
-        }
+        pathRewrite: () => '/predict'  // Always forward as '/predict'
     });
 }
