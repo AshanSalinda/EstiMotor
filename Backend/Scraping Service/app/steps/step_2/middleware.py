@@ -19,8 +19,8 @@ class RequestStats:
     @staticmethod
     def spider_opened(spider):
         """Called when the spider is opened."""
-        if not RequestStats._pm:
-            RequestStats._pm = spider.progress_manager
+        # if not RequestStats._pm:
+        #     RequestStats._pm = spider.progress_manager
 
     @staticmethod
     def spider_closed(spider, reason):
@@ -30,20 +30,20 @@ class RequestStats:
     def process_request(request, spider):
         """This is called for every request sent"""
         if not request.meta.get('redirect_times'):
-            RequestStats._pm.add_request()
+            spider.progress_manager.add_request()
         return None
 
     @staticmethod
     def process_response(request, response, spider):
         """This is called when responded"""
         if 200 <= response.status < 300:
-            RequestStats._pm.add_response(request.url)
+            spider.progress_manager.add_response(request.url)
             print(f"{request.meta.get('index')}\t{request.url}")
         else:
             index = request.meta.get('index')
             url = request.url
             err(f"{index}\t{response.status}\t{url}")
-            RequestStats._pm.add_response(request.url, {
+            spider.progress_manager.add_response(request.url, {
                 'index': index,
                 'url': url,
                 'error': response.status
@@ -57,7 +57,7 @@ class RequestStats:
         url = request.url
         error = type(exception).__name__
         err(f"{index}\t{error}\t{url}")
-        RequestStats._pm.add_response(request.url, {
+        spider.progress_manager.add_response(request.url, {
             'index': index,
             'url': url,
             'error': error

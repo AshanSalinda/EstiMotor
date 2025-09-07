@@ -13,6 +13,7 @@ from .websites.ikman_scraper import IkmanScraper
 from .websites.patpat_scraper import PatpatScraper
 from .websites.riyasewana_scraper import RiyasewanaScraper
 from .settings import settings
+from ...utils.ProgressManager import ProgressManager
 
 
 class Driver(Step):
@@ -28,15 +29,18 @@ class Driver(Step):
             ad_links_repo.drop()
             MessageQueue.set_enqueue_access(True)
             storage = Storage(data_type="dict")
+            progress_manager = ProgressManager(target=0)
+            progress_manager.start_scheduled_job()
 
             # Start crawling the spiders
-            d1 = self.runner.crawl(IkmanScraper, storage=storage, site_data=ikman)
-            d2 = self.runner.crawl(PatpatScraper, storage=storage, site_data=patpat)
-            d3 = self.runner.crawl(RiyasewanaScraper, storage=storage, site_data=riyasewana)
+            d1 = self.runner.crawl(IkmanScraper, progress_manager=progress_manager, site_data=ikman)
+            d2 = self.runner.crawl(PatpatScraper, progress_manager=progress_manager, site_data=patpat)
+            d3 = self.runner.crawl(RiyasewanaScraper, progress_manager=progress_manager, site_data=riyasewana)
 
             await DeferredList([d1, d2, d3])
             print(json.dumps(storage.get_stats(), indent=2))
             storage.clear()
+            progress_manager.end()
 
         except Exception as e:
             err(f"Error while running step 1: {e}")

@@ -11,7 +11,7 @@ class WebScraper(scrapy.Spider):
 
     def __init__(self, **kwargs):
         site_data = kwargs.get('site_data')
-        self.storage = kwargs.get('storage')
+        self.progress_manager = kwargs.get('progress_manager')
         self.name = site_data['name']
         self.start_urls = [site_data['url']]
         self.page_no = site_data['page_no']

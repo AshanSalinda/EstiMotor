@@ -63,7 +63,7 @@ class ProgressManager:
             return None
 
         current_time = datetime.now()
-        time_taken = str(current_time - self.start_time).split('.')[0]
+        duration = str(current_time - self.start_time).split('.')[0]
 
         try:
             success_rate = str(int((self.success_count * 100) / self.request_count)) + '%'
@@ -71,7 +71,7 @@ class ProgressManager:
             success_rate = '0%'
 
         return {
-            'Time Taken': time_taken,
+            'Duration': duration,
             'Success Rate': success_rate,
             'Request Count': self.request_count,
             'Success Count': self.success_count
@@ -98,7 +98,7 @@ class ProgressManager:
         try:
             percentage = round((self.response_count * 100) / self.target, 2)
         except ZeroDivisionError:
-            percentage = 0.0
+            percentage = -1
 
         self.response_count += 1
         MessageQueue.enqueue({'progress': percentage, 'log': url})

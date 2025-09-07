@@ -25,6 +25,17 @@ class ScrapedVehicles:
         except Exception as e:
             err(f"Failed to save data to the {self.collection_name} database. Error: {e}")
 
+    def get_all(self) -> list:
+        """Fetch all vehicles from the database."""
+        try:
+            self.set_collection()
+            vehicles = list(self.collection.find({}))
+            info(f"Fetched {len(vehicles)} vehicles from the database.")
+            return vehicles
+        except Exception as e:
+            err(f"Failed to fetch vehicles from the database. Error: {e}")
+            return []
+
     def get_paginated(self, page: int = 1, page_size: int = 50) -> list:
         """Returns a paginated list of vehicle documents."""
         try:

@@ -46,7 +46,7 @@ class Driver(Step):
             await DeferredList(deferreds, fireOnOneErrback=True)
 
             self.progress_manager.end()
-            ad_links_repo.drop()
+            # ad_links_repo.drop()
 
         except Exception as e:
             err(f"Error while running step 2: {e}")

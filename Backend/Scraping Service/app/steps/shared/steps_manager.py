@@ -5,6 +5,7 @@ from app.utils.logger import info
 from app.steps.step_1.driver import Driver as AdsCollecting
 from app.steps.step_2.driver import Driver as DetailsExtraction
 from app.steps.step_3.driver import Driver as DataCleaning
+from app.steps.step_4.driver import Driver as ModelTraining
 
 
 class StepsManager:
@@ -13,7 +14,8 @@ class StepsManager:
         self.steps = [
             AdsCollecting(),
             DetailsExtraction(),
-            # DataCleaning()
+            DataCleaning(),
+            ModelTraining()
         ]
 
     async def run(self):
