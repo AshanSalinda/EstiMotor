@@ -1,87 +1,57 @@
-import 'dotenv/config'
+import 'dotenv/config';
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import { createProxyMiddleware } from "http-proxy-middleware";
-import { authMiddleware } from "./middleware/auth.js";
-import { connectDB } from "./config/db.js";
 import adminRoutes from "./routes/admin.js";
-
+import { connectDB } from "./config/db.js";
+import { mlProxy } from "./proxies/mlProxy.js";
+import { scrapingProxy } from "./proxies/scrapingProxy.js";
+import { wsProxy } from "./proxies/wsProxy.js";
+import { authMiddleware } from "./middleware/auth.js";
 
 const PORT = process.env.PORT;
 const SCRAPING_SERVICE_URL = process.env.SCRAPING_SERVICE_URL;
 const ML_SERVICE_URL = process.env.ML_SERVICE_URL;
 
-
-// Create Express app
 const app = express();
-app.use(express.json());
 app.use(cookieParser());
-
 
 app.use(cors({
     origin: process.env.FRONTEND_URL,
     credentials: true
 }));
 
+// -----------------------
+// Proxies
+// -----------------------
+const ws = wsProxy(SCRAPING_SERVICE_URL);
+app.use("/ws", ws);
+app.use("/scraping", authMiddleware, scrapingProxy(SCRAPING_SERVICE_URL));
+app.use("/predict", mlProxy(ML_SERVICE_URL));
 
 // -----------------------
-// HTTP Proxy for ML Service
-// -----------------------
-const MlServiceApiProxy = createProxyMiddleware({
-    target: ML_SERVICE_URL,
-    changeOrigin: true,
-    pathRewrite: { '^': '/predict' },
-    logger: console
-})
-app.use('/predict', MlServiceApiProxy);
-
-
-// -----------------------
-// HTTP Proxy for Scraping Service
-// -----------------------
-const ScrapingServiceApiProxy = createProxyMiddleware({
-    target: SCRAPING_SERVICE_URL,
-    changeOrigin: true,
-    pathRewrite: { '^/scraping': '' },
-    logger: console
-})
-app.use('/scraping', authMiddleware, ScrapingServiceApiProxy);
-
-
-// -----------------------
-// WebSocket Proxy
-// -----------------------
-const wsProxy = createProxyMiddleware({
-    target: SCRAPING_SERVICE_URL.replace(/^http/, 'ws'),
-    changeOrigin: true,
-    pathRewrite: { '^/ws': '' },
-    logger: console
-});
-app.use('/ws', authMiddleware, wsProxy);
-
-
-// -----------------------
-// General Express logger
+// Logger
 // -----------------------
 app.use((req, res, next) => {
-    console.log(`[Express] ${req.method.padEnd(6)} ${req.url}`);
+    // Listen for the response to finish
+    res.on("finish", () => {
+        console.log(`[Express] ${req.method.padEnd(6)} ${req.originalUrl} [${res.statusCode}]`);
+    });
     next();
 });
 
-
 // -----------------------
-// Native routes
+// Native routes (with JSON parser)
 // -----------------------
-app.use("/admin", adminRoutes);
-
+app.use("/admin", express.json(), adminRoutes);
 
 // -----------------------
 // Start server
 // -----------------------
-const server = app.listen(PORT, async() => {
+const server = app.listen(PORT, async () => {
     await connectDB();
     console.log(`🚀 Coordinator Service running on port ${PORT}`);
 });
-// Attach WS upgrade handler
-server.on('upgrade', wsProxy.upgrade);
+
+// Attach WebSocket upgrade
+server.on("upgrade", ws.upgrade);
