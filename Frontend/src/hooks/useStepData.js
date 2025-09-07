@@ -18,11 +18,7 @@ export default function useStepData() {
     const allLogs = useRef(stepsInfo.map(() => []));
     const allStepStats = useRef(stepsInfo.map(() => ({
         'Status': "Pending",
-        'Time Taken': "00:00:00",
-        'Success Rate': "0%",
-        'Request Count': 0,
-        'Success Count': 0,
-        'Failure Count': 0,
+        'Duration': "00:00:00"
     })));
 
     const { showAlert } = useAlert();
@@ -67,11 +63,21 @@ export default function useStepData() {
     };
 
     const handleNext = () => {
-        const nextStep = activeStep < 0 ? 0 : (activeStep + 1) % stepsInfo.length;
+        const step_count = stepsInfo.length;
+        // If model training step is completed, mark the next step also as completed
+        if (activeStep === step_count - 2) {
+            allStepStats.current[step_count - 1] = {'Model Training Completed': ''}
+            setExpandedStep(step_count - 1);
+            setActiveStep(step_count);
+            setProgress(0);
+        }
+        else {
+            const nextStep = activeStep < 0 ? 0 : (activeStep + 1) % step_count;
 
-        setExpandedStep(nextStep);
-        setActiveStep(nextStep);
-        setProgress(0);
+            setExpandedStep(nextStep);
+            setActiveStep(nextStep);
+            setProgress(0);
+        }
     };
 
     const handleRunning = () => {
