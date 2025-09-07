@@ -12,7 +12,7 @@ export default function useWebSocket(props) {
     useEffect(() => {
         // Initialize WebSocket
         if (!isWsConnected && !ws.current) {
-            const url = (import.meta.env.VITE_BASE_URL || "")
+            const url = (import.meta.env.VITE_BE_BASE_URL || "")
                 .replace(/^http/, 'ws')
 
             ws.current = new WebSocket(url);
