@@ -6,7 +6,7 @@ export function authMiddleware(req, res, next) {
     const token = req.cookies?.token; // JWT stored in cookie
 
     if (!token) {
-        return res.status(401).json({ message: "Unauthorized session" });
+        return res.status(401).json({ message: "Unauthorized" });
     }
 
     try {
