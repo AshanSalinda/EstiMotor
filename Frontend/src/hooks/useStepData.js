@@ -6,15 +6,15 @@ import useWebSocket from "./useWebSocket.js";
 
 
 export default function useStepData() {
-    const [isLoading, setIsLoading] = useState(false);
     const [isWsConnected, setIsWsConnected] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const [isRunning, setIsRunning] = useState(false);
+    const [isFailed, setIsFailed] = useState(false);
     const [progress, setProgress] = useState(0);
     const [activeStep, setActiveStep] = useState(0);
     const [expandedStep, setExpandedStep] = useState(0);
     const [expandedStepLogs, setExpandedStepLogs] = useState([]);
     const [expandedStepStats, setExpandedStepStats] = useState({});
-    const [isFailed, setIsFailed] = useState(false);
-    const [isRunning, setIsRunning] = useState(false);
     const allLogs = useRef(stepsInfo.map(() => []));
     const allStepStats = useRef(stepsInfo.map(() => ({
         'Status': "Pending",
@@ -29,7 +29,7 @@ export default function useStepData() {
         const newLogs = payload?.logs?.reverse();
         const newControl = payload?.control;
 
-        if(newProgress) {
+        if(newProgress !== undefined && newProgress !== null) {
             setProgress(newProgress);
         }
 
@@ -51,12 +51,14 @@ export default function useStepData() {
         }
 
         if(newControl) {
-            if(newControl === 'completed') {
-                handleNext();
-
-                if (activeStep === 1) {
+            switch (newControl) {
+                case 'completed':
+                    handleNext();
+                    break;
+                case 'failed':
+                    setIsFailed(true);
                     setIsRunning(false);
-                }
+                    break;
             }
         }
 
@@ -66,9 +68,17 @@ export default function useStepData() {
         const step_count = stepsInfo.length;
         // If model training step is completed, mark the next step also as completed
         if (activeStep === step_count - 2) {
-            allStepStats.current[step_count - 1] = {'Model Training Completed': ''}
+            allStepStats.current[step_count - 1] = `Model Training Completed at: ${new Date().toLocaleTimeString()} on ${new Date().toLocaleDateString()}`;
             setExpandedStep(step_count - 1);
             setActiveStep(step_count);
+            setProgress(0);
+            setIsRunning(false);
+        }
+        // If last step is the active step
+        else if (activeStep === step_count) {
+            allLogs.current = stepsInfo.map(() => [])
+            setExpandedStep(0);
+            setActiveStep(0);
             setProgress(0);
         }
         else {
@@ -103,17 +113,14 @@ export default function useStepData() {
                 .then((data) => {
                     showAlert(data?.message);
                     setIsRunning(true);
+                    setIsFailed(false);
                     setActiveStep(0);
                     setExpandedStep(0);
                     setProgress(0);
                     allLogs.current = stepsInfo.map(() => []);
                     allStepStats.current = stepsInfo.map(() => ({
                         'Status': "Pending",
-                        'Time Taken': "00:00:00",
-                        'Success Rate': "0%",
-                        'Request Count': 0,
-                        'Success Count': 0,
-                        'Failure Count': 0,
+                        'Duration': "00:00:00"
                     }));
                 })
                 .catch(error => showAlert(error, "apiError"))

@@ -29,12 +29,20 @@ const Content = ({ content }) => {
         <div className='box-border p-4 rounded-md bg-dark-400'>
             <table>
                 <tbody>
-                    { Object.keys(content).map((key) => 
-                        <tr key={key}>
-                            <td className='pr-4'>{key}:</td>
-                            <td className='w-20'>{content[key]}</td>
+                    {
+                        (typeof content === 'object')
+                        ?
+                        Object.keys(content).map((key) =>
+                            <tr key={key}>
+                                <td className='pr-4'>{key}:</td>
+                                <td className='w-20'>{content[key]}</td>
+                            </tr>
+                        )
+                        :
+                        <tr>
+                            <td className='w-52'>{content}</td>
                         </tr>
-                    )}
+                    }
                 </tbody>
             </table>
         </div>
