@@ -48,6 +48,14 @@ class Driver(Step):
 
     def on_failure(self, failure):
         self.stop_progress()
+        MessageQueue.enqueue({
+            'stats': {
+                'Status': 'Failed',
+                'Duration': str(datetime.now() - self.start_time).split('.')[0] if self.start_time else "0",
+            },
+            'progress': 0,
+            'control': 'failed'
+        })
         err(f"❌ Model training failed. Error: {failure}")
 
     def start_progress(self):
