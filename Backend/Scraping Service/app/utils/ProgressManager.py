@@ -2,6 +2,7 @@ import json
 
 from datetime import datetime
 from twisted.internet import reactor
+from twisted.internet.defer import DeferredLock
 from app.utils.message_queue import MessageQueue
 
 
@@ -25,8 +26,12 @@ class ProgressManager:
         self.response_count = 0
         self.success_count = 0
         self.failed_requests = []
+
         self.scheduled_job_started = False
         self.job_interval = job_interval
+
+        # lock for thread-safety when multiple spiders update at the same time
+        self.lock = DeferredLock()
 
 
     def start_scheduled_job(self):
@@ -79,29 +84,38 @@ class ProgressManager:
 
 
     def add_request(self):
-        """Increment the request counter."""
-        self.request_count += 1
+        """Increment request counter safely."""
+
+        def _inc():
+            self.request_count += 1
+
+        return self.lock.run(_inc)
+
 
     def add_response(self, url: str, error: dict | None = None):
         """
-        Increment the response counter and track successes or failures.
+        Increment response counter and track result safely.
 
         Args:
             url (str): URL of the processed request.
             error (dict | None): Optional error information if request failed.
         """
-        if error:
-            self.failed_requests.append(error)
-        else:
-            self.success_count += 1
 
-        try:
-            percentage = round((self.response_count * 100) / self.target, 2)
-        except ZeroDivisionError:
-            percentage = -1
+        def _update():
+            if error:
+                self.failed_requests.append(error)
+            else:
+                self.success_count += 1
 
-        self.response_count += 1
-        MessageQueue.enqueue({'progress': percentage, 'log': url})
+            try:
+                percentage = round((self.response_count * 100) / self.target, 2)
+            except ZeroDivisionError:
+                percentage = -1
+
+            self.response_count += 1
+            MessageQueue.enqueue({'progress': percentage, 'log': url})
+
+        return self.lock.run(_update)
 
 
     def end(self):

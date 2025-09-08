@@ -18,15 +18,21 @@ class StepsManager:
             ModelTraining()
         ]
 
+
     async def run(self):
         info("Running all steps...")
         self.is_running = True
 
-        for step in self.steps:
-            await step.start()
+        try:
+            for step in self.steps:
+                await step.start()
+            info("Finished all steps...")
+        except Exception as e:
+            info(f"Error occurred")
+            raise e
+        finally:
+            self.is_running = False
 
-        info("Finished all steps...")
-        self.is_running = False
 
     def start(self):
         """Run steps inside the Twisted reactor thread."""
