@@ -3,6 +3,7 @@ import pandas as pd
 from datetime import datetime
 from app.data.parameters import *
 from app.utils.logger import warn
+from app.utils.message_queue import MessageQueue
 
 
 def normalize_vehicle_data(vehicle) -> dict:
@@ -95,7 +96,7 @@ def clean_make(make) -> str | None:
     return make.strip().title() if make else None
 
 
-def null_cleanup(vehicles: list) -> list[dict]:
+def null_cleanup(vehicles: list, progress_manager) -> list[dict]:
     """
     Handle null values in vehicle dataset:
       1. Drop records missing essential fields (PRICE, YOM, MAKE).
@@ -114,10 +115,13 @@ def null_cleanup(vehicles: list) -> list[dict]:
     # Identify and log dropped rows
     dropped_rows = df.loc[~df.index.isin(df_cleaned.index)]
     if not dropped_rows.empty:
+        count = 0
         for _, row in dropped_rows.iterrows():
+            count += 1
             missing = [field for field in essential_fields if pd.isna(row[field])]
             url = row.get("url", "N/A")
-            warn(f"Dropped vehicle: {url}\tmissing={missing}")
+            progress_manager.log({'action': 'Dropped', 'message': f'Missing {missing[0]}', 'url': url})
+        progress_manager.add_dropped(count)
 
     # Count nulls before filling
     null_counts = df_cleaned.isnull().sum()
@@ -134,6 +138,7 @@ def null_cleanup(vehicles: list) -> list[dict]:
         if null_counts.get(field, 0) > 0:
             placeholder = '-1' if field in [MILEAGE, ENGINE_CAPACITY] else 'N/A'
             warn(f"Filled {null_counts[field]} nulls in {field} with {placeholder}")
+            progress_manager.add_modified(int(null_counts[field]))
 
     # Convert cleaned DataFrame back to list of dicts
     return df_cleaned.to_dict(orient="records")

@@ -10,7 +10,7 @@ settings = {
     ),
     "DOWNLOADER_MIDDLEWARES": {
         'app.steps.shared.middleware.rate_limit.RateLimitMiddleware': 400,
-        'app.steps.step_1.middleware.RequestStats': 543,
+        'app.steps.step_2.middleware.RequestStats': 543,
         'app.steps.shared.middleware.cloudflare.CloudflareBypassMiddleware': 560,
         'app.steps.shared.middleware.retry_429.Retry429Middleware': 563
     }

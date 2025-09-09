@@ -6,20 +6,22 @@ from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 
 router = APIRouter()
 active_connections: List[WebSocket] = []
-send_task: asyncio.Task = None
+send_task: asyncio.Task | None = None
+_cancel_lock = asyncio.Lock()
 
 
 async def cancel_sender_task():
     """Cancel the send_messages coroutine."""
     global send_task
-    if send_task:
-        send_task.cancel()  # Cancel the task
-        MessageQueue.clear()
-        try:
-            await send_task  # Wait for the task to be cancelled
-            send_task = None
-        except asyncio.CancelledError:
-            send_task = None
+    async with _cancel_lock:  # Ensure only one canceller at a time
+        if send_task:
+            send_task.cancel()  # Cancel the task
+            MessageQueue.clear()
+            try:
+                await send_task  # Wait for the task to be cancelled
+                send_task = None
+            except asyncio.CancelledError:
+                send_task = None
 
 
 async def broadcast(message: List[dict]):

@@ -1,4 +1,5 @@
 import time
+from twisted.internet import reactor, defer
 from app.data.site_data import MAX_REQUESTS_PER_MINUTE
 
 class RateLimitMiddleware:
@@ -27,14 +28,17 @@ class RateLimitMiddleware:
                     elapsed = time.time() - last_time
 
                     # Minimum interval allowed between requests
-                    rate = 60 / limit
+                    min_interval = 60 / limit
 
                     # Delay required to maintain rate limit
-                    delay = max(0, rate - elapsed)
+                    delay = max(0, min_interval - elapsed)
 
                     # Enforce delay if requests are too fast
                     if delay > 0:
-                        time.sleep(delay)
+                        d = defer.Deferred()
+                        reactor.callLater(delay, d.callback, None)
+                        self.last_request_time[site] = time.time() + delay
+                        return d  # Only this request is delayed
 
                 # Update last request time for this site
                 self.last_request_time[site] = time.time()

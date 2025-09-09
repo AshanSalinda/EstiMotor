@@ -25,6 +25,15 @@ class ScrapedVehicles:
         except Exception as e:
             err(f"Failed to save data to the {self.collection_name} database. Error: {e}")
 
+    def get_total_ad_count(self) -> int:
+        """Returns the total count of vehicle documents."""
+        try:
+            self.set_collection()
+            return self.collection.count_documents({})
+        except Exception as e:
+            err(f"Failed to get total ad count. Error: {e}")
+            return 0
+
     def get_paginated(self, page: int = 1, page_size: int = 50) -> list:
         """Returns a paginated list of vehicle documents."""
         try:

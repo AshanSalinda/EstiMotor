@@ -1,9 +1,8 @@
 import pandas as pd
 from datetime import datetime
-from app.utils.logger import warn
 
 
-def impute_missing_fields(cleaned_vehicles: list, imputation_stats: dict):
+def impute_missing_fields(cleaned_vehicles: list, imputation_stats: dict, progress_manager):
     median_mileage_by_yom = imputation_stats.get("median_mileage_by_yom", {})
     mode_engine_capacity_by_make = imputation_stats.get("mode_engine_capacity_by_make", {})
     mode_transmission_by_make = imputation_stats.get("mode_transmission_by_make", {})
@@ -16,7 +15,8 @@ def impute_missing_fields(cleaned_vehicles: list, imputation_stats: dict):
             yom = row.get('yom')
             imputation = 0 if yom == current_year else median_mileage_by_yom.get(str(yom), None)
             if imputation is not None:
-                warn(f"Updating mileage '{row['mileage']}' to {imputation}: {row['url']}")
+                progress_manager.add_modified()
+                progress_manager.log({'action': 'Modified', 'message': f'mileage to {imputation}', 'url': row['url']})
             return imputation
         return row['mileage']
 
@@ -25,7 +25,8 @@ def impute_missing_fields(cleaned_vehicles: list, imputation_stats: dict):
             make = row.get('make', '')
             imputation = mode_engine_capacity_by_make.get(make, None)
             if imputation is not None:
-                warn(f"Updating engine_capacity '{row['engine_capacity']}' to {imputation}: {row['url']}")
+                progress_manager.add_modified()
+                progress_manager.log({'action': 'Modified', 'message': f'engine_capacity to {imputation}', 'url': row['url']})
             return imputation
         return row['engine_capacity']
 
@@ -34,7 +35,8 @@ def impute_missing_fields(cleaned_vehicles: list, imputation_stats: dict):
             make = row.get('make', '')
             imputation = mode_transmission_by_make.get(make, None)
             if imputation is not None:
-                warn(f"Updating transmission '{row['transmission']}' to {imputation}: {row['url']}")
+                progress_manager.add_modified()
+                progress_manager.log({'action': 'Modified', 'message': f'transmission to {imputation}', 'url': row['url']})
             return imputation
         return row['transmission']
 
