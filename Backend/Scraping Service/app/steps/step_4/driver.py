@@ -1,79 +1,31 @@
-import json
-
 import requests
-from datetime import datetime
-from twisted.internet import reactor, threads
+from twisted.internet import threads
 from app.config import settings
 from app.steps.shared.base_step import Step
-from app.utils.logger import err, info
-from app.utils.message_queue import MessageQueue
+from app.steps.step_4.progress_manager import ProgressManager
+from app.utils.logger import info
 
 
 class Driver(Step):
     def __init__(self):
         super().__init__(step_name="Model Training")
-        self.start_time = None
-        self.is_progress_emitting = False
 
     async def run(self):
-        info("Starting model training process...")
-        self.start_time = datetime.now()
-        self.start_progress()
+        progress_manager = ProgressManager()
 
-        # Run blocking request in a thread
-        d = threads.deferToThread(requests.post, settings.MODAL_TRAINING_API)
-        d.addCallback(self.on_success)
-        d.addErrback(self.on_failure)
+        try:
+            info("Starting model training process...")
+            progress_manager.start_progress_emitter()
 
-    def on_success(self, response):
-        self.stop_progress()
-        info("Model training completed successfully.")
+            # Run blocking request in a thread
+            response = await threads.deferToThread(
+                requests.post,
+                settings.MODAL_TRAINING_API
+            )
 
-        result = response.json()
-        metrics = result.get("evaluation_metrics", {})
-        stats = {
-            'Status': 'Completed',
-            'Duration': str(datetime.now() - self.start_time).split('.')[0],
-            'MAE': metrics.get("MAE", "N/A"),
-            'MAPE': metrics.get("MAPE", "N/A"),
-            'R2': metrics.get("R2", "N/A"),
-        }
+            progress_manager.stop_progress_emitter()
+            progress_manager.complete(response)
 
-        print(json.dumps(stats, indent=2))
-
-        MessageQueue.enqueue({
-            'stats': stats,
-            'control': 'completed'
-        })
-
-    def on_failure(self, failure):
-        self.stop_progress()
-        MessageQueue.enqueue({
-            'stats': {
-                'Status': 'Failed',
-                'Duration': str(datetime.now() - self.start_time).split('.')[0] if self.start_time else "0",
-            },
-            'progress': 0,
-            'control': 'failed'
-        })
-        err(f"❌ Model training failed. Error: {failure}")
-
-    def start_progress(self):
-        MessageQueue.set_enqueue_access(True)
-        if not self.is_progress_emitting:
-            self.is_progress_emitting = True
-            self.emit_progress_task()
-
-    def stop_progress(self):
-        self.is_progress_emitting = False
-
-    def emit_progress_task(self):
-        if self.is_progress_emitting:
-            MessageQueue.enqueue({
-                'stats': {
-                    'Status': 'Running',
-                    'Duration': str(datetime.now() - self.start_time).split('.')[0] if self.start_time else "0",
-                },
-                'progress': -1
-            })
-            reactor.callLater(1, self.emit_progress_task)
+        except Exception as e:
+            progress_manager.stop_progress_emitter()
+            raise e  # propagate to StepsManager

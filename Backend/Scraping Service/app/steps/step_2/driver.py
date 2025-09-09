@@ -1,10 +1,10 @@
 import asyncio
-
 from twisted.internet.defer import DeferredList, ensureDeferred
 from scrapy.crawler import CrawlerRunner
 from app.config import settings
 from app.utils.logger import err, info
 from app.utils.message_queue import MessageQueue
+from app.utils.progress_manager import ProgressManager
 from app.db.repository.ad_links_repository import ad_links_repo
 from app.db.repository.scraped_vehicle_data_repository import scraped_vehicles_data_repo
 from app.steps.shared.base_step import Step
@@ -13,7 +13,6 @@ from .websites.ikman_scraper import IkmanScraper
 from .websites.patpat_scraper import PatpatScraper
 from .websites.riyasewana_scraper import RiyasewanaScraper
 from .settings import settings as crawler_settings
-from ...utils.ProgressManager import ProgressManager
 
 
 class Driver(Step):
@@ -30,6 +29,7 @@ class Driver(Step):
             {"data": riyasewana, "scraper": RiyasewanaScraper},
         ]
 
+
     async def run(self):
         """Run all websites iteratively in batch mode."""
         try:
@@ -37,7 +37,7 @@ class Driver(Step):
             MessageQueue.set_enqueue_access(True)
             total_links = ad_links_repo.get_total_ad_count()
             self.progress_manager = ProgressManager(target=total_links)
-            self.progress_manager.start_scheduled_job()
+            self.progress_manager.start_progress_emitter()
 
             # Create Twisted Deferreds
             deferreds = [ensureDeferred(self.run_site_batch(site_info)) for site_info in self.websites]
@@ -45,12 +45,16 @@ class Driver(Step):
             # Wait for all sites in parallel
             await DeferredList(deferreds, fireOnOneErrback=True)
 
-            self.progress_manager.end()
+            # Drop the ad links collection after all scraping is done
             # ad_links_repo.drop()
 
+            self.progress_manager.stop_progress_emitter()
+            self.progress_manager.complete()
+
         except Exception as e:
-            err(f"Error while running step 2: {e}")
-            raise e
+            self.progress_manager.stop_progress_emitter()
+            raise e  # propagate to StepsManager
+
 
     async def run_site_batch(self, site_info: dict):
         """Scrape a single website batch-wise."""
@@ -91,6 +95,7 @@ class Driver(Step):
             scraped_data.clear()
             ad_links_repo.delete_by_ids(link_ids)
             processed_so_far += len(link_urls)
+
 
     async def stop_scraping(self):
         """Stop the scraping process gracefully."""

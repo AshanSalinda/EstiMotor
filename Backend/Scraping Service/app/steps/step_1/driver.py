@@ -1,11 +1,9 @@
 import asyncio
-import json
-
 from twisted.internet.defer import DeferredList
 from scrapy.crawler import CrawlerRunner
 from app.utils.logger import err
 from app.utils.message_queue import MessageQueue
-from app.utils.storage import Storage
+from app.utils.progress_manager import ProgressManager
 from app.db.repository.ad_links_repository import ad_links_repo
 from app.steps.shared.base_step import Step
 from app.data.site_data import ikman, patpat, riyasewana
@@ -13,7 +11,6 @@ from .websites.ikman_scraper import IkmanScraper
 from .websites.patpat_scraper import PatpatScraper
 from .websites.riyasewana_scraper import RiyasewanaScraper
 from .settings import settings
-from ...utils.ProgressManager import ProgressManager
 
 
 class Driver(Step):
@@ -23,14 +20,15 @@ class Driver(Step):
         super().__init__(step_name="Ads Collecting")
         self.runner = CrawlerRunner(settings)
 
+
     async def run(self):
         """Start the scraping process."""
+        progress_manager = ProgressManager(target=0)
+
         try:
             ad_links_repo.drop()
             MessageQueue.set_enqueue_access(True)
-            storage = Storage(data_type="dict")
-            progress_manager = ProgressManager(target=0)
-            progress_manager.start_scheduled_job()
+            progress_manager.start_progress_emitter()
 
             # Start crawling the spiders
             d1 = self.runner.crawl(IkmanScraper, progress_manager=progress_manager, site_data=ikman)
@@ -38,13 +36,14 @@ class Driver(Step):
             d3 = self.runner.crawl(RiyasewanaScraper, progress_manager=progress_manager, site_data=riyasewana)
 
             await DeferredList([d1, d2, d3])
-            print(json.dumps(storage.get_stats(), indent=2))
-            storage.clear()
-            progress_manager.end()
+
+            progress_manager.stop_progress_emitter()
+            progress_manager.complete()
 
         except Exception as e:
-            err(f"Error while running step 1: {e}")
-            raise e
+            progress_manager.stop_progress_emitter()
+            raise e  # propagate to StepsManager
+
 
     async def stop_scraping(self):
         """Stop the scraping process gracefully."""

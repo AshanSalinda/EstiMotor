@@ -5,7 +5,7 @@ from app.db.repository.scraped_vehicle_data_repository1 import scraped_vehicles_
 from app.db.repository.scraped_vehicle_data_repository import scraped_vehicles_data_repo
 from app.db.repository.normalized_vehicle_data_repository import normalized_vehicle_data_repo
 from app.steps.shared.base_step import Step
-from app.steps.step_3.ProgressManager import ProgressManager
+from app.steps.step_3.progress_manager import ProgressManager
 from app.steps.step_3.impute import impute_missing_fields
 from app.steps.step_3.normalize import normalize_vehicle_data, null_cleanup
 from app.utils.message_queue import MessageQueue
@@ -22,19 +22,23 @@ class Driver(Step):
     async def run(self):
         """Start the data cleaning process."""
 
-        scraped_vehicles_data_repo.drop()
-        vehicles = sp.get_all()
-        scraped_vehicles_data_repo.save(vehicles)
+        try:
+            scraped_vehicles_data_repo.drop()
+            vehicles = sp.get_all()
+            scraped_vehicles_data_repo.save(vehicles)
 
-        MessageQueue.set_enqueue_access(True)
+            MessageQueue.set_enqueue_access(True)
 
-        total_count = scraped_vehicles_data_repo.get_total_ad_count()
-        self.progress_manager = ProgressManager(total=total_count)
+            total_count = scraped_vehicles_data_repo.get_total_ad_count()
+            self.progress_manager = ProgressManager(total=total_count)
 
-        self.normalize_vehicles()
-        self.generate_imputation_stats()
-        self.impute_vehicles()
-        self.progress_manager.emit_progress(completed=True)
+            self.normalize_vehicles()
+            self.generate_imputation_stats()
+            self.impute_vehicles()
+            self.progress_manager.emit_progress(completed=True)
+
+        except Exception as e:
+            raise e  # propagate to StepsManager
 
 
     @staticmethod

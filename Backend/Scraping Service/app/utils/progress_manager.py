@@ -27,23 +27,28 @@ class ProgressManager:
         self.success_count = 0
         self.failed_requests = []
 
-        self.scheduled_job_started = False
+        self.is_progress_emitting = False
         self.job_interval = job_interval
 
         # lock for thread-safety when multiple spiders update at the same time
         self.lock = DeferredLock()
 
 
-    def start_scheduled_job(self):
+    def start_progress_emitter(self):
         """Start a repeating scheduled task to send stats every second."""
-        if not self.scheduled_job_started:
-            self.scheduled_job_started = True
-            reactor.callLater(self.job_interval, self.scheduled_task)
+        if not self.is_progress_emitting:
+            self.is_progress_emitting = True
+            reactor.callLater(self.job_interval, self._emit_progress)
 
 
-    def scheduled_task(self):
+    def stop_progress_emitter(self):
+        """Stops emitting progress updates."""
+        self.is_progress_emitting = False
+
+
+    def _emit_progress(self):
         """Periodically Sends the stats to MessageQueue and schedules itself again if still active."""
-        if self.scheduled_job_started:
+        if self.is_progress_emitting:
             stats = self.calculate_stats()
             MessageQueue.enqueue({'stats': {
                 'Status': 'Running',
@@ -52,7 +57,7 @@ class ProgressManager:
             }})
 
             # Schedule next call
-            reactor.callLater(self.job_interval, self.scheduled_task)
+            reactor.callLater(self.job_interval, self._emit_progress)
 
 
     def calculate_stats(self):
@@ -118,7 +123,7 @@ class ProgressManager:
         return self.lock.run(_update)
 
 
-    def end(self):
+    def complete(self):
         """
         Finalize the progress tracking.
 
@@ -147,7 +152,7 @@ class ProgressManager:
             'Failed Requests': self.failed_requests,
         }, indent=2))
 
-        self.scheduled_job_started = False
+        self.is_progress_emitting = False
         self.start_time = None
         self.target = 0
         self.request_count = 0
