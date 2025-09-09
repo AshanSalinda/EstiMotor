@@ -20,9 +20,9 @@ class Settings:
         exit()
 
     # Modal API
-    MODAL_TRAINING_API: str = os.getenv("MODAL_TRAINING_API")
-    if not MODAL_TRAINING_API:
-        err("MODAL_TRAINING_API is not set in environment variables!")
+    MODAL_TRAINING_URL: str = os.getenv("MODAL_TRAINING_URL")
+    if not MODAL_TRAINING_URL:
+        err("MODAL_TRAINING_URL is not set in environment variables!")
         exit(1)
 
     SCRAPING_BATCH_SIZE: int = int(os.getenv("SCRAPING_BATCH_SIZE", "100"))

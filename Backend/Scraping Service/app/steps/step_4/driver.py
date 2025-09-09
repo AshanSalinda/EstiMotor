@@ -20,7 +20,7 @@ class Driver(Step):
             # Run blocking request in a thread
             response = await threads.deferToThread(
                 requests.post,
-                settings.MODAL_TRAINING_API
+                settings.MODAL_TRAINING_URL
             )
 
             progress_manager.stop_progress_emitter()
