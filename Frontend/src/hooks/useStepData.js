@@ -34,10 +34,15 @@ export default function useStepData() {
         }
 
         if(newStats) {
-            allStepStats.current[activeStep] = newStats;
+            const overridden_stats = {
+                ...(allStepStats.current[activeStep]),
+                ...newStats,
+            }
+
+            allStepStats.current[activeStep] = overridden_stats;
 
             if (activeStep === expandedStep) {
-                setExpandedStepStats(newStats);
+                setExpandedStepStats(overridden_stats);
             }
         }
 
@@ -58,6 +63,9 @@ export default function useStepData() {
                 case 'failed':
                     setIsFailed(true);
                     setIsRunning(false);
+                    if (progress === -1) {
+                        setProgress(0);
+                    }
                     break;
             }
         }
