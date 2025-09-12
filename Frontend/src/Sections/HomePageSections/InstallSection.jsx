@@ -28,7 +28,7 @@ export default function InstallationSection() {
     };
 
     return (
-        <div className="p-8 mt-12 text-center text-white rounded-md shadow-lg ">
+        <div className="p-8 text-center text-white rounded-md shadow-lg ">
             <h2 className="text-2xl font-bold">Install Our App for a Better Experience!</h2>
             <p className="mt-4">Enjoy easy access to all features of EstiMotor on your home screen.</p>
             <div className='flex justify-center mt-6 space-x-4'>

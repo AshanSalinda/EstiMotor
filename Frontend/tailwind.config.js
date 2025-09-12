@@ -29,12 +29,17 @@ export default {
                     '0%': { textShadow: '5px 0 var(--glow-spade-0) var(--glowBlue), -5px 0 var(--glow-spade) var(--glowBlue), 0 -5px var(--glow-spade) var(--glowBlue), 0 5px var(--glow-spade) var(--glowBlue)' },
                     '30%': { textShadow: '12px 12px var(--glow-spade) var(--glowBlue-50), -12px 12px var(--glow-spade) var(--glowBlue-50), 12px -12px var(--glow-spade) var(--glowBlue-50), -12px -12px var(--glow-spade) var(--glowBlue-50)' },
                     '100%': { textShadow: '1px 0 20px var(--glowBlue), -1px 0 20px var(--glowBlue), 0 -1px 20px var(--glowBlue), 0 1px 20px var(--glowBlue)' },
+                },
+                expand: {
+                    '0%': { maxHeight: '0', opacity: 0, overflow: 'hidden', transform: "scale(0.98)" },
+                    '100%': { maxHeight: '10000px', opacity: 1, overflow: 'visible', transform: "scale(1)" },
                 }
             },
             animation: {
                 gradientMove: 'gradientMove 3.5s ease 500ms forwards',
                 fadeIn: 'fadeIn 1s ease',
                 glow: 'glow 3.5s ease',
+                expand: 'expand 2s ease',
             },
             colors: {
                 dark: {

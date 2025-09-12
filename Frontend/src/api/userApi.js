@@ -4,7 +4,7 @@ import api from './baseApi.js'
 
 export const getPrediction = async (payload) => {
     const res = await api.post("/predict", payload);
-    return res.data.value;
+    return res.data;
 };
 
 

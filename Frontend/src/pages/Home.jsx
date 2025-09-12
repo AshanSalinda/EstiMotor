@@ -1,5 +1,5 @@
 import LandingSection from '../sections/HomePageSections/LandingSection';
-import InputSection from '../sections/HomePageSections/InputSection';
+import ValuationSection from '../Sections/HomePageSections/ValuationSection.jsx';
 import InstallSection from '../sections/HomePageSections/InstallSection';
 import Footer from '../sections/HomePageSections/Footer';
 
@@ -7,7 +7,7 @@ function HomePage() {
     return (
         <div>
             <LandingSection />
-            <InputSection />
+            <ValuationSection />
             <InstallSection />
             <Footer />
         </div>

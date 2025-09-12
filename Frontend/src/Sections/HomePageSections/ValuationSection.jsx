@@ -7,13 +7,15 @@ import useDisplayValueAnimation from '../../hooks/useDisplayValueAnimation';
 import useVehicleInputValidation from '../../hooks/validations/useVehicleInputValidation';
 import { getPrediction, getMakeList, getModelList } from '../../api/userApi';
 import { useAlert } from "../../context/AlertContext.jsx";
+import VehicleAdCard from '../../Components/VehicleAdCard';
 
-function InputSection() {
+function ValuationSection() {
     const [ isValueLoading, setIsValueLoading ] = useState(false);
     const [ isMakeLoading, setIsMakeLoading ] = useState(false);
     const [ isModelLoading, setIsModelLoading ] = useState(false);
     const [ makeList, setMakeList ] = useState([]);
     const [ modelList, setModelList ] = useState([]);
+    const [ SimilarAds, setSimilarAds ] = useState([]);
     const { displayValue, animateCount } = useDisplayValueAnimation();
 
     const { getAttributes, handleSubmit } = useVehicleInputValidation();
@@ -25,6 +27,7 @@ function InputSection() {
 
     const onSubmit = async (formData) => {
         setIsValueLoading(true);
+        setSimilarAds([]); // Clear previous ads
 
         const payload = {
             make: formData.make,
@@ -44,8 +47,12 @@ function InputSection() {
         }
 
         let predictedValue = 0;
+        let ads = [];
+        
         try {
-            predictedValue = await getPrediction(payload);
+            const result = await getPrediction(payload);
+            predictedValue = result?.predictedValue || 0;
+            ads = result?.similarAds || [];
         }
         catch(error) {
             showAlert(error, "apiError")
@@ -58,10 +65,16 @@ function InputSection() {
         element.classList.remove('opacity-0', 'pointer-events-none', 'animate-glow');
         element.classList.add('animate-fadeIn');
 
+        if (ads.length > 0) {
+            element.scrollIntoView({behavior: 'smooth', block: 'center'});
+        }
+
         await animateCount(predictedValue);
 
         element.classList.add('animate-glow');
         element.classList.remove('animate-fadeIn');
+
+        setSimilarAds(ads);
     };
 
 
@@ -89,12 +102,12 @@ function InputSection() {
 
 
     return (
-        <div id='input-section' className='flex justify-center min-h-screen px-2 md:px-10 md:mt-40 lg:mt-28 onlyMd:min-h-fit'>
-            <form onSubmit={handleSubmit(onSubmit)} className='flex lg:min-w-[48vw] flex-col items-center justify-center space-y-16 text-center bg-gradient-to-t from-[#000000] to-[#121212] rounded-2xl md:rounded-3xl md:px-16 lg:px-16'>
+        <div id='input-section' className='min-h-screen px-2 md:px-10 md:mt-40 lg:mt-28 onlyMd:min-h-fit'>
+            <form onSubmit={handleSubmit(onSubmit)} className='flex mx-auto lg:w-fit flex-col items-center justify-center space-y-16 text-center bg-gradient-to-t from-[#000000] to-[#121212] rounded-xl md:rounded-2xl md:px-16 lg:px-16'>
 
-                <h1 className='px-10 pt-20 text-3xl font-semibold text-gray-200 max-w-[32rem] md:text-3xl'>Know Your Vehicle's Market Value Instantly</h1>
+                <h1 className='pt-20 text-center font-semibold text-gray-200 max-w-60 md:max-w-[26rem] text-2xl md:text-3xl'>Know Your Vehicle's Market Value Instantly</h1>
 
-                <div className="grid w-[85vw] md:w-fit grid-cols-1 gap-3 md:grid-cols-2 md:gap-x-4 md:gap-y-2 lg:w-[36rem]">
+                <div className="grid w-[80vw] md:w-fit lg:w-[36rem] grid-cols-1 gap-3 md:grid-cols-2 md:gap-x-4 md:gap-y-2">
                     <Select {...getAttributes("Manufacturer", "make", handleMakeChange)} options={makeList} isLoading={isMakeLoading} />
                     <Select {...getAttributes("Model")} options={modelList} isLoading={isModelLoading} />
                     <Select {...getAttributes("Make Year", "year")} options={yearOptions} />
@@ -125,10 +138,21 @@ function InputSection() {
                         {`LKR ${displayValue}`}
                     </p>
                 </div>
-
             </form>
+
+            {/* Vehicle Ads Grid */}
+            {SimilarAds.length > 0 && (
+                <div id="ads-grid" className="w-full pt-16 pb-24 md:pb-28 lg:pb-32 lg:px-10 animate-expand">
+                    <h2 className="text-2xl font-semibold text-gray-200 ml-2 mb-6">Similar Vehicle Ads</h2>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        {SimilarAds.map((ad, idx) => (
+                            <VehicleAdCard key={idx} ad={ad} />
+                        ))}
+                    </div>
+                </div>
+            )}
         </div>
     )
 }
 
-export default InputSection
+export default ValuationSection
