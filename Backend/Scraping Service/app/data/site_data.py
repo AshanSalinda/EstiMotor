@@ -7,6 +7,8 @@ patpat = {
     'selectors': {
         'ads_link': 'section.container-hero > div:nth-last-child(2) > div > div:first-child > div > div:first-child > a',
         'next_button': 'section.container-hero > div:nth-last-child(2) > div:last-child > span:last-child.cursor-not-allowed',
+        'title': 'section.left-div > section:first-child h2',
+        'image': 'section.left-div > section:nth-child(2) img',
         'price': 'section.middle-div > div:first-child > div:first-child > span',
         'rows': 'section.detail-page-purple-gradient > div > div li',
     }

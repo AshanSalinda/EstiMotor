@@ -19,11 +19,11 @@ class RiyasewanaScraper(WebScraper):
         table = response.css(self.table[0])
         is_desktop_response = True
 
-        if image and isinstance(image, str):
-            vehicle_details['image'] = image.strip()
-
         if title and isinstance(title, str):
             vehicle_details['title'] = title.strip()
+
+        if image and isinstance(image, str):
+            vehicle_details['image'] = image.strip()
 
         if not table:
             is_desktop_response = False
