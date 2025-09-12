@@ -7,6 +7,8 @@ patpat = {
     'selectors': {
         'ads_link': 'section.container-hero > div:nth-last-child(2) > div > div:first-child > div > div:first-child > a',
         'next_button': 'section.container-hero > div:nth-last-child(2) > div:last-child > span:last-child.cursor-not-allowed',
+        'title': 'section.left-div > section:first-child h2',
+        'image': 'section.left-div > section:nth-child(2) img',
         'price': 'section.middle-div > div:first-child > div:first-child > span',
         'rows': 'section.detail-page-purple-gradient > div > div li',
     }
@@ -23,6 +25,7 @@ ikman = {
         'pagination': 'span.ads-count-text--1UYy_',
         'category': 'div.link-text--1Tj-x',
         'price': 'div.amount--3NTpl',
+        'title': 'h1.title--3s1R8',
         'table': 'div.ad-meta--17Bqm div.full-width--XovDn',
     }
 }
@@ -38,7 +41,9 @@ riyasewana = {
         'next_button': 'div.pagination a:last-of-type',
         'current_button': 'div.pagination a.current',
         'category': ['a.vml:first-child', 'a.fm2:first-child'],
-        'table': ['table.moret tr', '#content > div.card-row']
+        'title': 'div#content > h1',
+        'image': 'img#main-image',
+        'table': ['table.moret tr', 'div#content > div.card-row']
     }
 }
 

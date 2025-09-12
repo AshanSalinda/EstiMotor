@@ -46,7 +46,7 @@ class Driver(Step):
             await DeferredList(deferreds, fireOnOneErrback=True)
 
             # Drop the ad links collection after all scraping is done
-            # ad_links_repo.drop()
+            ad_links_repo.drop()
 
             self.progress_manager.stop_progress_emitter()
             self.progress_manager.complete()

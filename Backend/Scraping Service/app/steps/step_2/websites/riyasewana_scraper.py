@@ -8,13 +8,22 @@ class RiyasewanaScraper(WebScraper):
         selectors = kwargs.get('site_data')['selectors']
         name = kwargs.get('site_data')['name']
         self.category = selectors['category']
+        self.title = selectors['title']
+        self.image = selectors['image']
         self.table = selectors['table']
         super(RiyasewanaScraper, self).__init__(name=name, **kwargs)
 
     def get_vehicle_info(self, response, vehicle_details):
+        image = response.css(f'{self.image}::attr(src)').get()
+        title = response.css(f'{self.title}::text').get()
         table = response.css(self.table[0])
-
         is_desktop_response = True
+
+        if title and isinstance(title, str):
+            vehicle_details['title'] = title.strip()
+
+        if image and isinstance(image, str):
+            vehicle_details['image'] = image.strip()
 
         if not table:
             is_desktop_response = False
