@@ -3,6 +3,7 @@ import asyncio
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 from app.schema.schema import VehicleFeatures, PricePrediction
+from app.service.get_ads import ads
 from app.service.model import model
 from app.utils.logger import err
 
@@ -55,7 +56,12 @@ async def predict_vehicle_value(vehicle: VehicleFeatures):
     try:
         vehicle_dict = vehicle.model_dump()
         predicted_value = model.predict(vehicle_dict)
-        return PricePrediction(message="Prediction successful.", value=predicted_value)
+        similar_ads = ads
+        return PricePrediction(
+            message="Prediction successful.",
+            predictedValue=predicted_value,
+            similarAds=similar_ads
+        )
 
     except Exception as e:
         err(f"Prediction failed: {e}")
