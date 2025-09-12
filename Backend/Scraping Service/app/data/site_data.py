@@ -25,6 +25,7 @@ ikman = {
         'pagination': 'span.ads-count-text--1UYy_',
         'category': 'div.link-text--1Tj-x',
         'price': 'div.amount--3NTpl',
+        'title': 'h1.title--3s1R8',
         'table': 'div.ad-meta--17Bqm div.full-width--XovDn',
     }
 }
