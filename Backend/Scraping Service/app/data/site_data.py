@@ -38,7 +38,9 @@ riyasewana = {
         'next_button': 'div.pagination a:last-of-type',
         'current_button': 'div.pagination a.current',
         'category': ['a.vml:first-child', 'a.fm2:first-child'],
-        'table': ['table.moret tr', '#content > div.card-row']
+        'title': 'div#content > h1',
+        'image': 'img#main-image',
+        'table': ['table.moret tr', 'div#content > div.card-row']
     }
 }
 
