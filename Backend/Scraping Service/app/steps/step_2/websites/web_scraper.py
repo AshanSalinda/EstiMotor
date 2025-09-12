@@ -32,7 +32,7 @@ class WebScraper(scrapy.Spider):
         try:
             url = response.url
             index = response.meta.get('index')
-            vehicle_details = self.get_vehicle_info(response, {'url': url, 'index': index})
+            vehicle_details = self.get_vehicle_info(response, {'url': url})
             self.scraped_data.append(vehicle_details)
 
         except Exception as e:

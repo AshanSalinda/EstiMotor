@@ -3,7 +3,6 @@ import pandas as pd
 from datetime import datetime
 from app.data.parameters import *
 from app.utils.logger import warn
-from app.utils.message_queue import MessageQueue
 
 
 def normalize_vehicle_data(vehicle) -> dict:
@@ -13,6 +12,8 @@ def normalize_vehicle_data(vehicle) -> dict:
 
     return {
         'url': url,
+        'image': vehicle.get('image', '').strip(),
+        'title': vehicle.get('title', '').strip(),
         PRICE: clean_numbers(vehicle.get(PRICE, '')),
         MILEAGE: clean_numbers(vehicle.get(MILEAGE, '')),
         YOM: clean_yom(vehicle.get(YOM, '')),
