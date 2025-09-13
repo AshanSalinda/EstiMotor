@@ -3,7 +3,7 @@ import asyncio
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 from app.schema.schema import VehicleFeatures, PricePrediction
-from app.service.get_ads import ads
+from app.service.get_ads import get_similar_ads
 from app.service.model import model
 from app.utils.logger import err
 
@@ -55,8 +55,11 @@ async def start_scraping_task() -> JSONResponse:
 async def predict_vehicle_value(vehicle: VehicleFeatures):
     try:
         vehicle_dict = vehicle.model_dump()
-        predicted_value = model.predict(vehicle_dict)
-        similar_ads = ads
+        loop = asyncio.get_running_loop()
+
+        predicted_value = await loop.run_in_executor(None, model.predict, vehicle_dict)
+        similar_ads = await loop.run_in_executor(None, get_similar_ads, vehicle_dict, 8)
+
         return PricePrediction(
             message="Prediction successful.",
             predictedValue=predicted_value,
