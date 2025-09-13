@@ -19,15 +19,21 @@ class RiyasewanaScraper(WebScraper):
         table = response.css(self.table[0])
         is_desktop_response = True
 
+        if not table:
+            is_desktop_response = False
+            table = response.css(self.table[1])
+
+        category = self.get_category(is_desktop_response, response)
+        if category and isinstance(category, str):
+            vehicle_details[CATEGORY] = category.strip()
+        else:
+            raise RuntimeError(f"Banned Category")
+
         if title and isinstance(title, str):
             vehicle_details['title'] = title.strip()
 
         if image and isinstance(image, str):
             vehicle_details['image'] = image.strip()
-
-        if not table:
-            is_desktop_response = False
-            table = response.css(self.table[1])
 
         if is_desktop_response:
             price = None
@@ -35,7 +41,8 @@ class RiyasewanaScraper(WebScraper):
             # Remove unnecessary upper rows
             while price is None:
                 if not table:
-                    print(response.body.decode())
+                    # print(response.body.decode())
+                    raise RuntimeError("Price not found")
                 tr1 = table.pop(0)
                 key = tr1.css('td:nth-child(3) p::text').get()
                 if key == 'Price':
@@ -69,8 +76,6 @@ class RiyasewanaScraper(WebScraper):
                     if key and value and isinstance(value, str):
                         vehicle_details[key] = value.strip()
 
-        vehicle_details[CATEGORY] = self.get_category(is_desktop_response, response)
-
         return vehicle_details
 
 
@@ -84,6 +89,7 @@ class RiyasewanaScraper(WebScraper):
                 link = response.css(f"{self.category[1]}::attr(href)").get()
 
             if link and isinstance(link, str):
+                # https://riyasewana.com/search/{category}/...
                 link = link.strip()
                 link = link.replace("//riyasewana.com/search/", "")
                 category = link.split('/')[0]

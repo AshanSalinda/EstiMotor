@@ -7,8 +7,10 @@ from .web_scraper import WebScraper
 class IkmanScraper(WebScraper):
 
     def __init__(self, **kwargs):
-        selectors = kwargs.get('site_data')['selectors']
-        name = kwargs.get('site_data')['name']
+        site_data = kwargs.get('site_data')
+        selectors = site_data['selectors']
+        name = site_data['name']
+        self.banned_categories = site_data['banned_categories']
         self.category = selectors['category']
         self.price = selectors['price']
         self.title = selectors['title']
@@ -31,7 +33,10 @@ class IkmanScraper(WebScraper):
             vehicle_details['title'] = title.strip()
 
         if category and isinstance(category, str):
-            vehicle_details[CATEGORY] = category.strip()
+            category = category.strip()
+            if category in self.banned_categories:
+                raise RuntimeError(f"Banned Category")
+            vehicle_details[CATEGORY] = category
 
         for row in table:
             key = self.get_key(row.css('div:nth-child(1)::text').get())
@@ -40,6 +45,8 @@ class IkmanScraper(WebScraper):
 
             if key and value and isinstance(value, str):
                 vehicle_details[key] = value.strip()
+            elif value == 'SUV / 4x4':
+                vehicle_details[CATEGORY] = 'SUV'
 
         vehicle_details['image'] = self.get_image(response).strip()
 

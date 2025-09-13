@@ -22,6 +22,7 @@ def normalize_vehicle_data(vehicle) -> dict:
         TRANSMISSION: clean_transmission(vehicle.get(TRANSMISSION, ''), url),
         FUEL_TYPE: clean_fuel_type(vehicle.get(FUEL_TYPE, ''), url),
         MODEL: clean_model(vehicle.get(MODEL, '')),
+        CATEGORY: clean_category(vehicle.get(CATEGORY, ''))
     }
 
 
@@ -97,6 +98,35 @@ def clean_make(make) -> str | None:
     return make.strip().title() if make else None
 
 
+def clean_category(category: str) -> str | None:
+    """Normalize vehicle categories across websites."""
+    if not category:
+        return None
+
+    # Special handling for patpat car categories
+    if category.lower().startswith('car'):
+        return "car"
+
+    mapping = {
+        "car": ["cars", "Cars"],
+        "van": ["vans", "Vans", "Van"],
+        "suv": ["suvs", "pickups", "SUV"],
+        "motorcycle": ["motorcycles", "Motorbikes", "Bike"],
+        "bus": ["buses", "Buses", "Bus"],
+        "lorry": ["lorries", "crew-cabs", "Lorries & Trucks", "Truck"],
+        "three_wheeler": ["three-wheels", "Three Wheelers", "Three wheeler"],
+        "tractor": ["tractors", "Tractors", "Land"],
+        "heavy_duty": ["heavy-duties", "Heavy Duty", "Heavy"],
+        "other": ["others"]
+    }
+
+    for norm, keywords in mapping.items():
+        if any(category == k for k in keywords):
+            return norm
+
+    return None
+
+
 def null_cleanup(vehicles: list, progress_manager) -> list[dict]:
     """
     Handle null values in vehicle dataset:
@@ -133,12 +163,15 @@ def null_cleanup(vehicles: list, progress_manager) -> list[dict]:
     df_cleaned[FUEL_TYPE] = df_cleaned[FUEL_TYPE].fillna('N/A')
     df_cleaned[MODEL] = df_cleaned[MODEL].fillna('N/A')
     df_cleaned[TRANSMISSION] = df_cleaned[TRANSMISSION].fillna('N/A')
+    df_cleaned[CATEGORY] = df_cleaned[CATEGORY].fillna('other')
 
     # Log how many placeholders were filled
-    for field in [MILEAGE, ENGINE_CAPACITY, FUEL_TYPE, MODEL, TRANSMISSION]:
+    for field in [MILEAGE, ENGINE_CAPACITY, FUEL_TYPE, MODEL, TRANSMISSION, CATEGORY]:
         if null_counts.get(field, 0) > 0:
             placeholder = '-1' if field in [MILEAGE, ENGINE_CAPACITY] else 'N/A'
-            warn(f"Filled {null_counts[field]} nulls in {field} with {placeholder}")
+            if field == CATEGORY:
+                placeholder = 'other'
+            warn(f"Filled {null_counts[field]} nulls in '{field}' with '{placeholder}'")
             progress_manager.add_modified(int(null_counts[field]))
 
     # Convert cleaned DataFrame back to list of dicts

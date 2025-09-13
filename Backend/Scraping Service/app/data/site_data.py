@@ -27,7 +27,15 @@ ikman = {
         'price': 'div.amount--3NTpl',
         'title': 'h1.title--3s1R8',
         'table': 'div.ad-meta--17Bqm div.full-width--XovDn',
-    }
+    },
+    'banned_categories': [
+        'Auto Parts & Accessories',
+        'Rentals',
+        'Auto Services',
+        'Bicycles',
+        'Maintenance and Repair',
+        'Boats & Water Transport',
+    ]
 }
 
 riyasewana = {
@@ -44,7 +52,10 @@ riyasewana = {
         'title': 'div#content > h1',
         'image': 'img#main-image',
         'table': ['table.moret tr', 'div#content > div.card-row']
-    }
+    },
+    'banned_categories': [
+        'bicycles'
+    ]
 }
 
 CLOUDFLARE_PROTECTED = [

@@ -23,9 +23,9 @@ class Driver(Step):
         """Start the data cleaning process."""
 
         try:
-            scraped_vehicles_data_repo.drop()
-            vehicles = sp.get_all()
-            scraped_vehicles_data_repo.save(vehicles)
+            # scraped_vehicles_data_repo.drop()
+            # vehicles = sp.get_all()
+            # scraped_vehicles_data_repo.save(vehicles)
 
             MessageQueue.set_enqueue_access(True)
 

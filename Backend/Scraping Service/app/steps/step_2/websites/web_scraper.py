@@ -48,6 +48,7 @@ class WebScraper(scrapy.Spider):
             'Model': MODEL,
             'Year of Manufacture:': YOM,
             'Model Year': YOM,
+            'Model year:': YOM,
             'YOM': YOM,
             'Transmission:': TRANSMISSION,
             'Transmission': TRANSMISSION,
