@@ -26,9 +26,9 @@ class VehicleFeatures(BaseModel):
 
 
 class PricePrediction(BaseModel):
-    predictedValue: float = Field(..., description="Estimated resale price of the vehicle.")
-    similarAds: list = Field(..., description="Similar Vehicle Ads")
-    message: str = Field(..., description="Status message.")
+    predictedValue: float
+    similarAds: list
+    message: str
 
     class Config:
         json_schema_extra = {
@@ -48,4 +48,3 @@ class PricePrediction(BaseModel):
                 ]
             }
         }
-        validate_by_name = True
