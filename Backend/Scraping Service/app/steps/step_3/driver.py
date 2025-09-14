@@ -1,6 +1,7 @@
 from app.config import settings
 from app.db.repository.cleaned_vehicle_data_repository import cleaned_vehicles_data_repo
 from app.db.repository.imputation_stats_repository import imputation_stats_repo
+from app.db.repository.make_model_mapping_repository import make_model_mapping_repo
 from app.db.repository.scraped_vehicle_data_repository1 import scraped_vehicles_data_repo as sp
 from app.db.repository.scraped_vehicle_data_repository import scraped_vehicles_data_repo
 from app.db.repository.normalized_vehicle_data_repository import normalized_vehicle_data_repo
@@ -35,6 +36,7 @@ class Driver(Step):
             self.normalize_vehicles()
             self.generate_imputation_stats()
             self.impute_vehicles()
+            self.generate_make_model_category_mapping()
             self.progress_manager.emit_progress(completed=True)
 
         except Exception as e:
@@ -49,6 +51,7 @@ class Driver(Step):
         imputation_stats_repo.save(imputation_stats)
 
     def normalize_vehicles(self):
+        """Normalize raw vehicle data."""
         normalized_vehicle_data_repo.drop()
 
         while True:
@@ -75,6 +78,7 @@ class Driver(Step):
 
 
     def impute_vehicles(self):
+        """Impute missing fields in vehicles."""
         imputation_stats = imputation_stats_repo.get_stats()
         cleaned_vehicles_data_repo.drop()
 
@@ -96,3 +100,11 @@ class Driver(Step):
             self.progress_manager.emit_progress(processed_count=len(vehicles))
             cleaned_vehicles_data_repo.save(cleaned_vehicles)  # Save the cleaned vehicle data
             normalized_vehicle_data_repo.delete_by_ids(processed_ids)  # Delete the original raw vehicle data
+
+
+    @staticmethod
+    def generate_make_model_category_mapping():
+        """Generate the make-model-category mapping."""
+        mappings = cleaned_vehicles_data_repo.get_make_model_category_map()
+        make_model_mapping_repo.drop()
+        make_model_mapping_repo.save(mappings)
