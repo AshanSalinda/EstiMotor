@@ -3,6 +3,7 @@ import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import adminRoutes from "./routes/admin.js";
+import userRoutes from "./routes/user.js";
 import { connectDB } from "./config/db.js";
 import { mlProxy } from "./proxies/mlProxy.js";
 import { scrapingProxy } from "./proxies/scrapingProxy.js";
@@ -43,7 +44,9 @@ app.use((req, res, next) => {
 // -----------------------
 // Native routes (with JSON parser)
 // -----------------------
-app.use("/admin", express.json(), adminRoutes);
+app.use(express.json());
+app.use("/api", userRoutes);
+app.use("/admin", adminRoutes);
 
 // -----------------------
 // Start server
