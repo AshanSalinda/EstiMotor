@@ -5,14 +5,14 @@ import Select from '../../components/input/Select';
 import selectItems from '../../data/selectItems.json'
 import useDisplayValueAnimation from '../../hooks/useDisplayValueAnimation';
 import useVehicleInputValidation from '../../hooks/validations/useVehicleInputValidation';
-import { getPrediction, getMakeList, getModelList } from '../../api/userApi';
+import { getPrediction, getMakeModelMapping } from '../../api/userApi';
 import { useAlert } from "../../context/AlertContext.jsx";
 import VehicleAdCard from '../../Components/VehicleAdCard';
 
 function ValuationSection() {
     const [ isValueLoading, setIsValueLoading ] = useState(false);
     const [ isMakeLoading, setIsMakeLoading ] = useState(false);
-    const [ isModelLoading, setIsModelLoading ] = useState(false);
+    const [ makeModelMap, setMakeModelMap ] = useState({});
     const [ makeList, setMakeList ] = useState([]);
     const [ modelList, setModelList ] = useState([]);
     const [ SimilarAds, setSimilarAds ] = useState([]);
@@ -31,7 +31,8 @@ function ValuationSection() {
 
         const payload = {
             make: formData.make,
-            model: formData.model,
+            model: formData.model.value,
+            category: formData.model.category,
             year: Number(formData.year.replace(',', '')),
             transmission: formData.transmission,
             fuelType: formData.fuelType,
@@ -79,13 +80,10 @@ function ValuationSection() {
 
 
     const handleMakeChange = (e) => {
-        if (e?.target?.value) {
-            setIsModelLoading(true);
-            setModelList([]);
+        const makeValue = e?.target?.value;
 
-            getModelList(e?.target?.value)
-                .then((modelList) => setModelList(modelList))
-                .finally(() => setIsModelLoading(false));
+        if (makeValue) {
+            setModelList(makeModelMap[makeValue] || []);
         } else {
             setModelList([]);
         }
@@ -95,8 +93,22 @@ function ValuationSection() {
     useEffect(() => {
         setIsMakeLoading(true);
 
-        getMakeList()
-            .then((makeList) => setMakeList(makeList))
+        getMakeModelMapping()
+            .then((mappings) => {
+                const map = {};
+                const makeOptions = mappings.map(mapping => {
+                    map[mapping.make] = mapping.models.map(model => ({
+                        label: model.name,
+                        value: model.name,
+                        category: model.category
+                    }));
+                    return { label: mapping.make, value: mapping.make };
+                });
+                console.log(map)
+                setMakeModelMap(map);
+                setMakeList(makeOptions);
+            })
+            .catch(error => showAlert(error, "apiError"))
             .finally(() => setIsMakeLoading(false));
     }, []);
 
@@ -107,9 +119,9 @@ function ValuationSection() {
 
                 <h1 className='pt-20 text-center font-semibold text-gray-200 max-w-60 md:max-w-[26rem] text-2xl md:text-3xl'>Know Your Vehicle's Market Value Instantly</h1>
 
-                <div className="grid w-[80vw] md:w-fit lg:w-[36rem] grid-cols-1 gap-3 md:grid-cols-2 md:gap-x-4 md:gap-y-2">
+                <div className="grid w-[80vw] md:w-[36rem] grid-cols-1 gap-3 md:grid-cols-2 md:gap-x-4 md:gap-y-2">
                     <Select {...getAttributes("Manufacturer", "make", handleMakeChange)} options={makeList} isLoading={isMakeLoading} />
-                    <Select {...getAttributes("Model")} options={modelList} isLoading={isModelLoading} />
+                    <Select {...getAttributes("Model")} options={modelList} isFullOptionRequired={true} />
                     <Select {...getAttributes("Make Year", "year")} options={yearOptions} />
                     <Select {...getAttributes("Transmission")} options={transmissionOptions} />
                     <Select {...getAttributes("Fuel Type")} options={fuelTypeOptions} />
