@@ -39,14 +39,15 @@ class Model:
         if self.model is None:
             self._load_model()
 
+        input_vehicle = vehicle_data.copy()
         current_year = datetime.now().year
-        vehicle_data["age"] = current_year - vehicle_data.pop("year")
-        vehicle_data["mileage_per_year"] = (
-            vehicle_data["mileage"] / vehicle_data["age"]
-            if not vehicle_data["age"] == 0 else 0
+        input_vehicle["age"] = current_year - input_vehicle.pop("year")
+        input_vehicle["mileage_per_year"] = (
+            input_vehicle["mileage"] / input_vehicle["age"]
+            if not input_vehicle["age"] == 0 else 0
         )
 
-        input_pd = pd.DataFrame([vehicle_data])
+        input_pd = pd.DataFrame([input_vehicle])
 
         # Predict
         predicted_price = np.expm1(self.model.predict(input_pd)[0])
@@ -77,7 +78,7 @@ class Model:
         # Feature Engineering
         # ------------------------------
         current_year = datetime.now().year
-        df["age"] = current_year - df["yom"].astype(int)
+        df["age"] = current_year - df["year"].astype(int)
 
         # Avoid division by zero
         df["mileage_per_year"] = df.apply(
@@ -88,7 +89,7 @@ class Model:
         # ------------------------------
         # Features / Target
         # ------------------------------
-        X = df[["make", "model", "engine_capacity", "mileage", "transmission",
+        X = df[["make", "model", "category", "engine_capacity", "mileage", "transmission",
                 "fuel_type", "age", "mileage_per_year"]]
         y = df["price"]
 
@@ -105,7 +106,7 @@ class Model:
         # ------------------------------
         # Preprocessor
         # ------------------------------
-        categorical = ["make", "model", "transmission", "fuel_type"]
+        categorical = ["make", "model", "category", "transmission", "fuel_type"]
         numeric = ["engine_capacity", "mileage", "age", "mileage_per_year"]
 
         preprocessor = ColumnTransformer(

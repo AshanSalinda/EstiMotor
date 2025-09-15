@@ -4,6 +4,7 @@ from pydantic import BaseModel, Field
 class VehicleFeatures(BaseModel):
     make: str
     model: str
+    category: str
     year: int
     mileage: float
     fuel_type: str = Field(..., alias="fuelType")
@@ -15,6 +16,7 @@ class VehicleFeatures(BaseModel):
             "example": {
                 "make": "Toyota",
                 "model": "Corolla",
+                "category": "car",
                 "year": 2019,
                 "mileage": 35000,
                 "fuelType": "Petrol",
@@ -26,9 +28,9 @@ class VehicleFeatures(BaseModel):
 
 
 class PricePrediction(BaseModel):
-    predictedValue: float = Field(..., description="Estimated resale price of the vehicle.")
-    similarAds: list = Field(..., description="Similar Vehicle Ads")
-    message: str = Field(..., description="Status message.")
+    predictedValue: float
+    similarAds: list
+    message: str
 
     class Config:
         json_schema_extra = {
@@ -36,16 +38,15 @@ class PricePrediction(BaseModel):
                 "message": "Prediction successful.",
                 "predictedValue": 15000.0,
                 "similarAds": [
-                        {
-                            "image": 'https://example.lk/uploads/images/ad-10377793.jpg',
-                            "title": 'Example Vehicle Title',
-                            "year": 2020,
-                            "mileage": 0,
-                            "source": 'Example.lk',
-                            "price": 0,
-                            "url": 'https://example.lk/vehicles/ad-10377793'
-                        }
+                    {
+                        "image": 'https://example.lk/uploads/images/ad-10377793.jpg',
+                        "title": 'Example Vehicle Title',
+                        "year": 2020,
+                        "mileage": 0,
+                        "source": 'Example.lk',
+                        "price": 0,
+                        "url": 'https://example.lk/vehicles/ad-10377793'
+                    }
                 ]
             }
         }
-        validate_by_name = True
