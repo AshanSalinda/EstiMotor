@@ -16,7 +16,7 @@ def normalize_vehicle_data(vehicle) -> dict:
         'title': vehicle.get('title', '').strip(),
         PRICE: clean_numbers(vehicle.get(PRICE, '')),
         MILEAGE: clean_numbers(vehicle.get(MILEAGE, '')),
-        YOM: clean_yom(vehicle.get(YOM, '')),
+        YEAR: clean_year(vehicle.get(YEAR, '')),
         ENGINE_CAPACITY: clean_numbers(vehicle.get(ENGINE_CAPACITY, '')),
         MAKE: clean_make(vehicle.get(MAKE, '')),
         TRANSMISSION: clean_transmission(vehicle.get(TRANSMISSION, ''), url),
@@ -44,9 +44,9 @@ def clean_numbers(value) -> int | None:
         return None
 
 
-def clean_yom(yom) -> int | None:
-    """Ensure YOM is a valid 4-digit year."""
-    cleaned_year = clean_numbers(yom)
+def clean_year(year) -> int | None:
+    """Ensure YEAR is a valid 4-digit year."""
+    cleaned_year = clean_numbers(year)
 
     if cleaned_year is None:
         return None
@@ -93,8 +93,8 @@ def clean_model(model) -> str | None:
     if not model:
         return None
 
-    model = model.strip().title()                   # Title Case
-    model = ' '.join(model.split())                 # Remove extra spaces
+    model = model.strip().title()       # Title Case
+    model = ' '.join(model.split())     # Remove extra spaces
     model = model.replace('-', ' ')     # Replace dashes with spaces
     model = model.replace('.', '')      # Remove periods
 
@@ -155,12 +155,12 @@ def clean_category(category: str) -> str | None:
 def null_cleanup(vehicles: list, progress_manager) -> list[dict]:
     """
     Handle null values in vehicle dataset:
-      1. Drop records missing essential fields (PRICE, YOM, MAKE).
+      1. Drop records missing essential fields (PRICE, YEAR, MAKE).
       3. Fill remaining optional fields with placeholders
          to avoid leaving nulls in the dataset.
     """
 
-    essential_fields = [PRICE, YOM, MAKE]
+    essential_fields = [PRICE, YEAR, MAKE]
 
     # Convert vehicles list into DataFrame for easier processing
     df = pd.DataFrame(vehicles)

@@ -39,27 +39,27 @@ class NormalizedVehicles:
             return []
 
     def get_stats(self) -> dict:
-        """Returns median mileage by yom, mode engine capacity and transmission by make, """
+        """Returns median mileage by year, mode engine capacity and transmission by make, """
         self.set_collection()
-        median_mileage_by_yom = {}
+        median_mileage_by_year = {}
         mode_engine_capacity_by_make = {}
         mode_transmission_by_make = {}
 
         try:
-            mileage_by_yom_pipeline = [
-                {"$match": {"yom": {"$type": "int"}, "mileage": {"$type": "int"}}},
+            mileage_by_year_pipeline = [
+                {"$match": {"year": {"$type": "int"}, "mileage": {"$type": "int"}}},
                 {"$group": {
-                    "_id": "$yom",
+                    "_id": "$year",
                     "mileages": {"$push": "$mileage"}
                 }}
             ]
-            result = self.collection.aggregate(mileage_by_yom_pipeline)
-            median_mileage_by_yom = {
+            result = self.collection.aggregate(mileage_by_year_pipeline)
+            median_mileage_by_year = {
                 str(doc["_id"]): int(median(doc["mileages"]))
                 for doc in result if doc["mileages"]
             }
         except Exception as e:
-            err(f"Failed to compute median mileage by yom. Error: {e}")
+            err(f"Failed to compute median mileage by year. Error: {e}")
 
         try:
             engine_capacity_by_make_pipeline = [
@@ -94,7 +94,7 @@ class NormalizedVehicles:
             err(f"Failed to compute mode transmission by make. Error: {e}")
 
         return {
-            "median_mileage_by_yom": median_mileage_by_yom,
+            "median_mileage_by_year": median_mileage_by_year,
             "mode_engine_capacity_by_make": mode_engine_capacity_by_make,
             "mode_transmission_by_make": mode_transmission_by_make
         }
