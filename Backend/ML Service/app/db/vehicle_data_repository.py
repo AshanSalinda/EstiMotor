@@ -42,7 +42,7 @@ class VehicleDataRepo:
                     "$addFields": {
                         "distance": {
                             "$add": [
-                                {"$abs": {"$subtract": ["$yom", target.get("year", 0)]}},
+                                {"$abs": {"$subtract": ["$year", target.get("year", 0)]}},
                                 {"$divide": [{"$abs": {"$subtract": ["$mileage", target.get("mileage", 0)]}}, 1000]},
                                 {"$divide": [{"$abs": {"$subtract": ["$engine_capacity", target.get("engine_capacity", 0)]}}, 100]}
                             ]
@@ -56,7 +56,7 @@ class VehicleDataRepo:
                         "_id": 0,
                         "image": 1,
                         "title": 1,
-                        "year": "$yom",
+                        "year": 1,
                         "mileage": 1,
                         "price": 1,
                         "url": 1,

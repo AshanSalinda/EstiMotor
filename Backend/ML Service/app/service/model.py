@@ -78,7 +78,7 @@ class Model:
         # Feature Engineering
         # ------------------------------
         current_year = datetime.now().year
-        df["age"] = current_year - df["yom"].astype(int)
+        df["age"] = current_year - df["year"].astype(int)
 
         # Avoid division by zero
         df["mileage_per_year"] = df.apply(
