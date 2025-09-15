@@ -89,7 +89,7 @@ class Model:
         # ------------------------------
         # Features / Target
         # ------------------------------
-        X = df[["make", "model", "engine_capacity", "mileage", "transmission",
+        X = df[["make", "model", "category", "engine_capacity", "mileage", "transmission",
                 "fuel_type", "age", "mileage_per_year"]]
         y = df["price"]
 
@@ -106,7 +106,7 @@ class Model:
         # ------------------------------
         # Preprocessor
         # ------------------------------
-        categorical = ["make", "model", "transmission", "fuel_type"]
+        categorical = ["make", "model", "category", "transmission", "fuel_type"]
         numeric = ["engine_capacity", "mileage", "age", "mileage_per_year"]
 
         preprocessor = ColumnTransformer(
