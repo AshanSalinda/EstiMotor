@@ -1,7 +1,7 @@
 PRICE = 'price'
 MAKE = 'make'
 MODEL = 'model'
-YOM = 'yom'
+YEAR = 'year'
 TRANSMISSION = 'transmission'
 ENGINE_CAPACITY = 'engine_capacity'
 FUEL_TYPE = 'fuel_type'

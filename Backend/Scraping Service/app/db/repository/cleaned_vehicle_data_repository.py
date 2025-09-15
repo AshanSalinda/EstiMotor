@@ -34,6 +34,50 @@ class CleanedVehicles:
             err(f"Failed to fetch vehicles from the database. Error: {e}")
             return []
 
+    def get_make_model_category_map(self) -> list:
+        """Builds and returns a mapping of makes → models → categories."""
+        try:
+            self.set_collection()
+            pipeline = [
+                # 1. Count occurrences of each (make, model, category)
+                {
+                    "$group": {
+                        "_id": {"make": "$make", "model": "$model", "category": "$category"},
+                        "count": {"$sum": 1}
+                    }
+                },
+                # 2. Sort by make, model, count descending
+                {
+                    "$sort": {"_id.make": 1, "_id.model": 1, "count": -1}
+                },
+                # 3. Group by make + model, pick first category (most frequent)
+                {
+                    "$group": {
+                        "_id": {"make": "$_id.make", "model": "$_id.model"},
+                        "category": {"$first": "$_id.category"}
+                    }
+                },
+                # 4. Group by make → collect models with their single category
+                {
+                    "$group": {
+                        "_id": "$_id.make",
+                        "models": {
+                            "$push": {"name": "$_id.model", "category": "$category"}
+                        }
+                    }
+                },
+                # 5. Final projection
+                {
+                    "$project": {"_id": 0, "make": "$_id", "models": 1}
+                }
+            ]
+
+            info(f"Fetched make-model-category mapping from the database.")
+            return list(self.collection.aggregate(pipeline))
+        except Exception as e:
+            err(f"Failed to build make-model-category mapping. Error: {e}")
+            return []
+
     def drop(self) -> None:
         """Drops the 'vehicle' collection."""
         try:

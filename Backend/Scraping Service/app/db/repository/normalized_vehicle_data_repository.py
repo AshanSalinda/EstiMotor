@@ -1,6 +1,6 @@
 from bson import ObjectId
 from statistics import median
-from collections import Counter
+from collections import Counter, defaultdict
 
 from app.db.database import database
 from app.utils.logger import err, info
@@ -39,27 +39,27 @@ class NormalizedVehicles:
             return []
 
     def get_stats(self) -> dict:
-        """Returns median mileage by yom, mode engine capacity and transmission by make, """
+        """Returns median mileage by year, mode engine capacity and transmission by make, """
         self.set_collection()
-        median_mileage_by_yom = {}
+        median_mileage_by_year = {}
         mode_engine_capacity_by_make = {}
         mode_transmission_by_make = {}
 
         try:
-            mileage_by_yom_pipeline = [
-                {"$match": {"yom": {"$type": "int"}, "mileage": {"$type": "int"}}},
+            mileage_by_year_pipeline = [
+                {"$match": {"year": {"$type": "int"}, "mileage": {"$type": "int"}}},
                 {"$group": {
-                    "_id": "$yom",
+                    "_id": "$year",
                     "mileages": {"$push": "$mileage"}
                 }}
             ]
-            result = self.collection.aggregate(mileage_by_yom_pipeline)
-            median_mileage_by_yom = {
+            result = self.collection.aggregate(mileage_by_year_pipeline)
+            median_mileage_by_year = {
                 str(doc["_id"]): int(median(doc["mileages"]))
                 for doc in result if doc["mileages"]
             }
         except Exception as e:
-            err(f"Failed to compute median mileage by yom. Error: {e}")
+            err(f"Failed to compute median mileage by year. Error: {e}")
 
         try:
             engine_capacity_by_make_pipeline = [
@@ -94,10 +94,44 @@ class NormalizedVehicles:
             err(f"Failed to compute mode transmission by make. Error: {e}")
 
         return {
-            "median_mileage_by_yom": median_mileage_by_yom,
+            "median_mileage_by_year": median_mileage_by_year,
             "mode_engine_capacity_by_make": mode_engine_capacity_by_make,
             "mode_transmission_by_make": mode_transmission_by_make
         }
+
+    def get_make_model_frequencies(self) -> dict:
+        """
+        Returns make-wise unique models with frequencies.
+        Structure:
+        {
+            "Toyota": [{"model": "Land Cruiser Prado", "frequency": 28}, ...],
+            "Honda": [{"model": "Civic", "frequency": 15}, ...]
+        }
+        """
+        self.set_collection()
+
+        pipeline = [
+            # Only consider documents with non-null make and model
+            {"$match": {"make": {"$type": "string"}, "model": {"$type": "string"}}},
+            # Group by make and model to count frequency
+            {"$group": {
+                "_id": {"make": "$make", "model": "$model"},
+                "frequency": {"$sum": 1}
+            }},
+            # Sort by frequency descending
+            {"$sort": {"_id.make": 1, "frequency": -1}}
+        ]
+
+        result = self.collection.aggregate(pipeline)
+        make_model_freq = defaultdict(list)
+
+        for doc in result:
+            make = doc["_id"]["make"]
+            model = doc["_id"]["model"]
+            frequency = doc.get("frequency", 1)
+            make_model_freq[make].append({"model": model, "frequency": frequency})
+
+        return dict(make_model_freq)
 
     def delete_by_ids(self, ids: list) -> None:
         """Deletes multiple vehicle documents by their _id."""

@@ -3,7 +3,7 @@ from datetime import datetime
 
 
 def impute_missing_fields(cleaned_vehicles: list, imputation_stats: dict, progress_manager):
-    median_mileage_by_yom = imputation_stats.get("median_mileage_by_yom", {})
+    median_mileage_by_year = imputation_stats.get("median_mileage_by_year", {})
     mode_engine_capacity_by_make = imputation_stats.get("mode_engine_capacity_by_make", {})
     mode_transmission_by_make = imputation_stats.get("mode_transmission_by_make", {})
     current_year = datetime.now().year
@@ -12,8 +12,8 @@ def impute_missing_fields(cleaned_vehicles: list, imputation_stats: dict, progre
 
     def fill_mileage(row):
         if pd.isna(row['mileage']):
-            yom = row.get('yom')
-            imputation = 0 if yom == current_year else median_mileage_by_yom.get(str(yom), None)
+            year = row.get('year')
+            imputation = 0 if year == current_year else median_mileage_by_year.get(str(year), None)
             if imputation is not None:
                 progress_manager.add_modified()
                 progress_manager.log({'action': 'Modified', 'message': f'mileage to {imputation}', 'url': row['url']})
