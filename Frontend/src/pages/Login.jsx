@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Input from '../components/input';
-import Button from '../components/input/Button';
-import useLoginValidation from '../hooks/validations/useLoginValidation';
 import { PiEye, PiEyeClosed } from "react-icons/pi";
 import { adminLogin } from "../api/adminApi.js";
+import Input from '../components/input';
+import Button from '../components/input/Button';
+import ProgressBar from "../components/ProgressBar.jsx";
 import { useAlert } from "../context/AlertContext.jsx";
-import ProgressBar from "../Components/ProgressBar.jsx";
+import useLoginValidation from '../hooks/validations/useLoginValidation';
 
 
 function Login() {

@@ -1,4 +1,4 @@
-import ProgressBar from "../Components/ProgressBar.jsx";
+import ProgressBar from "../components/ProgressBar.jsx";
 
 
 export default function LoadingPage() {

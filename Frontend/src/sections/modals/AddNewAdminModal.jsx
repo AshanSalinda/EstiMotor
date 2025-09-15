@@ -1,6 +1,6 @@
-import Input from '../../Components/input/index.jsx';
-import Button from '../../Components/input/Button.jsx';
-import Modal from "../../Components/Modal.jsx";
+import Input from '../../components/input/index.jsx';
+import Button from '../../components/input/Button.jsx';
+import Modal from "../../components/Modal.jsx";
 import useAddNewAdminValidation from "../../hooks/validations/useAddNewAdminValidation.js";
 import { createAdmin } from "../../api/adminApi.js";
 

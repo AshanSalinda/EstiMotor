@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
+import { getPrediction, getMakeModelMapping } from '../../api/userApi';
 import Input from '../../components/input';
 import Button from '../../components/input/Button';
 import Select from '../../components/input/Select';
+import VehicleAdCard from '../../components/VehicleAdCard';
+import { useAlert } from "../../context/AlertContext.jsx";
 import selectItems from '../../data/selectItems.json'
 import useDisplayValueAnimation from '../../hooks/useDisplayValueAnimation';
 import useVehicleInputValidation from '../../hooks/validations/useVehicleInputValidation';
-import { getPrediction, getMakeModelMapping } from '../../api/userApi';
-import { useAlert } from "../../context/AlertContext.jsx";
-import VehicleAdCard from '../../Components/VehicleAdCard';
+
 
 function ValuationSection() {
     const [ isValueLoading, setIsValueLoading ] = useState(false);

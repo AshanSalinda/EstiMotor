@@ -1,10 +1,10 @@
 import { useState } from "react";
 import AdminCard from "../../components/AdminCard";
 import Button from '../../components/input/Button';
-import AddNewAdminModal from "../Modals/AddNewAdminModal.jsx";
-import DeleteAdminModal from "../Modals/DeleteAdminModal.jsx";
-import UpdateAdminLevelModal from "../Modals/UpdateAdminLevelModal.jsx";
 import useAdminInfo from "../../hooks/useAdminInfo.js";
+import AddNewAdminModal from "../modals/AddNewAdminModal.jsx";
+import DeleteAdminModal from "../modals/DeleteAdminModal.jsx";
+import UpdateAdminLevelModal from "../modals/UpdateAdminLevelModal.jsx";
 
 export default function TeamManagement(props) {
     const { adminList, setAdminList, showAlert, setIsLoading } = props;

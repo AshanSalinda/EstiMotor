@@ -1,12 +1,12 @@
 import { useState } from "react";
+import { PiEye, PiEyeClosed } from "react-icons/pi";
+import { updateEmail, updatePassword } from "../../api/adminApi.js";
 import Input from '../../components/input';
 import Button from '../../components/input/Button';
 import useAdminInfo from "../../hooks/useAdminInfo.js";
 import useLogout from "../../hooks/useLogout.js";
 import useUpdateCurrentAdminValidation from "../../hooks/validations/useUpdateCurrentAdminValidation.js";
-import { updateEmail, updatePassword } from "../../api/adminApi.js";
-import { PiEye, PiEyeClosed } from "react-icons/pi";
-import LogoutConfirmModal from "../Modals/LogoutConfirmModal.jsx";
+import LogoutConfirmModal from "../modals/LogoutConfirmModal.jsx";
 
 
 export default function AccountManagement(props) {

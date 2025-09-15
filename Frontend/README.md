@@ -56,13 +56,13 @@ Frontend
 │   ├── index.css           # Global styles
 │   ├── main.jsx            # Entry point
 │   ├── api                 # API modules
-│   ├── Components          # Reusable UI components
+│   ├── components          # Reusable UI components
 │   ├── context             # React context providers
 │   ├── data                # Static data files
 │   ├── hooks               # Custom React hooks
 │   ├── pages               # Application pages
 │   ├── routes              # Route definitions and protection
-│   ├── Sections            # Page sections and layouts
+│   ├── sections            # Page sections and layouts
 │   └── theme               # Theme configuration
 ├── index.html              # HTML template
 ├── package.json            # Project metadata and scripts
