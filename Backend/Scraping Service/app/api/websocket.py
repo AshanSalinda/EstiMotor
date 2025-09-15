@@ -16,7 +16,7 @@ async def cancel_sender_task():
     async with _cancel_lock:  # Ensure only one canceller at a time
         if send_task:
             send_task.cancel()  # Cancel the task
-            MessageQueue.clear()
+            MessageQueue.set_enqueue_access(False)
             try:
                 await send_task  # Wait for the task to be cancelled
                 send_task = None
@@ -56,6 +56,7 @@ async def on_shutdown():
 async def websocket_endpoint(connection: WebSocket):
     await connection.accept()
     active_connections.append(connection)
+    MessageQueue.set_enqueue_access(True)
 
     global send_task
     if send_task is None:

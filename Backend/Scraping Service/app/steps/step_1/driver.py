@@ -27,7 +27,6 @@ class Driver(Step):
 
         try:
             ad_links_repo.drop()
-            MessageQueue.set_enqueue_access(True)
             progress_manager.start_progress_emitter()
 
             # Start crawling the spiders
@@ -55,8 +54,6 @@ class Driver(Step):
             if crawler.crawling:
                 print(f"Stopping {crawler.spider.name} spider...")
                 crawler.engine.close_spider(crawler.spider, 'Stopped by user')
-
-        MessageQueue.set_enqueue_access(False)
 
         # Wait for spiders to gracefully shut down
         while any(crawler.crawling for crawler in self.runner.crawlers):

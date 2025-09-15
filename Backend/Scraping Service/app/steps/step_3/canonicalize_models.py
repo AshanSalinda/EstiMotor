@@ -14,7 +14,7 @@ from collections import defaultdict
 
 # --- Configuration (tune these) ---
 EMBED_MODEL_NAME = "all-MiniLM-L6-v2"   # light & effective
-DBSCAN_EPS = 0.15      # cosine distance threshold (lower => stricter)
+DBSCAN_EPS = 0.18      # cosine distance threshold (lower => stricter)
 DBSCAN_MIN_SAMPLES = 1 # min points in a cluster (1 to allow singletons)
 UMAP_N_NEIGHBORS = 15
 UMAP_MIN_DIST = 0.0

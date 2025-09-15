@@ -1,5 +1,5 @@
 import requests
-from twisted.internet import threads
+from twisted.internet import threads, defer
 from app.config import settings
 from app.steps.shared.base_step import Step
 from app.steps.step_4.progress_manager import ProgressManager
@@ -17,10 +17,12 @@ class Driver(Step):
             info("Starting model training process...")
             progress_manager.start_progress_emitter()
 
-            # Run blocking request in a thread
-            response = await threads.deferToThread(
-                requests.post,
-                settings.MODAL_TRAINING_URL
+            # Send POST request to trigger model training in background
+            response = await defer.ensureDeferred(
+                threads.deferToThread(
+                    requests.post,
+                    settings.MODAL_TRAINING_URL
+                )
             )
 
             progress_manager.stop_progress_emitter()

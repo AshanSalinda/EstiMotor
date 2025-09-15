@@ -34,7 +34,6 @@ class Driver(Step):
         """Run all websites iteratively in batch mode."""
         try:
             scraped_vehicles_data_repo.drop()
-            MessageQueue.set_enqueue_access(True)
             total_links = ad_links_repo.get_total_ad_count()
             self.progress_manager = ProgressManager(target=total_links)
             self.progress_manager.start_progress_emitter()
@@ -107,8 +106,6 @@ class Driver(Step):
             if crawler.crawling:
                 print(f"Stopping {crawler.spider.name} spider...")
                 crawler.engine.close_spider(crawler.spider, 'Stopped by user')
-
-        MessageQueue.set_enqueue_access(False)
 
         # Wait for spiders to gracefully shut down
         while any(crawler.crawling for crawler in self.runner.crawlers):
