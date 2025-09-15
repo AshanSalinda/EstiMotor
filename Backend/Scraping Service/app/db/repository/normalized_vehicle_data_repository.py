@@ -1,6 +1,6 @@
 from bson import ObjectId
 from statistics import median
-from collections import Counter
+from collections import Counter, defaultdict
 
 from app.db.database import database
 from app.utils.logger import err, info
@@ -98,6 +98,40 @@ class NormalizedVehicles:
             "mode_engine_capacity_by_make": mode_engine_capacity_by_make,
             "mode_transmission_by_make": mode_transmission_by_make
         }
+
+    def get_make_model_frequencies(self) -> dict:
+        """
+        Returns make-wise unique models with frequencies.
+        Structure:
+        {
+            "Toyota": [{"model": "Land Cruiser Prado", "frequency": 28}, ...],
+            "Honda": [{"model": "Civic", "frequency": 15}, ...]
+        }
+        """
+        self.set_collection()
+
+        pipeline = [
+            # Only consider documents with non-null make and model
+            {"$match": {"make": {"$type": "string"}, "model": {"$type": "string"}}},
+            # Group by make and model to count frequency
+            {"$group": {
+                "_id": {"make": "$make", "model": "$model"},
+                "frequency": {"$sum": 1}
+            }},
+            # Sort by frequency descending
+            {"$sort": {"_id.make": 1, "frequency": -1}}
+        ]
+
+        result = self.collection.aggregate(pipeline)
+        make_model_freq = defaultdict(list)
+
+        for doc in result:
+            make = doc["_id"]["make"]
+            model = doc["_id"]["model"]
+            frequency = doc.get("frequency", 1)
+            make_model_freq[make].append({"model": model, "frequency": frequency})
+
+        return dict(make_model_freq)
 
     def delete_by_ids(self, ids: list) -> None:
         """Deletes multiple vehicle documents by their _id."""

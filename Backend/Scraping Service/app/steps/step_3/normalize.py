@@ -90,7 +90,15 @@ def clean_fuel_type(fuel_type, url) -> str | None:
 
 def clean_model(model) -> str | None:
     """Normalize model case and values."""
-    return model.strip().title() if model else None
+    if not model:
+        return None
+
+    model = model.strip().title()                   # Title Case
+    model = ' '.join(model.split())                 # Remove extra spaces
+    model = model.replace('-', ' ')     # Replace dashes with spaces
+    model = model.replace('.', '')      # Remove periods
+
+    return model if model else None
 
 
 def clean_make(make) -> str | None:
@@ -108,21 +116,38 @@ def clean_category(category: str) -> str | None:
         return "car"
 
     mapping = {
-        "car": ["cars", "Cars"],
-        "van": ["vans", "Vans", "Van"],
-        "suv": ["suvs", "pickups", "SUV"],
-        "motorcycle": ["motorcycles", "Motorbikes", "Bike"],
-        "bus": ["buses", "Buses", "Bus"],
-        "lorry": ["lorries", "crew-cabs", "Lorries & Trucks", "Truck"],
-        "three_wheeler": ["three-wheels", "Three Wheelers", "Three wheeler"],
-        "tractor": ["tractors", "Tractors", "Land"],
-        "heavy_duty": ["heavy-duties", "Heavy Duty", "Heavy"],
-        "other": ["others"]
+        "cars": "car",
+        "Cars": "car",
+        "vans": "van",
+        "Vans": "van",
+        "Van": "van",
+        "suvs": "suv",
+        "pickups": "suv",
+        "SUV": "suv",
+        "motorcycles": "motorcycle",
+        "Motorbikes": "motorcycle",
+        "Bike": "motorcycle",
+        "buses": "bus",
+        "Buses": "bus",
+        "Bus": "bus",
+        "lorries": "lorry",
+        "crew-cabs": "lorry",
+        "Lorries & Trucks": "lorry",
+        "Truck": "lorry",
+        "three-wheels": "three_wheeler",
+        "Three Wheelers": "three_wheeler",
+        "Three wheeler": "three_wheeler",
+        "tractors": "tractor",
+        "Tractors": "tractor",
+        "Land": "tractor",
+        "heavy-duties": "heavy_duty",
+        "Heavy Duty": "heavy_duty",
+        "Heavy": "heavy_duty",
+        "others": "other"
     }
 
-    for norm, keywords in mapping.items():
-        if any(category == k for k in keywords):
-            return norm
+    if category in mapping:
+        return mapping[category]
 
     return None
 
