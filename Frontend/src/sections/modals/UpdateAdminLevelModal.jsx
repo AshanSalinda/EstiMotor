@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import Modal from "../../Components/Modal.jsx";
-import Button from '../../Components/input/Button.jsx';
 import { updateAdminLevel } from "../../api/adminApi.js";
+import Modal from "../../components/Modal.jsx";
+import Button from '../../components/input/Button.jsx';
 
 export default function UpdateAdminLevelModal(props) {
     const { adminToLevelUpdate, setAdminToLevelUpdate, setAdmins, showAlert, setIsLoading } = props;

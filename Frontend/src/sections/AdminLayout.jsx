@@ -1,5 +1,5 @@
 import Header from "./Header";
-import ProgressBar from "../Components/ProgressBar.jsx";
+import ProgressBar from "../components/ProgressBar.jsx";
 
 export default function AdminLayout(props) {
     const { children, isLoading, ...headerProps } = props;

@@ -1,5 +1,5 @@
 import AdminLayout from '../sections/AdminLayout';
-import Stepper from '../components/Stepper/Stepper';
+import Stepper from '../components/stepper/Stepper';
 import DataPanel from '../sections/DataPanel';
 import StepDataProvider, { useStepDataContext } from '../context/StepDataContext';
 

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import AdminLayout from "../sections/AdminLayout";
-import AccountManagement from "../Sections/AdminManagementSections/AccountManagement.jsx";
-import TeamManagement from "../Sections/AdminManagementSections/TeamManagement.jsx";
+import AccountManagement from "../sections/adminManagementSections/AccountManagement.jsx";
+import TeamManagement from "../sections/adminManagementSections/TeamManagement.jsx";
 import { getAllAdmins } from "../api/adminApi.js";
 import { useAlert } from "../context/AlertContext.jsx";
 

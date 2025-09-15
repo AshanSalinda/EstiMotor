@@ -29,7 +29,7 @@ const styles = {
         ...styles,
         textAlign: 'left',
         padding: '10px 15px',
-        fontSize: '18px',
+        fontSize: '16px',
         color: 'white',
         backgroundColor: isSelected ? colors.primary[500] : 'transparent',
         ':hover': {

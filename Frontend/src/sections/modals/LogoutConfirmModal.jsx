@@ -1,4 +1,4 @@
-import Modal from "../../Components/Modal.jsx";
+import Modal from "../../components/Modal.jsx";
 import Button from "../../components/input/Button";
 
 export default function LogoutConfirmModal({ open, onClose, onConfirm }) {

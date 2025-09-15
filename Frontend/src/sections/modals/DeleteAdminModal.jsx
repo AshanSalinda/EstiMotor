@@ -1,6 +1,6 @@
-import Button from '../../Components/input/Button.jsx';
-import Modal from "../../Components/Modal.jsx";
 import { deleteAdmin } from "../../api/adminApi.js";
+import Button from '../../components/input/Button.jsx';
+import Modal from "../../components/Modal.jsx";
 
 export default function DeleteAdminModal(props) {
     const { adminToDelete, setAdminToDelete, setAdmins, showAlert, setIsLoading } = props;

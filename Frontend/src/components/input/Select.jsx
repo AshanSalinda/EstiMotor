@@ -1,5 +1,4 @@
 import { useEffect, useState, forwardRef } from 'react';
-import PropTypes from 'prop-types';
 import Select from 'react-select';
 import InputLabel from '@mui/material/InputLabel';
 import FormHelperText from '@mui/material/FormHelperText';
@@ -14,7 +13,8 @@ const SelectInput = forwardRef((props, ref) => {
     
 
     const { 
-        options = [], 
+        options = [],
+        isFullOptionRequired = false,
         label, 
         id, 
         name, 
@@ -39,7 +39,10 @@ const SelectInput = forwardRef((props, ref) => {
 
         if (typeof (onChange) === 'function') {
             onChange({
-                target: { value: option?.value, name: name },
+                target: {
+                    value: isFullOptionRequired ? option : option?.value,
+                    name: name
+                },
             });
         }
     }
@@ -57,7 +60,7 @@ const SelectInput = forwardRef((props, ref) => {
     useEffect(() => {
         if (options.length === 1) {
             handleChange(options[0]);
-        } else if (options.length === 0) {
+        } else if (selected && !options.find(opt => opt.value === selected.value)) {
             handleChange(null);
         }
     }, [options]);
@@ -97,7 +100,7 @@ const SelectInput = forwardRef((props, ref) => {
                 isClearable
                 blurInputOnSelect
                 menuPortalTarget={document.body}
-                menuShouldScrollIntoView={false}
+                menuShouldScrollIntoView={true}
                 isLoading={isLoading}
                 value={selected}
                 aria-invalid={error}
@@ -116,19 +119,5 @@ const SelectInput = forwardRef((props, ref) => {
         </FormControl>
     )
 });
-
-
-SelectInput.propTypes = {
-    options: PropTypes.array,
-    label: PropTypes.string,
-    id: PropTypes.string,
-    name: PropTypes.string,
-    isLoading: PropTypes.bool,
-    helperText: PropTypes.string,
-    error: PropTypes.bool,
-    onChange: PropTypes.func,
-    onBlur: PropTypes.func,
-};
-
 
 export default SelectInput;

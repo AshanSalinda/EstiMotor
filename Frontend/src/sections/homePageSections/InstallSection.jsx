@@ -27,6 +27,10 @@ export default function InstallationSection() {
         }
     };
 
+    if (!deferredPrompt) {
+        return null; // Don't render anything if the prompt isn't available
+    }
+
     return (
         <div className="p-8 text-center text-white rounded-md shadow-lg ">
             <h2 className="text-2xl font-bold">Install Our App for a Better Experience!</h2>
@@ -39,9 +43,8 @@ export default function InstallationSection() {
             </div>
             <button
                 onClick={handleInstallClick}
-                className="px-4 py-2 mt-6 transition duration-300 rounded-lg shadow-lg bg-primary-500 hover:bg-blue-100"
-            >
-                {!deferredPrompt ? "App Installed" : "Install Now"}
+                className="px-4 py-2 mt-6 transition duration-300 rounded-lg shadow-lg bg-primary-500 hover:bg-blue-100" >
+                Install Now
             </button>
         </div>
     )
