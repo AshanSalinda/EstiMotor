@@ -4,7 +4,6 @@ from pymongo.errors import BulkWriteError
 
 from app.db.database import database
 from app.utils.logger import err, info, warn
-from datetime import datetime, timezone
 
 
 class AdLinks:
