@@ -2,25 +2,14 @@ from scrapy import signals
 from app.utils.logger import info, err
 
 
-class RequestStats:
+class StatCollectorMiddleware:
     """Middleware to track request statistics."""
-
-    _pm = None  # ProgressManager instance
-
     @classmethod
     def from_crawler(cls, crawler):
         """This method is used by Scrapy to create spiders."""
         middleware = cls()
-
-        crawler.signals.connect(middleware.spider_opened, signal=signals.spider_opened)
         crawler.signals.connect(middleware.spider_closed, signal=signals.spider_closed)
         return middleware
-
-    @staticmethod
-    def spider_opened(spider):
-        """Called when the spider is opened."""
-        # if not RequestStats._pm:
-        #     RequestStats._pm = spider.progress_manager
 
     @staticmethod
     def spider_closed(spider, reason):
