@@ -25,20 +25,15 @@ class MessageQueue(object):
 
     @classmethod
     def set_enqueue_access(cls, access: bool):
-        """To control the access when starting and stopping crawling process"""
+        """Set whether enqueueing messages is allowed."""
+        if access == cls._is_enqueue_access_granted:
+            return
         cls._is_enqueue_access_granted = access
-        cls.clear()
-
-    @classmethod
-    def clear(cls):
-        while not cls._queue.empty():
-            try:
-                cls._queue.get_nowait()
-            except QueueEmpty:
-                break
+        cls._clear()
 
     @classmethod
     async def get_as_payload(cls, batch_size: int):
+        """Retrieve messages from the queue and format them into a payload."""
         payload = {}
         for _ in range(batch_size):
             data = await cls._queue.get()
@@ -51,6 +46,7 @@ class MessageQueue(object):
 
     @classmethod
     def format_payload(cls, payload, data):
+        """Format the payload dictionary with data from the message."""
         if 'progress' in data:
             payload['progress'] = data['progress']
 
@@ -64,3 +60,12 @@ class MessageQueue(object):
             if 'logs' not in payload:
                 payload['logs'] = []
             payload['logs'].append(data['log'])
+
+    @classmethod
+    def _clear(cls):
+        """Clear all messages from the queue."""
+        while not cls._queue.empty():
+            try:
+                cls._queue.get_nowait()
+            except QueueEmpty:
+                break

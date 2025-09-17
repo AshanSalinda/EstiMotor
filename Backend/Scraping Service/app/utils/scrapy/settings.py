@@ -9,9 +9,9 @@ settings = {
         'Chrome/58.0.3029.110 Safari/537.36'
     ),
     "DOWNLOADER_MIDDLEWARES": {
-        'app.steps.shared.middleware.rate_limit.RateLimitMiddleware': 400,
-        'app.steps.step_2.middleware.RequestStats': 543,
-        'app.steps.shared.middleware.cloudflare.CloudflareBypassMiddleware': 560,
-        'app.steps.shared.middleware.retry_429.Retry429Middleware': 563
+        'app.utils.scrapy.middleware.rate_limit.RateLimitMiddleware': 400,
+        'app.utils.scrapy.middleware.stat_collector.StatCollectorMiddleware': 543,
+        'app.utils.scrapy.middleware.cloudflare.CloudflareBypassMiddleware': 560,
+        'app.utils.scrapy.middleware.retry_429.Retry429Middleware': 563
     }
 }

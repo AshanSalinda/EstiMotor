@@ -2,17 +2,16 @@ import asyncio
 from twisted.internet.defer import DeferredList, ensureDeferred
 from scrapy.crawler import CrawlerRunner
 from app.config import settings
-from app.utils.logger import err, info
-from app.utils.message_queue import MessageQueue
-from app.utils.progress_manager import ProgressManager
+from app.data.site_data import ikman, patpat, riyasewana
 from app.db.repository.ad_links_repository import ad_links_repo
 from app.db.repository.scraped_vehicle_data_repository import scraped_vehicles_data_repo
 from app.steps.shared.base_step import Step
-from app.data.site_data import ikman, patpat, riyasewana
-from .websites.ikman_scraper import IkmanScraper
-from .websites.patpat_scraper import PatpatScraper
-from .websites.riyasewana_scraper import RiyasewanaScraper
-from .settings import settings as crawler_settings
+from app.steps.step_2.websites.ikman_scraper import IkmanScraper
+from app.steps.step_2.websites.patpat_scraper import PatpatScraper
+from app.steps.step_2.websites.riyasewana_scraper import RiyasewanaScraper
+from app.utils.logger import err, info
+from app.utils.scrapy.progress_manager import ProgressManager
+from app.utils.scrapy.settings import settings as crawler_settings
 
 
 class Driver(Step):
@@ -34,7 +33,6 @@ class Driver(Step):
         """Run all websites iteratively in batch mode."""
         try:
             scraped_vehicles_data_repo.drop()
-            MessageQueue.set_enqueue_access(True)
             total_links = ad_links_repo.get_total_ad_count()
             self.progress_manager = ProgressManager(target=total_links)
             self.progress_manager.start_progress_emitter()
@@ -107,8 +105,6 @@ class Driver(Step):
             if crawler.crawling:
                 print(f"Stopping {crawler.spider.name} spider...")
                 crawler.engine.close_spider(crawler.spider, 'Stopped by user')
-
-        MessageQueue.set_enqueue_access(False)
 
         # Wait for spiders to gracefully shut down
         while any(crawler.crawling for crawler in self.runner.crawlers):

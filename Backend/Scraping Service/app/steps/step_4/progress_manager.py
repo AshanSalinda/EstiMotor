@@ -20,7 +20,6 @@ class ProgressManager:
         if not self.is_progress_emitting:
             self.is_progress_emitting = True
             self.start_time = datetime.now()
-            MessageQueue.set_enqueue_access(True)
             reactor.callLater(self.job_interval, self._emit_progress)
 
 

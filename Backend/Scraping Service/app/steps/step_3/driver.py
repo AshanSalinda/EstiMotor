@@ -2,7 +2,6 @@ from app.config import settings
 from app.db.repository.cleaned_vehicle_data_repository import cleaned_vehicles_data_repo
 from app.db.repository.imputation_stats_repository import imputation_stats_repo
 from app.db.repository.make_model_mapping_repository import make_model_mapping_repo
-from app.db.repository.scraped_vehicle_data_repository1 import scraped_vehicles_data_repo as sp
 from app.db.repository.scraped_vehicle_data_repository import scraped_vehicles_data_repo
 from app.db.repository.normalized_vehicle_data_repository import normalized_vehicle_data_repo
 from app.steps.shared.base_step import Step
@@ -27,12 +26,6 @@ class Driver(Step):
         """Start the data cleaning process."""
 
         try:
-            # scraped_vehicles_data_repo.drop()
-            # vehicles = sp.get_all()
-            # scraped_vehicles_data_repo.save(vehicles)
-
-            MessageQueue.set_enqueue_access(True)
-
             total_count = scraped_vehicles_data_repo.get_total_ad_count()
             self.progress_manager = ProgressManager(total=total_count)
 

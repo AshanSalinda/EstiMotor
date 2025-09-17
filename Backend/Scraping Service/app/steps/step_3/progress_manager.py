@@ -1,6 +1,4 @@
 import json
-import time
-
 from datetime import datetime
 from app.utils.logger import warn
 from app.utils.message_queue import MessageQueue
@@ -61,7 +59,6 @@ class ProgressManager:
             })
 
             print(json.dumps(stats, indent=2))
-            time.sleep(1)
 
         else:
             MessageQueue.enqueue({
