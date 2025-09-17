@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { getPrediction, getMakeModelMapping } from '../../api/userApi';
 import Input from '../../components/input';
 import Button from '../../components/input/Button';
@@ -22,9 +22,17 @@ function ValuationSection() {
     const { getAttributes, handleSubmit } = useVehicleInputValidation();
     const { showAlert } = useAlert();
 
-    const yearOptions = selectItems.year.map((year) => ({value: year, label: year}));
     const transmissionOptions = selectItems.transmission.map((transmission) => ({value: transmission, label: transmission}));
     const fuelTypeOptions = selectItems.fuelType.map((fuelType) => ({value: fuelType, label: fuelType}));
+
+    const yearOptions = useMemo(() => {
+        const currentYear = new Date().getFullYear();
+        const baseYear = 1980;
+        return Array.from({ length: currentYear - baseYear + 1 }, (_, i) => {
+            const year = currentYear - i;
+            return { value: String(year), label: String(year) };
+        });
+    }, []);
 
     const onSubmit = async (formData) => {
         setIsValueLoading(true);
