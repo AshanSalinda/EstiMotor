@@ -10,7 +10,6 @@ from app.steps.step_3.progress_manager import ProgressManager
 from app.steps.step_3.impute import impute_missing_fields
 from app.steps.step_3.normalize import normalize_vehicle_data, null_cleanup
 from app.utils.logger import info
-from app.utils.message_queue import MessageQueue
 
 
 class Driver(Step):
