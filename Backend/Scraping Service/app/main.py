@@ -4,6 +4,7 @@ from app.db.database import database
 from app.api.websocket import router as websocket_router
 from app.steps.shared.reactor_thread import reactor_thread
 from app.api.routes import router as api_router
+from app.utils.scheduler import scheduler
 
 app = FastAPI()
 
@@ -11,6 +12,7 @@ app = FastAPI()
 @app.on_event("startup")
 async def on_startup():
     reactor_thread.start()
+    scheduler.start()
 
 
 @app.on_event("shutdown")
