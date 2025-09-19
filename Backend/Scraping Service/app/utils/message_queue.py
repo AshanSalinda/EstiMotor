@@ -29,7 +29,7 @@ class MessageQueue(object):
         if access == cls._is_enqueue_access_granted:
             return
         cls._is_enqueue_access_granted = access
-        cls._clear()
+        asyncio.create_task(cls._clear())
 
     @classmethod
     async def get_as_payload(cls, batch_size: int):
@@ -62,10 +62,10 @@ class MessageQueue(object):
             payload['logs'].append(data['log'])
 
     @classmethod
-    def _clear(cls):
+    async def _clear(cls):
         """Clear all messages from the queue."""
         while not cls._queue.empty():
             try:
-                cls._queue.get_nowait()
+                await cls._queue.get()
             except QueueEmpty:
                 break

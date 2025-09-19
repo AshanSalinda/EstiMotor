@@ -19,7 +19,7 @@ class Settings:
         err("DATABASE_NAME is not set in environment variables!")
         exit()
 
-    # Modal API
+    # Modal Training
     MODAL_TRAINING_URL: str = os.getenv("MODAL_TRAINING_URL")
     if not MODAL_TRAINING_URL:
         err("MODAL_TRAINING_URL is not set in environment variables!")
@@ -27,6 +27,17 @@ class Settings:
 
     SCRAPING_BATCH_SIZE: int = int(os.getenv("SCRAPING_BATCH_SIZE", "100"))
     PROCESSING_BATCH_SIZE: int = int(os.getenv("PROCESSING_BATCH_SIZE", "1000"))
+
+    # Email
+    EMAIL_SENDER_ADDRESS: str = os.getenv("EMAIL_SENDER_ADDRESS")
+    EMAIL_SENDER_PASSWORD: str = os.getenv("EMAIL_SENDER_PASSWORD")
+
+    if not EMAIL_SENDER_ADDRESS:
+        err("EMAIL_SENDER_ADDRESS is not set in environment variables!")
+        exit(1)
+    if not EMAIL_SENDER_PASSWORD:
+        err("EMAIL_SENDER_PASSWORD is not set in environment variables!")
+        exit(1)
 
 
 settings = Settings()

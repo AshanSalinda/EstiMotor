@@ -29,7 +29,7 @@ class Driver(Step):
         ]
 
 
-    async def run(self):
+    async def run(self) -> list:
         """Run all websites iteratively in batch mode."""
         try:
             scraped_vehicles_data_repo.drop()
@@ -46,8 +46,10 @@ class Driver(Step):
             # Drop the ad links collection after all scraping is done
             ad_links_repo.drop()
 
+            errors = self.progress_manager.failed_requests.copy()
             self.progress_manager.stop_progress_emitter()
             self.progress_manager.complete()
+            return errors
 
         except Exception as e:
             self.progress_manager.stop_progress_emitter()
@@ -74,7 +76,7 @@ class Driver(Step):
 
             for doc in batch_links:
                 link_ids.append(doc.get("_id"))
-                link_urls.append(doc.get("url"))
+                link_urls.append(doc.get("url").replace("-", ""))
 
             info(f"Processing {len(link_urls)} links for {name}...")
             d = self.runner.crawl(

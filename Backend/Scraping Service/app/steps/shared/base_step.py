@@ -15,7 +15,7 @@ class Step:
         # Name of the step, defaults to the class name
         self.step_name = kwargs.get('step_name', self.__class__.__name__)
 
-    async def start(self):
+    async def start(self) -> list:
         # Prevents starting the step if it's already running
         if self.is_running:
             e = Exception(f"Step: '{self.step_name}' is already running.")
@@ -27,8 +27,9 @@ class Step:
 
         try:
             # Run the step's main logic
-            await self.run()
+            errors = await self.run()
             info(f"Finished Step: '{self.step_name}'")
+            return errors
         except StepExecutionError as e:
             # Handles custom step execution errors
             raise e
@@ -40,6 +41,6 @@ class Step:
             # Ensures the running flag is reset
             self.is_running = False
 
-    def run(self):
+    async def run(self) -> list:
         # Method to be implemented by subclasses
         raise NotImplementedError(f"{self.__class__.__name__} must implement run() method")

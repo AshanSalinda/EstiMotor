@@ -20,7 +20,7 @@ class Driver(Step):
         self.runner = CrawlerRunner(settings)
 
 
-    async def run(self):
+    async def run(self) -> list:
         """Start the scraping process."""
         progress_manager = ProgressManager(target=0)
 
@@ -35,8 +35,10 @@ class Driver(Step):
 
             await DeferredList([d1, d2, d3])
 
+            errors = progress_manager.failed_requests.copy()
             progress_manager.stop_progress_emitter()
             progress_manager.complete()
+            return errors
 
         except Exception as e:
             progress_manager.stop_progress_emitter()

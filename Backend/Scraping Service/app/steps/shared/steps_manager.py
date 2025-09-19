@@ -1,6 +1,8 @@
+from datetime import datetime
 from twisted.internet import reactor
 from twisted.internet.defer import ensureDeferred
 
+from app.utils.email_sender import send_training_completion_email
 from app.utils.logger import info, err
 from app.steps.step_1.driver import Driver as AdsCollecting
 from app.steps.step_2.driver import Driver as DetailsExtraction
@@ -39,13 +41,28 @@ class StepsManager:
 
     async def run(self):
         info("Running all steps...")
+        start_time = datetime.now()
         self.is_running = True
+        errors = []
 
         try:
             for step in self.steps:
-                await step.start()
+                step_errors = await step.start()
+                if isinstance(step_errors, list):
+                    errors.extend(step_errors)
                 self.current_step += 1
+
             info("Finished all steps...")
+            duration = str(datetime.now() - start_time).split('.')[0]
+            send_training_completion_email(
+                training_duration=duration,
+                total_records=len(errors),
+                mae=23.5,  # Placeholder value
+                mape=12.3,  # Placeholder value
+                r2_score=25.6,  # Placeholder value
+                errors=errors,
+            )
+
         except StepExecutionError as e:
             self.handle_step_error(e)
         except Exception as e:
