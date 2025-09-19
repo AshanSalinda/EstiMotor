@@ -76,7 +76,7 @@ class Driver(Step):
 
             for doc in batch_links:
                 link_ids.append(doc.get("_id"))
-                link_urls.append(doc.get("url").replace("-", ""))
+                link_urls.append(doc.get("url"))
 
             info(f"Processing {len(link_urls)} links for {name}...")
             d = self.runner.crawl(
