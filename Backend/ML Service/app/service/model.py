@@ -57,112 +57,113 @@ class Model:
 
     def train(self):
         """Train the model."""
-
         if self.is_training:
             raise Exception("Model training is already in progress.")
 
-        info("Starting model training process...")
+        try:
+            info("Starting model training process...")
 
-        self.is_training = True
+            self.is_training = True
 
-        info("Fetching vehicles from DB...")
-        vehicles = vehicle_data_repo.get_all()
+            info("Fetching vehicles from DB...")
+            vehicles = vehicle_data_repo.get_all()
 
-        if not vehicles:
-            warn("No vehicles found in DB.")
-            return None
+            if not vehicles:
+                raise Exception("No vehicle data available in DB.")
 
-        df = pd.DataFrame(vehicles)
+            df = pd.DataFrame(vehicles)
 
-        # ------------------------------
-        # Feature Engineering
-        # ------------------------------
-        current_year = datetime.now().year
-        df["age"] = current_year - df["year"].astype(int)
+            # ------------------------------
+            # Feature Engineering
+            # ------------------------------
+            current_year = datetime.now().year
+            df["age"] = current_year - df["year"].astype(int)
 
-        # Avoid division by zero
-        df["mileage_per_year"] = df.apply(
-            lambda row: row["mileage"] / row["age"] if row["age"] > 0 else row["mileage"],
-            axis=1
-        )
+            # Avoid division by zero
+            df["mileage_per_year"] = df.apply(
+                lambda row: row["mileage"] / row["age"] if row["age"] > 0 else row["mileage"],
+                axis=1
+            )
 
-        # ------------------------------
-        # Features / Target
-        # ------------------------------
-        X = df[["make", "model", "category", "engine_capacity", "mileage", "transmission",
-                "fuel_type", "age", "mileage_per_year"]]
-        y = df["price"]
+            # ------------------------------
+            # Features / Target
+            # ------------------------------
+            X = df[["make", "model", "category", "engine_capacity", "mileage", "transmission",
+                    "fuel_type", "age", "mileage_per_year"]]
+            y = df["price"]
 
-        # Apply log transformation to target
-        y = np.log1p(y)
+            # Apply log transformation to target
+            y = np.log1p(y)
 
-        # ------------------------------
-        # Train/Test Split
-        # ------------------------------
-        X_train, X_test, y_train, y_test = train_test_split(
-            X, y, test_size=0.2, random_state=42
-        )
+            # ------------------------------
+            # Train/Test Split
+            # ------------------------------
+            X_train, X_test, y_train, y_test = train_test_split(
+                X, y, test_size=0.2, random_state=42
+            )
 
-        # ------------------------------
-        # Preprocessor
-        # ------------------------------
-        categorical = ["make", "model", "category", "transmission", "fuel_type"]
-        numeric = ["engine_capacity", "mileage", "age", "mileage_per_year"]
+            # ------------------------------
+            # Preprocessor
+            # ------------------------------
+            categorical = ["make", "model", "category", "transmission", "fuel_type"]
+            numeric = ["engine_capacity", "mileage", "age", "mileage_per_year"]
 
-        preprocessor = ColumnTransformer(
-            transformers=[
-                ("num", StandardScaler(), numeric),
-                ("cat", OneHotEncoder(handle_unknown="ignore"), categorical),
-            ]
-        )
+            preprocessor = ColumnTransformer(
+                transformers=[
+                    ("num", StandardScaler(), numeric),
+                    ("cat", OneHotEncoder(handle_unknown="ignore"), categorical),
+                ]
+            )
 
-        # ------------------------------
-        # Model (Random Forest)
-        # ------------------------------
-        model = Pipeline(steps=[
-            ("preprocessor", preprocessor),
-            ("regressor", RandomForestRegressor(
-                n_estimators=200,
-                max_depth=None,
-                random_state=42,
-                n_jobs=-1
-            )),
-        ])
+            # ------------------------------
+            # Model (Random Forest)
+            # ------------------------------
+            model = Pipeline(steps=[
+                ("preprocessor", preprocessor),
+                ("regressor", RandomForestRegressor(
+                    n_estimators=200,
+                    max_depth=None,
+                    random_state=42,
+                    n_jobs=-1
+                )),
+            ])
 
-        info("Training model (RandomForest with log(price))...")
-        model.fit(X_train, y_train)
+            info("Training model (RandomForest with log(price))...")
+            model.fit(X_train, y_train)
 
-        # ------------------------------
-        # Evaluation
-        # ------------------------------
-        y_pred = model.predict(X_test)
+            # ------------------------------
+            # Evaluation
+            # ------------------------------
+            y_pred = model.predict(X_test)
 
-        # Transform back from log(price)
-        y_test_exp = np.expm1(y_test)
-        y_pred_exp = np.expm1(y_pred)
+            # Transform back from log(price)
+            y_test_exp = np.expm1(y_test)
+            y_pred_exp = np.expm1(y_pred)
 
-        # Evaluation Metrics
-        mae = mean_absolute_error(y_test_exp, y_pred_exp)
-        mape = np.mean(np.abs((y_test_exp - y_pred_exp) / y_test_exp)) * 100
-        r2 = r2_score(y_test_exp, y_pred_exp)
+            # Evaluation Metrics
+            mae = mean_absolute_error(y_test_exp, y_pred_exp)
+            mape = np.mean(np.abs((y_test_exp - y_pred_exp) / y_test_exp)) * 100
+            r2 = r2_score(y_test_exp, y_pred_exp)
 
-        # Save the model
-        joblib.dump(model, self.model_path)
+            # Save the model
+            joblib.dump(model, self.model_path)
 
-        self._load_model()
-        self.is_training = False
+            self._load_model()
 
-        info(f"Evaluation Results:")
-        info(f"MAE:  {mae:.2f}")
-        info(f"MAPE: {mape:.2f}%")
-        info(f"R²:   {r2:.4f}")
-        info("Model training completed.")
+            info(f"Evaluation Results:")
+            info(f"MAE:  {mae:.2f}")
+            info(f"MAPE: {mape:.2f}%")
+            info(f"R²:   {r2:.4f}")
+            info("Model training completed.")
 
-        return {
-            "MAE": f"{mae:.2f}",
-            "MAPE": f"{mape:.2f}%",
-            "R2": f"{r2:.4f}"
-        }
+            return {
+                "MAE": f"{mae:.2f}",
+                "MAPE": f"{mape:.2f}%",
+                "R2": f"{r2:.4f}"
+            }
+
+        finally:
+            self.is_training = False
 
 
 model = Model()
