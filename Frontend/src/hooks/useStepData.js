@@ -47,7 +47,10 @@ export default function useStepData() {
         }
 
         if(newLogs) {
-            allLogs.current[activeStep].unshift(...newLogs);
+            let current_logs = allLogs.current[activeStep] || [];
+            current_logs.unshift(...newLogs);              // Add new logs to the beginning
+            current_logs = current_logs.slice(0, 100);     // Keep only the latest 100 logs
+            allLogs.current[activeStep] = current_logs;
 
             if (activeStep === expandedStep) {
                 setExpandedStepLogs([...allLogs.current[activeStep]]);
