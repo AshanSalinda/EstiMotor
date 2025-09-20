@@ -25,8 +25,12 @@ class Driver(Step):
                 )
             )
 
+            response.raise_for_status()
+            metrics = response.json().get("evaluation_metrics", {})
+            self.execution_report.training_metrics = metrics
+
             progress_manager.stop_progress_emitter()
-            progress_manager.complete(response)
+            progress_manager.complete(metrics)
 
         except Exception as e:
             progress_manager.stop_progress_emitter()

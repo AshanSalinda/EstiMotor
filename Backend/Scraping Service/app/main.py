@@ -1,24 +1,29 @@
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.db.database import database
-from app.api.websocket import router as websocket_router
-from app.steps.shared.reactor_thread import reactor_thread
+
 from app.api.routes import router as api_router
+from app.api.websocket import router as websocket_router, cancel_sender_task
+from app.db.database import database
+from app.steps.shared.reactor_thread import reactor_thread
 from app.utils.scheduler import scheduler
 
-app = FastAPI()
 
-
-@app.on_event("startup")
-async def on_startup():
+@asynccontextmanager
+async def lifespan(fastapi: FastAPI):
+    # On startup
     reactor_thread.start()
     scheduler.start()
 
+    # Application is running
+    yield
 
-@app.on_event("shutdown")
-async def on_shutdown():
+    # On shutdown
+    await cancel_sender_task()
     database.close()
     reactor_thread.stop()
+
+app = FastAPI(lifespan=lifespan)
 
 
 app.add_middleware(

@@ -1,15 +1,14 @@
-from datetime import datetime
 from twisted.internet import reactor
 from twisted.internet.defer import ensureDeferred
-
-from app.utils.email_sender import send_training_completion_email
-from app.utils.logger import info, err
+from app.steps.shared.step_execution_error import StepExecutionError
 from app.steps.step_1.driver import Driver as AdsCollecting
 from app.steps.step_2.driver import Driver as DetailsExtraction
 from app.steps.step_3.driver import Driver as DataCleaning
 from app.steps.step_4.driver import Driver as ModelTraining
+from app.utils.email.completion_email import send_training_completion_email
+from app.utils.execution_report import ExecutionReport
+from app.utils.logger import info, err
 from app.utils.message_queue import MessageQueue
-from app.steps.shared.step_execution_error import StepExecutionError
 
 
 class StepsManager:
@@ -41,27 +40,16 @@ class StepsManager:
 
     async def run(self):
         info("Running all steps...")
-        start_time = datetime.now()
         self.is_running = True
-        errors = []
+        execution_report = ExecutionReport()
 
         try:
             for step in self.steps:
-                step_errors = await step.start()
-                if isinstance(step_errors, list):
-                    errors.extend(step_errors)
+                await step.start(execution_report)
                 self.current_step += 1
 
             info("Finished all steps...")
-            duration = str(datetime.now() - start_time).split('.')[0]
-            send_training_completion_email(
-                training_duration=duration,
-                total_records=len(errors),
-                mae=23.5,  # Placeholder value
-                mape=12.3,  # Placeholder value
-                r2_score=25.6,  # Placeholder value
-                errors=errors,
-            )
+            send_training_completion_email(execution_report)
 
         except StepExecutionError as e:
             self.handle_step_error(e)

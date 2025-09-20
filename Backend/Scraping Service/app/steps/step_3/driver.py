@@ -8,8 +8,7 @@ from app.steps.shared.base_step import Step
 from app.steps.step_3.canonicalize_models import build_canonical_map
 from app.steps.step_3.progress_manager import ProgressManager
 from app.steps.step_3.impute import impute_missing_fields
-from app.steps.step_3.normalize import normalize_vehicle_data, null_cleanup
-from app.utils.logger import info
+from app.steps.step_3.normalizer import Normalizer
 
 
 class Driver(Step):
@@ -19,6 +18,7 @@ class Driver(Step):
         super().__init__(step_name="Data Cleaning")
         self.batch_size = settings.PROCESSING_BATCH_SIZE  # Number of vehicles to process in each batch
         self.progress_manager = None
+        self.normalizer = None
         self.model_canonical_map = {}
 
     async def run(self):
@@ -27,6 +27,7 @@ class Driver(Step):
         try:
             total_count = scraped_vehicles_data_repo.get_total_ad_count()
             self.progress_manager = ProgressManager(total=total_count)
+            self.normalizer = Normalizer(self.progress_manager)
 
             self.normalize_vehicles()
             self.generate_imputation_stats()
@@ -34,6 +35,7 @@ class Driver(Step):
             self.finalize_cleaned_vehicles()
             self.generate_make_model_category_mapping()
             self.progress_manager.emit_progress(completed=True)
+            self.execution_report.make_model_map = self.model_canonical_map
 
         except Exception as e:
             raise e  # propagate to StepsManager
@@ -54,7 +56,7 @@ class Driver(Step):
 
         # Build canonical map per make
         for make, models_freq_list in make_model_freqs.items():
-            info(f"Canonicalizing models for make: {make}")
+            self.progress_manager.log(f"Identifying canonical models for make: {make}")
             # extract model names and frequency dict
             model_list = [entry['model'] for entry in models_freq_list]
             freq_dict = {entry['model']: entry['frequency'] for entry in models_freq_list}
@@ -92,7 +94,7 @@ class Driver(Step):
                 vehicle_id = vehicle.pop('_id', None)
                 if vehicle_id:
                     processed_ids.append(vehicle_id)
-                normalized_vehicle = normalize_vehicle_data(vehicle)
+                normalized_vehicle = self.normalizer.normalize_vehicle_data(vehicle)
                 normalized_vehicles.append(normalized_vehicle)
 
             self.progress_manager.emit_progress(processed_count=len(vehicles))
@@ -111,7 +113,6 @@ class Driver(Step):
                 # Drop the collection after cleaning is done
                 normalized_vehicle_data_repo.drop()
                 imputation_stats_repo.drop()
-                self.model_canonical_map.clear()
                 break
 
             # Canonicalize model names
@@ -125,7 +126,7 @@ class Driver(Step):
             imputed_vehicles = impute_missing_fields(vehicles, imputation_stats, self.progress_manager)
 
             # Final cleanup: remove or fill null/empty fields
-            cleaned_vehicles = null_cleanup(imputed_vehicles, self.progress_manager)
+            cleaned_vehicles = self.normalizer.null_cleanup(imputed_vehicles)
 
             processed_ids = [vehicle.pop('_id') for vehicle in vehicles if '_id' in vehicle]
 
