@@ -18,12 +18,16 @@ DATABASE_NAME=""
 MODAL_TRAINING_URL=""
 SCRAPING_BATCH_SIZE=100
 PROCESSING_BATCH_SIZE=1000
+EMAIL_SENDER_ADDRESS=""
+EMAIL_SENDER_PASSWORD=""
 ```
 - `MONGO_URI`: MongoDB connection string for storing and retrieving vehicle data.
 - `DATABASE_NAME`: Name of the MongoDB database.
 - `MODAL_TRAINING_URL`: URL of the ML service endpoint to trigger model retraining.
 - `SCRAPING_BATCH_SIZE`: Number of vehicle ads to scrape per batch.
 - `PROCESSING_BATCH_SIZE`: Number of records to process per batch during cleaning and preparation.
+- `EMAIL_SENDER_ADDRESS`: Email address used for sending notifications.
+- `EMAIL_SENDER_PASSWORD`: Password for the email sender address.
 
 ## Configuration
 Configuration is managed through several files and modules:

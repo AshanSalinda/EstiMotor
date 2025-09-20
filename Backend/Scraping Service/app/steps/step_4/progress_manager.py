@@ -48,18 +48,16 @@ class ProgressManager:
             reactor.callLater(self.job_interval, self._emit_progress)
 
 
-    def complete(self, response):
+    def complete(self, training_metrics):
         """Handles completion of the process and emits final stats."""
         info("Model training completed successfully.")
 
-        result = response.json()
-        metrics = result.get("evaluation_metrics", {})
         stats = {
             'Status': 'Completed',
             'Duration': self._get_duration(),
-            'MAE': metrics.get("MAE", "N/A"),
-            'MAPE': metrics.get("MAPE", "N/A"),
-            'R2': metrics.get("R2", "N/A"),
+            'MAE': training_metrics.get("MAE", "N/A"),
+            'MAPE': training_metrics.get("MAPE", "N/A"),
+            'R2': training_metrics.get("R2", "N/A"),
         }
 
         print(json.dumps(stats, indent=2))

@@ -35,6 +35,7 @@ class Driver(Step):
 
             await DeferredList([d1, d2, d3])
 
+            self.execution_report.add_scraping_errors((progress_manager.failed_requests.copy()))
             progress_manager.stop_progress_emitter()
             progress_manager.complete()
 

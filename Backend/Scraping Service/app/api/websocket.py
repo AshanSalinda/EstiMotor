@@ -1,11 +1,10 @@
 import asyncio
-from typing import List
 from app.utils.logger import err
 from app.utils.message_queue import MessageQueue
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 
 router = APIRouter()
-active_connections: List[WebSocket] = []
+active_connections: list[WebSocket] = []
 send_task: asyncio.Task | None = None
 _cancel_lock = asyncio.Lock()
 
@@ -24,7 +23,7 @@ async def cancel_sender_task():
                 send_task = None
 
 
-async def broadcast(message: List[dict]):
+async def broadcast(message: dict):
     """Send a JSON message to all active WebSocket connections."""
     for connection in active_connections.copy():
         try:
@@ -40,16 +39,10 @@ async def broadcast(message: List[dict]):
         
 async def check_for_send():
     while True:
-        payload = await MessageQueue.get_as_payload(5)
+        payload = await MessageQueue.get_as_payload(10)
         if payload:
             await broadcast(payload)
         await asyncio.sleep(0.1)
-        
-
-@router.on_event("shutdown")
-async def on_shutdown():
-    """Shutdown event to cancel the send_messages coroutine."""
-    await cancel_sender_task()
 
 
 @router.websocket("/")

@@ -3,23 +3,17 @@ Auto-canonicalizer for vehicle model strings.
 - Input: list of model strings (optionally with counts/frequencies)
 - Output: list of clusters with a canonical model and variant members
 """
-import warnings
 from typing import List, Dict, Optional
 import numpy as np
-import umap
 from sentence_transformers import SentenceTransformer
 from sklearn.cluster import DBSCAN
 from sklearn.preprocessing import normalize
 from collections import defaultdict
 
-# --- Configuration (tune these) ---
+# --- Configuration ---
 EMBED_MODEL_NAME = "all-MiniLM-L6-v2"   # light & effective
-DBSCAN_EPS = 0.18      # cosine distance threshold (lower => stricter)
-DBSCAN_MIN_SAMPLES = 1 # min points in a cluster (1 to allow singletons)
-UMAP_N_NEIGHBORS = 15
-UMAP_MIN_DIST = 0.0
-UMAP_N_COMPONENTS = 64
-# -----------------------------------
+DBSCAN_EPS = 0.18                       # cosine distance threshold (lower => stricter)
+DBSCAN_MIN_SAMPLES = 1                  # min points in a cluster (1 to allow singletons)
 
 
 def embed_texts(texts: List[str], model_name: str = EMBED_MODEL_NAME) -> np.ndarray:
@@ -44,7 +38,6 @@ def cluster_embeddings(
 
 def choose_canonical_for_cluster(
     models: List[str],
-    emb: np.ndarray,
     indices: List[int],
     freqs: Optional[Dict[str,int]] = None) -> str:
     """
@@ -85,23 +78,6 @@ def build_canonical_map(
         return []
 
     emb = embed_texts(unique_models, model_name)
-
-    with warnings.catch_warnings():
-        warnings.simplefilter("ignore")
-
-        try:
-            reducer = umap.UMAP(
-                n_neighbors=UMAP_N_NEIGHBORS,
-                min_dist=UMAP_MIN_DIST,
-                n_components=UMAP_N_COMPONENTS,
-                metric="cosine",
-                random_state=42
-            )
-            emb = reducer.fit_transform(emb)
-            emb = normalize(emb)
-        except Exception as e:
-            print("UMAP not available or failed, continuing without it:", e)
-
     labels = cluster_embeddings(emb, eps=eps, min_samples=min_samples, metric="cosine")
 
     clusters = defaultdict(list)
@@ -111,7 +87,7 @@ def build_canonical_map(
     result = []
     for lbl, indices in clusters.items():
         # select canonical
-        canonical = choose_canonical_for_cluster(unique_models, emb, indices, freqs)
+        canonical = choose_canonical_for_cluster(unique_models, indices, freqs)
         variants = [unique_models[i] for i in indices]
         total_count = sum(freqs.get(v, 1) if freqs else 1 for v in variants)
         result.append({

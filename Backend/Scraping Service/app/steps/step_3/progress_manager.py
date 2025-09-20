@@ -1,6 +1,6 @@
 import json
 from datetime import datetime
-from app.utils.logger import warn
+from app.utils.logger import info, warn
 from app.utils.message_queue import MessageQueue
 
 
@@ -25,11 +25,16 @@ class ProgressManager:
         self.modified_count = 0
         self.logs = []
 
-    def log(self, log: dict) -> None:
+    def log(self, log: dict | str) -> None:
         self.logs.append(log)
-        warn(f"{log['action']} {log['message']} for {log['url']}")
-        # MessageQueue.enqueue({'log': log})
-        MessageQueue.enqueue({'log': f"{log['action']}: {log['message']} for {log['url']}"})
+
+        if isinstance(log, dict):
+            warn(f"{log['action']} {log['message']} for {log['url']}")
+            # MessageQueue.enqueue({'log': log})
+            MessageQueue.enqueue({'log': f"{log['action']}: {log['message']} for {log['url']}"})
+        else:
+            info(log)
+            MessageQueue.enqueue({'log': log})
 
     def add_modified(self, count: int = 1) -> None:
         self.modified_count += count
@@ -40,7 +45,7 @@ class ProgressManager:
     def emit_progress(self, processed_count: int = 0, completed: bool = False):
         """Emit progress update."""
         self.processed_so_far += processed_count
-        progress = (self.processed_so_far / self.total_count) * 100 if self.total_count > 0 else 100
+        progress = round((self.processed_so_far / self.total_count) * 100, 2) if self.total_count > 0 else -1
         time_taken = str(datetime.now() - self.start_time).split('.')[0] if self.start_time else 0
 
         stats = {

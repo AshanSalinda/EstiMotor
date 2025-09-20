@@ -46,6 +46,7 @@ class Driver(Step):
             # Drop the ad links collection after all scraping is done
             ad_links_repo.drop()
 
+            self.execution_report.add_scraping_errors((self.progress_manager.failed_requests.copy()))
             self.progress_manager.stop_progress_emitter()
             self.progress_manager.complete()
 

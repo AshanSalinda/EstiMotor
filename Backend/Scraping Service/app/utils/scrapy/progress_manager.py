@@ -135,7 +135,7 @@ class ProgressManager:
         try:
             percentage = round((self.response_count * 100) / self.target, 2)
         except ZeroDivisionError:
-            percentage = 100
+            percentage = -1
 
         MessageQueue.enqueue({
             'stats': {
