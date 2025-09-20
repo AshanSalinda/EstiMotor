@@ -36,7 +36,7 @@ export default {
                 }
             },
             animation: {
-                gradientMove: 'gradientMove 3.5s ease 500ms forwards',
+                gradientMove: 'gradientMove 3.5s ease 750ms forwards',
                 fadeIn: 'fadeIn 1s ease',
                 glow: 'glow 3.5s ease',
                 expand: 'expand 2s ease',
