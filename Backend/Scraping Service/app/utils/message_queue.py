@@ -59,7 +59,10 @@ class MessageQueue(object):
         if 'log' in data:
             if 'logs' not in payload:
                 payload['logs'] = []
-            payload['logs'].append(data['log'])
+            if isinstance(data['log'], list):
+                payload['logs'].extend(data['log'])
+            else:
+                payload['logs'].append(data['log'])
 
     @classmethod
     async def _clear(cls):

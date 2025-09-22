@@ -4,7 +4,7 @@ from datetime import datetime
 
 def get_completion_email_body(
     training_duration: str,
-    total_records: int,
+    dataset_size: int,
     mae: float,
     mape: float,
     r2_score: float,
@@ -179,8 +179,8 @@ def get_completion_email_body(
                 <td>{training_duration}</td>
             </tr>
             <tr>
-                <td>Total Records Processed</td>
-                <td>{total_records}</td>
+                <td>No of items in Dataset</td>
+                <td>{dataset_size}</td>
             </tr>
             <tr>
                 <td>Completion Date</td>

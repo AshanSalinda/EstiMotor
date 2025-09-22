@@ -1,3 +1,6 @@
+from twisted.internet.defer import ensureDeferred
+from twisted.internet.threads import deferToThread
+
 from app.config import settings
 from app.db.repository.cleaned_vehicle_data_repository import cleaned_vehicles_data_repo
 from app.db.repository.imputation_stats_repository import imputation_stats_repo
@@ -16,26 +19,29 @@ class Driver(Step):
 
     def __init__(self):
         super().__init__(step_name="Data Cleaning")
-        self.batch_size = settings.PROCESSING_BATCH_SIZE  # Number of vehicles to process in each batch
-        self.progress_manager = None
-        self.normalizer = None
-        self.model_canonical_map = {}
+        self.batch_size: int = settings.PROCESSING_BATCH_SIZE  # Number of vehicles to process in each batch
+        self.progress_manager: ProgressManager | None = None
+        self.normalizer: Normalizer | None = None
+        self.model_canonical_map: dict = {}
 
     async def run(self):
         """Start the data cleaning process."""
 
         try:
             total_count = scraped_vehicles_data_repo.get_total_ad_count()
-            self.progress_manager = ProgressManager(total=total_count)
+            self.progress_manager = ProgressManager(total_count)
             self.normalizer = Normalizer(self.progress_manager)
 
-            self.normalize_vehicles()
-            self.generate_imputation_stats()
-            self.generate_model_canonical_map()
-            self.finalize_cleaned_vehicles()
-            self.generate_make_model_category_mapping()
-            self.progress_manager.emit_progress(completed=True)
+            # Offload blocking methods
+            await ensureDeferred(deferToThread(self.normalize_vehicles))
+            await ensureDeferred(deferToThread(self.generate_imputation_stats))
+            await ensureDeferred(deferToThread(self.generate_model_canonical_map))
+            await ensureDeferred(deferToThread(self.finalize_cleaned_vehicles))
+            await ensureDeferred(deferToThread(self.generate_make_model_category_mapping))
+
+            self.progress_manager.complete()
             self.execution_report.make_model_map = self.model_canonical_map
+            self.execution_report.dataset_size = total_count - self.progress_manager.dropped_count or 0
 
         except Exception as e:
             raise e  # propagate to StepsManager
@@ -53,9 +59,11 @@ class Driver(Step):
         """Canonicalize vehicle models per make."""
         # Get make-wise models with frequencies
         make_model_freqs = normalized_vehicle_data_repo.get_make_model_frequencies()
+        self.progress_manager.set_total_makes(len(make_model_freqs.keys()))
 
         # Build canonical map per make
         for make, models_freq_list in make_model_freqs.items():
+            self.progress_manager.add_processed(1, "canonicalize")
             self.progress_manager.log(f"Identifying canonical models for make: {make}")
             # extract model names and frequency dict
             model_list = [entry['model'] for entry in models_freq_list]
@@ -97,7 +105,7 @@ class Driver(Step):
                 normalized_vehicle = self.normalizer.normalize_vehicle_data(vehicle)
                 normalized_vehicles.append(normalized_vehicle)
 
-            self.progress_manager.emit_progress(processed_count=len(vehicles))
+            self.progress_manager.add_processed(len(vehicles), "normalize")
             normalized_vehicle_data_repo.save(normalized_vehicles)  # Save the standardized vehicle data
             scraped_vehicles_data_repo.delete_by_ids(processed_ids)  # Delete the original raw vehicle data
 
@@ -130,7 +138,7 @@ class Driver(Step):
 
             processed_ids = [vehicle.pop('_id') for vehicle in vehicles if '_id' in vehicle]
 
-            self.progress_manager.emit_progress(processed_count=len(vehicles))
+            self.progress_manager.add_processed(len(vehicles), "finalize")
             cleaned_vehicles_data_repo.save(cleaned_vehicles)  # Save the cleaned vehicle data
             normalized_vehicle_data_repo.delete_by_ids(processed_ids)  # Delete the original raw vehicle data
 

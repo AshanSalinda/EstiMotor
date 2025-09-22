@@ -7,20 +7,18 @@ from app.utils.execution_report import ExecutionReport
 
 def send_training_completion_email(
     execution_report: ExecutionReport,
-    total_records: int = 0
 ) -> None:
     """
     Send a model training completion email with performance metrics and an optional error report.
 
     Args:
         execution_report : An ExecutionReport object containing all report info.
-        total_records : Total number of records processed during training.
     """
     recipients=["ashansalinda.as@gmail.com"]
     subject = "Model Training Completed"
     html_body = get_completion_email_body(
         training_duration=execution_report.get_duration(),
-        total_records=total_records,
+        dataset_size=execution_report.dataset_size,
         mae=execution_report.training_metrics.get("MAE") or 'N/A',
         mape=execution_report.training_metrics.get("MAPE") or 'N/A',
         r2_score=execution_report.training_metrics.get("R2") or 'N/A',
