@@ -23,11 +23,12 @@ export default function useStepData() {
 
     const { showAlert } = useAlert();
 
-    const setLogs = (payload) => {
+    const updateStep = (payload) => {
         const newProgress = payload?.progress;
         const newStats = payload?.stats;
         const newLogs = payload?.logs?.reverse();
         const newControl = payload?.control;
+        const newStep = payload?.step;
 
         if(newProgress !== undefined && newProgress !== null) {
             setProgress(newProgress);
@@ -48,7 +49,7 @@ export default function useStepData() {
 
         if(newLogs) {
             let current_logs = allLogs.current[activeStep] || [];
-            current_logs.unshift(...newLogs);              // Add new logs to the beginning
+            current_logs.unshift(...newLogs);              // Add new logs at the beginning
             current_logs = current_logs.slice(0, 100);     // Keep only the latest 100 logs
             allLogs.current[activeStep] = current_logs;
 
@@ -58,8 +59,27 @@ export default function useStepData() {
             
         }
 
+        if (typeof(newStep) === 'number' && newStep > 0 && newStep <= stepsInfo.length) {
+            const zeroIndexedStep = newStep - 1;
+            if (zeroIndexedStep >= 0 && zeroIndexedStep < stepsInfo.length && zeroIndexedStep !== activeStep) {
+                for (let step = 0; step < zeroIndexedStep; step++) {
+                    allStepStats.current[step] = {
+                        ...(allStepStats.current[step]),
+                        'Status': "Completed",
+                    };
+                }
+
+                setActiveStep(zeroIndexedStep);
+                setExpandedStep(zeroIndexedStep);
+            }
+        }
+
         if(newControl) {
             switch (newControl) {
+                case 'running':
+                    setIsRunning(true);
+                    setIsFailed(false);
+                    break;
                 case 'completed':
                     handleNext();
                     break;
@@ -145,7 +165,7 @@ export default function useStepData() {
         setExpandedStepStats(allStepStats.current[expandedStep]);
     }, [expandedStep]);
 
-    useWebSocket({ isWsConnected, setIsWsConnected, setLogs } )
+    useWebSocket({ isWsConnected, setIsWsConnected, updateStep } )
 
 
     return {
