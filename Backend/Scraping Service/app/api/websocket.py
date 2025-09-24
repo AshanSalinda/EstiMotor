@@ -53,7 +53,7 @@ async def websocket_endpoint(connection: WebSocket):
     MessageQueue.set_enqueue_access(True)
 
     await connection.send_json({
-        "setStep": stepsManager.current_step if stepsManager.is_running else 1,
+        "step": stepsManager.current_step if stepsManager.is_running else 1,
         "control": "running" if stepsManager.is_running else ""
     })
 
