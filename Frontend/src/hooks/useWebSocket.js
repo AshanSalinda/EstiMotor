@@ -1,13 +1,13 @@
 import { useEffect, useRef, useCallback } from "react";
 
 export default function useWebSocket(props) {
-    const { isWsConnected, setIsWsConnected, setLogs } = props;
-    const setLogsRef = useRef(setLogs);
+    const { isWsConnected, setIsWsConnected, updateStep } = props;
+    const updateStepRef = useRef(updateStep);
     const ws = useRef(null);
 
     useEffect(() => {
-        setLogsRef.current = setLogs;
-    }, [setLogs]);
+        updateStepRef.current = updateStep;
+    }, [updateStep]);
 
     useEffect(() => {
         // Initialize WebSocket
@@ -27,7 +27,7 @@ export default function useWebSocket(props) {
         // On message
         ws.current.onmessage = (event) => {
             const data = JSON.parse(event.data);
-            setLogsRef.current(data);
+            updateStepRef.current(data);
         };
 
         // On close
