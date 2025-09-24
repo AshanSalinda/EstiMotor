@@ -24,6 +24,7 @@ class ExecutionReport:
         self.scraping_errors: list = []
         self.make_model_map: dict = {}
         self.training_metrics: dict = {}
+        self.dataset_size: int = 0
 
 
     def add_scraping_errors(self, errors: list):

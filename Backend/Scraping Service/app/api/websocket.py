@@ -1,7 +1,8 @@
 import asyncio
+from fastapi import APIRouter, WebSocket, WebSocketDisconnect
+from app.steps.shared.steps_manager import stepsManager
 from app.utils.logger import err
 from app.utils.message_queue import MessageQueue
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 
 router = APIRouter()
 active_connections: list[WebSocket] = []
@@ -50,6 +51,11 @@ async def websocket_endpoint(connection: WebSocket):
     await connection.accept()
     active_connections.append(connection)
     MessageQueue.set_enqueue_access(True)
+
+    await connection.send_json({
+        "step": stepsManager.current_step if stepsManager.is_running else 1,
+        "control": "running" if stepsManager.is_running else ""
+    })
 
     global send_task
     if send_task is None:
