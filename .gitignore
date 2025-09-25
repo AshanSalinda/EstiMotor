@@ -3,6 +3,7 @@
 /Frontend/.idea
 /Frontend/.env
 /Frontend/node_modules
+/Frontend/package-lock.json
 /Frontend/dist
 /Frontend/dev-dist
 /Frontend/dist-ssr
